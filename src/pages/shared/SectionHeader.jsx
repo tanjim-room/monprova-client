@@ -2,9 +2,9 @@
 
 const SectionHeader = ({heading, subHeading}) => {
     return (
-        <div className="my-16">
-            <h2 className="text-center font-bold text-4xl primary-color leading-normal">{heading}</h2>
-            <p className="font-bold text-center secondary-color border-y-2 w-1/2 mx-auto py-4 border-tertiary-color">{subHeading}</p>
+        <div className="my-16 py-8">
+            <h2 className="text-center font-bold text-4xl text-white leading-normal primary-color">--- {heading} ---</h2>
+            <p className="font-semibold text-center text-white border-y-2 w-1/2 mx-auto py-4 secondary-color bd-primary-color">{subHeading}</p>
         </div>
     );
 };

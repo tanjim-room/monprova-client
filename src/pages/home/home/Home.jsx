@@ -9,6 +9,7 @@ const Home = () => {
             <Hero></Hero>
             <SectionHeading heading={"বিশেষজ্ঞ ডাক্তারগণ"} subHeading={"আপনার জন্য আমাদের বিশেষজ্ঞ ডাক্তাররা আছে সবসময়"}></SectionHeading>
             <DoctorSection></DoctorSection>
+            <SectionHeading heading={"ব্লগসমুহ"} subHeading={"আপনার মানসিক স্বাস্থ্য সম্পর্কিত ব্লগ পড়ুন"}></SectionHeading>
         </div>
     );
 };

@@ -10,6 +10,10 @@
   color : #4e395f;
 }
 
+.tertiary-color {
+  color : #ea676b;
+}
+
 .bg-primary-color {
   background-color : #27b294;
 }
@@ -22,6 +26,10 @@
   border-color : #27b294;
 }
 
-.border-tertiary-color {
+.bd-primary-color {
   border-color : #ea676b;
+}
+
+.bg-tetrary-color {
+  background-color : #1e888d;
 }

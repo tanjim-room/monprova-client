@@ -11,8 +11,8 @@ const DoctorSection = () => {
                     doctors.slice(0, 6).map(doctor => <DoctorCard key={doctor.id} doctor={doctor}></DoctorCard>)
                 }
             </div>
-            <div className="flex justify-center text-center my-8">
-                <Button btnName={"আরও দেখুন"}></Button>
+            <div className="flex justify-center text-center my-12">
+                <Button btnName={"আরও দেখুন"} bgColor="bg-secondary-color"></Button>
             </div>
         </section>
 
