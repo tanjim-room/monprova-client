@@ -1,3 +1,35 @@
 @tailwind base;
  @tailwind components;
  @tailwind utilities;
+
+.primary-color {
+  color : #27b294;
+}
+
+.secondary-color {
+  color : #4e395f;
+}
+
+.tertiary-color {
+  color : #ea676b;
+}
+
+.bg-primary-color {
+  background-color : #27b294;
+}
+
+.bg-secondary-color {
+  background-color : #ea676b;
+}
+
+.border-primary-color {
+  border-color : #27b294;
+}
+
+.bd-primary-color {
+  border-color : #ea676b;
+}
+
+.bg-tetrary-color {
+  background-color : #1e888d;
+}
