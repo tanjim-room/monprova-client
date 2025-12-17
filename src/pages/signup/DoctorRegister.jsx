@@ -1,10 +1,14 @@
 import React from 'react';
 import Button from '../../components/Button';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 const DoctorRegister = () => {
     return (
         <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+            <Helmet>
+                <title>Doctor Register</title>
+            </Helmet>
             <div className="w-full max-w-6xl bg-base-100 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-2 overflow-hidden">
                 {/* Left Section */}
                 <div className="p-8 md:p-12 flex flex-col justify-center">

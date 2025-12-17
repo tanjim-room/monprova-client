@@ -9,6 +9,9 @@ import PatientLogin from "../pages/login/PatientLogin";
 import PatientRegister from "../pages/signup/PatientRegister";
 import DoctorLogin from "../pages/login/DoctorLogin";
 import DoctorRegister from "../pages/signup/DoctorRegister";
+import DoctorList from "../pages/doctorList/DoctorList";
+import DoctorDetails from "../pages/doctorDetails/DoctorDetails";
+import BlogDetails from "../pages/blogDetails/BlogDetails";
 
 export const router = createBrowserRouter([
   {
@@ -34,6 +37,18 @@ export const router = createBrowserRouter([
       {
         path: "doctorRegister",
         element: <DoctorRegister></DoctorRegister>
+      },
+      {
+        path: "doctorList",
+        element: <DoctorList></DoctorList>
+      },
+      {
+        path: "doctorDetails/:doctorId",
+        element: <DoctorDetails></DoctorDetails>,
+      },
+      {
+        path: "/blogDetails/:blogId",
+        element: <BlogDetails></BlogDetails>,
       }
       ]
   },

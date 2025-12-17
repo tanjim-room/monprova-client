@@ -1,24 +1,24 @@
 import { useEffect, useState } from "react";
 
 
-const useBlogs = () => {
-    const [blogs, setBlogs] = useState([]);
+const useVideos = () => {
+    const [videos, setVideos] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-       fetch('/blogs.json')
+       fetch('/videos.json')
            .then(res => res.json())
            .then(data => {
-            setBlogs(data)
+            setVideos(data)
             setLoading(false);})
            .catch(err => {
-            console.error("Error fetching blogs data:", err)
+            console.error("Error fetching videos data:", err)
             setLoading(false);
            });
     }
     ,[]);
 
-   return [blogs, loading];
+   return [videos, loading];
 };
 
-export default useBlogs;
+export default useVideos;

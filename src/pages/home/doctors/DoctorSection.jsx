@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Button from "../../../components/Button";
 import DoctorCard from "../../../components/cards/DoctorCard";
 import useDoctors from "../../../hooks/useDoctors";
@@ -12,7 +13,9 @@ const DoctorSection = () => {
                 }
             </div>
             <div className="flex justify-center text-center my-12">
-                <Button btnName={"আরও দেখুন"} bgColor="bg-secondary-color"></Button>
+                <Link to="/doctorList">
+                    <Button btnName={"সব ডাক্তার দেখুন"} bgColor={"bg-secondary-color"}></Button>
+                </Link>
             </div>
         </section>
 

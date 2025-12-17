@@ -24,7 +24,9 @@ const Hero = () => {
                         <Link to="/patientLogin">
                             <Button btnName={"রোগী হিসেবে শুরু করুন"} bgColor="bg-secondary-color"></Button>
                         </Link>
-                        <Button btnName={"ডাক্তার হিসেবে শুরু করুন"} bgColor="bg-primary-color"></Button>
+                        <Link to="/doctorLogin">
+                            <Button btnName={"ডাক্তার হিসেবে শুরু করুন"} bgColor="bg-primary-color"></Button>
+                        </Link>
                     </section>
                 </div>
             </div>

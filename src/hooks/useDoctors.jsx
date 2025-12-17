@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 const useDoctors = () => {
     const [doctors, setDoctors] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
 
     useEffect(() => {
        fetch('/doctors.json')
@@ -12,7 +12,7 @@ const useDoctors = () => {
            .catch(err => console.error("Error fetching doctors data:", err));
     },[]);
 
-   return [doctors, loading];
+   return [doctors];
 };
 
 export default useDoctors;
