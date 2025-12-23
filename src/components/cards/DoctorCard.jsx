@@ -28,8 +28,8 @@ const DoctorCard = ({ doctor }) => {
                
                 
             </div>
-            <div className="my-4 mx-6">
-                   <Link to={`/doctorDetails/${id}`}>
+            <div className="mb-6 mx-6">
+                   <Link to={`doctorDetails/${id}`}>
                        <Button btnName={"বিস্তারিত দেখুন"} bgColor="bg-primary-color w-full"></Button>
                    </Link>
             </div>

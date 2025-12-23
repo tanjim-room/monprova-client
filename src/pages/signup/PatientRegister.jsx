@@ -1,9 +1,34 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Button from '../../components/Button';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { AuthContext } from '../../providers/AuthProvider';
 
 const PatientRegister = () => {
+    const {signUpEmail} = useContext(AuthContext);
+    const handleSignUp = (event) => {
+        event.preventDefault();
+        // Handle signup logic here  
+        const form = event.target;
+        const name = form.name.value;
+        const email = form.email.value;
+        const password = form.password.value;
+
+        console.log('Name:', name);
+        console.log('Email:', email);
+        console.log('Password:', password); 
+
+        signUpEmail(email, password)
+        .then(result => {
+            const createdUser = result.user;
+            console.log(createdUser);
+        })
+        .catch(error => {
+            console.log(error.message);
+        });
+
+
+    };
     return (
         <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
             <Helmet>
@@ -17,12 +42,14 @@ const PatientRegister = () => {
                         একজন রোগী হিসেবে শুরু করুন।
                     </p>
 
-                    <div className="form-control mb-4">
+                    <form onSubmit={handleSignUp} action="">
+                        <div className="form-control mb-4">
                         <label className="label">
                             <span className="label-text">নাম দিন</span>
                         </label>
                         <input
                             type="text"
+                            name="name"
                             placeholder="আপনার নাম লিখুন"
                             className="input input-bordered w-full px-4 bg-gray-200"
                         />
@@ -34,6 +61,7 @@ const PatientRegister = () => {
                         </label>
                         <input
                             type="email"
+                            name="email"
                             placeholder="আপনার ইমেইল লিখুন"
                             className="input input-bordered w-full px-4 bg-gray-200"
                         />
@@ -46,13 +74,18 @@ const PatientRegister = () => {
                         </label>
                         <input
                             type="password"
+                            name="password"
                             placeholder="আপনার পাসওয়ার্ড লিখুন"
                             className="input input-bordered w-full px-4 bg-gray-200"
                         />
                     </div>
 
+                        <input type="submit" value="সাইন আপ করুন" className="btn bg-secondary-color text-white w-full px-8" />
 
-                    <Button btnName={"সাইন আপ করুন"} bgColor="bg-secondary-color w-full mb-4"></Button>
+                    </form>
+
+
+                  
 
 
                     <div className="divider">অথবা</div>
@@ -71,9 +104,9 @@ const PatientRegister = () => {
                     <p className="text-sm text-center mt-6">
                         আপনার কি কোনো আকাউন্ট আছে?{" "}
                         <Link to="/patientLogin" className="tertiary-color font-bold">
-                        <a href="" className="tertiary-color font-bold">
+                        
                             লগইন করুন
-                        </a>
+                        
                         </Link>
                     </p>
 

@@ -1,8 +1,30 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Button from '../../components/Button';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { AuthContext } from '../../providers/AuthProvider';
 const PatientLogin = () => {
+
+    const { signInEmail } = useContext(AuthContext);    
+    const handleLogin = (event) => {
+        event.preventDefault();
+        // Handle login logic here  
+        const form = event.target;
+        const email = form.email.value;
+        const password = form.password.value;
+
+        console.log('Email:', email);
+        console.log('Password:', password);
+
+        signInEmail(email, password)
+        .then(result => {
+            const loggedUser = result.user;
+            console.log(loggedUser);
+        })
+        .catch(error => {
+            console.log(error.message);
+        });
+    };
     return (
         <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
             <Helmet>
@@ -17,31 +39,34 @@ const PatientLogin = () => {
                     </p>
 
 
-                    <div className="form-control mb-4">
-                        <label className="label">
-                            <span className="label-text">ইমেইল দিন</span>
-                        </label>
-                        <input
-                            type="email"
-                            placeholder="আপনার ইমেইল লিখুন"
-                            className="input input-bordered w-full px-4 bg-gray-200"
-                        />
-                    </div>
+                    <form onSubmit={handleLogin}>
+                        <div className="form-control mb-4">
+                            <label className="label">
+                                <span className="label-text">ইমেইল দিন</span>
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="আপনার ইমেইল লিখুন"
+                                className="input input-bordered w-full px-4 bg-gray-200"
+                            />
+                        </div>
 
 
-                    <div className="form-control mb-6">
-                        <label className="label">
-                            <span className="label-text">পাসওয়ার্ড দিন</span>
-                        </label>
-                        <input
-                            type="password"
-                            placeholder="আপনার পাসওয়ার্ড লিখুন"
-                            className="input input-bordered w-full px-4 bg-gray-200"
-                        />
-                    </div>
+                        <div className="form-control mb-6">
+                            <label className="label">
+                                <span className="label-text">পাসওয়ার্ড দিন</span>
+                            </label>
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="আপনার পাসওয়ার্ড লিখুন"
+                                className="input input-bordered w-full px-4 bg-gray-200"
+                            />
+                        </div>
+                        <input type="submit" value="লগইন করুন" className="btn bg-secondary-color text-white w-full px-8" />
+                    </form>
 
-
-                    <Button btnName={"লগইন করুন"} bgColor="bg-secondary-color w-full mb-4"></Button>
 
 
                     <div className="divider">অথবা</div>

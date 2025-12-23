@@ -12,6 +12,16 @@ import DoctorRegister from "../pages/signup/DoctorRegister";
 import DoctorList from "../pages/doctorList/DoctorList";
 import DoctorDetails from "../pages/doctorDetails/DoctorDetails";
 import BlogDetails from "../pages/blogDetails/BlogDetails";
+import PatientDashboardLayout from "../layouts/PatientDashboardLayout";
+import PatientHome from "../pages/patient/PatientHome";
+import DoctorDashboardLayout from "../layouts/DoctorDashboardLayout";
+import AdminDashboardLayout from "../layouts/AdminDashboardLayout";
+import AdminHome from "../pages/admin/AdminHome";
+import DoctorHome from "../pages/doctor/DoctorHome";
+import Resources from "../pages/resources/Resources";
+import BlogList from "../pages/blogList/BlogList";
+import VideoList from "../pages/videoList/VideoList";
+import ResourcesHome from "../pages/resources/ResourcesHome";
 
 export const router = createBrowserRouter([
   {
@@ -46,10 +56,83 @@ export const router = createBrowserRouter([
         path: "doctorDetails/:doctorId",
         element: <DoctorDetails></DoctorDetails>,
       },
+
       {
-        path: "/blogDetails/:blogId",
-        element: <BlogDetails></BlogDetails>,
-      }
-      ]
+        path: "blogList",
+        element: <BlogList></BlogList>,
+      },
+      {
+        path: "videoList",
+        element: <VideoList></VideoList>,
+      },
+
+    ]
   },
+  {
+    path: "/dashboardPatient",
+    element: <PatientDashboardLayout></PatientDashboardLayout>,
+    children: [
+      // Dashboard routes can be added here
+      {
+        path: "/dashboardPatient",
+        element: <PatientHome></PatientHome>
+      },
+      {
+        path: "doctorList",
+        element: <DoctorList></DoctorList>,
+      },
+
+      {
+        path: "resources",
+        element: <Resources></Resources>,
+        children: [
+          {
+            index: true,
+            element: <ResourcesHome></ResourcesHome>
+          },
+          {
+            path: "blogs",
+            element: <BlogList></BlogList>
+          },
+          {
+            path: "blogDetails/:blogId",
+            element: <BlogDetails></BlogDetails>,
+          },
+          {
+            path: "videos",
+            element: <VideoList></VideoList>
+          }
+
+        ]
+      },
+
+
+    ]
+  },
+  {
+    path: "/dashboardDoctor",
+    element: <DoctorDashboardLayout></DoctorDashboardLayout>,
+    children: [
+      // Dashboard routes can be added here
+      {
+        path: "/dashboardDoctor",
+        element: <DoctorHome></DoctorHome>
+      },
+      {
+      }
+    ]
+  },
+  {
+    path: "/dashboardAdmin",
+    element: <AdminDashboardLayout></AdminDashboardLayout>,
+    children: [
+      // Dashboard routes can be added here
+      {
+        path: "/dashboardAdmin",
+        element: <AdminHome></AdminHome>
+      },
+      {
+      }
+    ]
+  }
 ]);
