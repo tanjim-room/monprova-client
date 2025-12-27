@@ -1,11 +1,30 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import Button from '../../components/Button';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { AuthContext } from '../../providers/AuthProvider';
 const PatientLogin = () => {
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location?.state?.from?.pathname || "/dashboardPatient"
+    const { signInEmail, signInWithGoogle } = useContext(AuthContext);
+    const handleGoogleLogin = async () => {
+    try {
+        const result = await signInWithGoogle();
+        const googleUser = result.user;
 
-    const { signInEmail } = useContext(AuthContext);    
+        // ✅ Google users are already verified
+        if (googleUser) {
+            setError("");
+            navigate(from, { replace: true });
+        }
+    } catch (err) {
+        setError("গুগল দিয়ে লগইন করা যায়নি");
+        console.error(err.message);
+    }
+};
+
     const handleLogin = (event) => {
         event.preventDefault();
         // Handle login logic here  
@@ -17,13 +36,22 @@ const PatientLogin = () => {
         console.log('Password:', password);
 
         signInEmail(email, password)
-        .then(result => {
-            const loggedUser = result.user;
-            console.log(loggedUser);
-        })
-        .catch(error => {
-            console.log(error.message);
-        });
+            .then(result => {
+                const loggedUser = result.user;
+                console.log(loggedUser);
+                if (loggedUser.emailVerified) {
+                    setError("")
+                    navigate(from, { replace: true })
+
+                }
+                else {
+                    setError("ইমেইল ভেরিফিকেশন করুন");
+                }
+
+            })
+            .catch(error => {
+                setError("ভুল ইমেইল বা পাসওয়ার্ড দিয়েছেন")
+            });
     };
     return (
         <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
@@ -40,6 +68,9 @@ const PatientLogin = () => {
 
 
                     <form onSubmit={handleLogin}>
+                        {
+                            error && <p className='text-red-600 text-sm mb-2'>** {error} **</p>
+                        }
                         <div className="form-control mb-4">
                             <label className="label">
                                 <span className="label-text">ইমেইল দিন</span>
@@ -64,6 +95,7 @@ const PatientLogin = () => {
                                 className="input input-bordered w-full px-4 bg-gray-200"
                             />
                         </div>
+
                         <input type="submit" value="লগইন করুন" className="btn bg-secondary-color text-white w-full px-8" />
                     </form>
 
@@ -72,7 +104,7 @@ const PatientLogin = () => {
                     <div className="divider">অথবা</div>
 
 
-                    <button className="btn btn-outline w-full flex gap-2 bg-primary-color text-white py-4">
+                    <button onClick={handleGoogleLogin} className="btn btn-outline w-full flex gap-2 bg-primary-color text-white py-4">
                         <img
                             src="https://www.svgrepo.com/show/475656/google-color.svg"
                             alt="Google"

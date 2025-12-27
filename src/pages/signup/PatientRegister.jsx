@@ -1,34 +1,84 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import Button from '../../components/Button';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { AuthContext } from '../../providers/AuthProvider';
+import { sendEmailVerification } from 'firebase/auth';
 
 const PatientRegister = () => {
-    const {signUpEmail} = useContext(AuthContext);
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location?.state?.from?.pathname || "/dashboardPatient"
+    const { signUpEmail, signInWithGoogle } = useContext(AuthContext);
+
+    const handleGoogleLogin = async () => {
+        try {
+            const result = await signInWithGoogle();
+            const googleUser = result.user;
+
+            // ✅ Google users are already verified
+            if (googleUser) {
+                navigate(from, { replace: true });
+            }
+        } catch (err) {
+            setError("গুগল দিয়ে লগইন করা যায়নি");
+            console.error(err.message);
+        }
+    };
+
     const handleSignUp = (event) => {
         event.preventDefault();
-        // Handle signup logic here  
+        setError(""); // reset error
+
         const form = event.target;
-        const name = form.name.value;
-        const email = form.email.value;
+        const name = form.name.value.trim();
+        const email = form.email.value.trim();
         const password = form.password.value;
 
-        console.log('Name:', name);
-        console.log('Email:', email);
-        console.log('Password:', password); 
+        // ===== Validation =====
+        if (!name) {
+            setError("আপনার নাম দিন");
+            return;
+        }
 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setError("আপনার সঠিক ইমেইল দিন");
+            return;
+        }
+
+        if (password.length < 6) {
+            setError("কমপক্ষে ৬ সংখ্যার পাসওয়ার্ড দিন");
+            return;
+        }
+
+        const passwordRegex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/;
+        if (!passwordRegex.test(password)) {
+            setError(
+                "পাসওয়ার্ড এ কমপক্ষে একটি করে আপার কেস, লোয়ার কেস, সংখ্যা ও বিশেষ চিহ্ন দিন "
+            );
+            return;
+        }
+
+        // ===== Firebase Signup =====
         signUpEmail(email, password)
-        .then(result => {
-            const createdUser = result.user;
-            console.log(createdUser);
-        })
-        .catch(error => {
-            console.log(error.message);
-        });
+            .then(result => {
+                const createdUser = result.user;
 
+                sendEmailVerification(createdUser).then(() => {
+                    setError("ভেরিফিকেশন ইমেইল পাঠানো হয়েছে। লগইন করার আগে ভেরিফাই করুন।");
+                });
+
+                // ❌ DO NOT navigate here
+            })
+            .catch(() => {
+                setError("এই ইমেইলটি ব্যবহৃত হয়েছে");
+            });
 
     };
+
     return (
         <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
             <Helmet>
@@ -43,55 +93,59 @@ const PatientRegister = () => {
                     </p>
 
                     <form onSubmit={handleSignUp} action="">
+                        {
+                            error && <p className="text-red-600 text-sm mb-2">** {error} **</p>
+
+                        }
                         <div className="form-control mb-4">
-                        <label className="label">
-                            <span className="label-text">নাম দিন</span>
-                        </label>
-                        <input
-                            type="text"
-                            name="name"
-                            placeholder="আপনার নাম লিখুন"
-                            className="input input-bordered w-full px-4 bg-gray-200"
-                        />
-                    </div>
+                            <label className="label">
+                                <span className="label-text">নাম দিন</span>
+                            </label>
+                            <input
+                                type="text"
+                                name="name"
+                                placeholder="আপনার নাম লিখুন"
+                                className="input input-bordered w-full px-4 bg-gray-200"
+                            />
+                        </div>
 
-                    <div className="form-control mb-4">
-                        <label className="label">
-                            <span className="label-text">ইমেইল দিন</span>
-                        </label>
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="আপনার ইমেইল লিখুন"
-                            className="input input-bordered w-full px-4 bg-gray-200"
-                        />
-                    </div>
+                        <div className="form-control mb-4">
+                            <label className="label">
+                                <span className="label-text">ইমেইল দিন</span>
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="আপনার ইমেইল লিখুন"
+                                className="input input-bordered w-full px-4 bg-gray-200"
+                            />
+                        </div>
 
 
-                    <div className="form-control mb-6">
-                        <label className="label">
-                            <span className="label-text">পাসওয়ার্ড দিন</span>
-                        </label>
-                        <input
-                            type="password"
-                            name="password"
-                            placeholder="আপনার পাসওয়ার্ড লিখুন"
-                            className="input input-bordered w-full px-4 bg-gray-200"
-                        />
-                    </div>
+                        <div className="form-control mb-6">
+                            <label className="label">
+                                <span className="label-text">পাসওয়ার্ড দিন</span>
+                            </label>
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="আপনার পাসওয়ার্ড লিখুন"
+                                className="input input-bordered w-full px-4 bg-gray-200"
+                            />
+                        </div>
 
                         <input type="submit" value="সাইন আপ করুন" className="btn bg-secondary-color text-white w-full px-8" />
 
                     </form>
 
 
-                  
+
 
 
                     <div className="divider">অথবা</div>
 
 
-                    <button className="btn btn-outline w-full flex gap-2 bg-primary-color text-white py-4">
+                    <button onClick={handleGoogleLogin} className="btn btn-outline w-full flex gap-2 bg-primary-color text-white py-4">
                         <img
                             src="https://www.svgrepo.com/show/475656/google-color.svg"
                             alt="Google"
@@ -104,18 +158,18 @@ const PatientRegister = () => {
                     <p className="text-sm text-center mt-6">
                         আপনার কি কোনো আকাউন্ট আছে?{" "}
                         <Link to="/patientLogin" className="tertiary-color font-bold">
-                        
+
                             লগইন করুন
-                        
+
                         </Link>
                     </p>
 
                     <p className="text-sm text-center mt-6">
                         আপনা কি একজন ডাক্তার?{" "}
                         <Link to="/doctorRegister" className="tertiary-color font-bold">
-                        <a href="" className="tertiary-color font-bold">
-                            সাইন আপ করুন
-                        </a>
+                            <a href="" className="tertiary-color font-bold">
+                                সাইন আপ করুন
+                            </a>
                         </Link>
                     </p>
                 </div>

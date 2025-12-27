@@ -22,6 +22,8 @@ import Resources from "../pages/resources/Resources";
 import BlogList from "../pages/blogList/BlogList";
 import VideoList from "../pages/videoList/VideoList";
 import ResourcesHome from "../pages/resources/ResourcesHome";
+import Doctors from "../pages/patient/Doctors";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -52,10 +54,7 @@ export const router = createBrowserRouter([
         path: "doctorList",
         element: <DoctorList></DoctorList>
       },
-      {
-        path: "doctorDetails/:doctorId",
-        element: <DoctorDetails></DoctorDetails>,
-      },
+
 
       {
         path: "blogList",
@@ -70,7 +69,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/dashboardPatient",
-    element: <PatientDashboardLayout></PatientDashboardLayout>,
+    element: <PrivateRoute><PatientDashboardLayout></PatientDashboardLayout></PrivateRoute>,
     children: [
       // Dashboard routes can be added here
       {
@@ -79,8 +78,19 @@ export const router = createBrowserRouter([
       },
       {
         path: "doctorList",
-        element: <DoctorList></DoctorList>,
+        element: <Doctors></Doctors>,
+        children: [
+          {
+            index: true,
+            element: <DoctorList></DoctorList>
+          },
+          {
+            path: "doctorDetails/:doctorId",
+            element: <DoctorDetails></DoctorDetails>,
+          }
+        ]
       },
+
 
       {
         path: "resources",

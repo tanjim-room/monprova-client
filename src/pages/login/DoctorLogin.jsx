@@ -1,9 +1,42 @@
-import React from 'react';
-import Button from '../../components/Button';
-import { Link } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { AuthContext } from '../../providers/AuthProvider';
 
 const DoctorLogin = () => {
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location?.state?.from?.pathname || "/dashboardDoctor"
+    const { signInEmail } = useContext(AuthContext);
+    const handleLogin = (event) => {
+        event.preventDefault();
+        // Handle login logic here  
+        const form = event.target;
+        const email = form.email.value;
+        const password = form.password.value;
+
+        console.log('Email:', email);
+        console.log('Password:', password);
+
+        signInEmail(email, password)
+            .then(result => {
+                const loggedUser = result.user;
+                console.log(loggedUser);
+                if (loggedUser.emailVerified) {
+                    setError("")
+                    navigate(from, { replace: true })
+
+                }
+                else {
+                    setError("ইমেইল ভেরিফিকেশন করুন");
+                }
+
+            })
+            .catch(error => {
+                setError("ভুল ইমেইল বা পাসওয়ার্ড দিয়েছেন")
+            });
+    };
     return (
         <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
             <Helmet>
@@ -18,31 +51,39 @@ const DoctorLogin = () => {
                     </p>
 
 
-                    <div className="form-control mb-4">
-                        <label className="label">
-                            <span className="label-text">ইমেইল দিন</span>
-                        </label>
-                        <input
-                            type="email"
-                            placeholder="আপনার ইমেইল লিখুন"
-                            className="input input-bordered w-full px-4 bg-gray-200"
-                        />
-                    </div>
+                    <form action="" onSubmit={handleLogin}>
+                        {
+                            error && <p className='text-red-600 text-sm mb-2'>** {error} **</p>
+                        }
+                        <div className="form-control mb-4">
+                            <label className="label">
+                                <span className="label-text">ইমেইল দিন</span>
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                placeholder="আপনার ইমেইল লিখুন"
+                                className="input input-bordered w-full px-4 bg-gray-200"
+                            />
+                        </div>
 
 
-                    <div className="form-control mb-6">
-                        <label className="label">
-                            <span className="label-text">পাসওয়ার্ড দিন</span>
-                        </label>
-                        <input
-                            type="password"
-                            placeholder="আপনার পাসওয়ার্ড লিখুন"
-                            className="input input-bordered w-full px-4 bg-gray-200"
-                        />
-                    </div>
+                        <div className="form-control mb-6">
+                            <label className="label">
+                                <span className="label-text">পাসওয়ার্ড দিন</span>
+                            </label>
+                            <input
+                                type="password"
+                                name="password"
+                                placeholder="আপনার পাসওয়ার্ড লিখুন"
+                                className="input input-bordered w-full px-4 bg-gray-200"
+                            />
+                        </div>
 
 
-                    <Button btnName={"লগইন করুন"} bgColor="bg-secondary-color w-full mb-4"></Button>
+                        <input type="submit" value="লগইন করুন" className="btn bg-secondary-color text-white w-full px-8" />
+                    </form>
+
 
 
                     <div className="divider">অথবা</div>
@@ -60,7 +101,7 @@ const DoctorLogin = () => {
 
                     <p className="text-sm text-center mt-6">
                         আপনার কি কোনো আকাউন্ট নেই?{" "}
-                        <Link to="/patientRegister" className="tertiary-color font-bold">
+                        <Link to="/doctorRegister" className="tertiary-color font-bold">
                             <a href="" className="tertiary-color font-bold">
                                 সাইন আপ করুন
                             </a>

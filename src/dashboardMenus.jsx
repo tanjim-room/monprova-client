@@ -27,7 +27,7 @@ export const patientMenuItems = [
   { title: "গেমস", link: "/patientDashboard/games", icon: <FaGamepad /> },
   { title: "সাহায্য", link: "/patientDashboard/patientHelp", icon: <FaHandsHelping /> },
   { title: "প্রোফাইল", link: "/patientDashboard/patientProfile", icon: <FaUser /> },
-  { title: "লগ আউট", link: "/", icon: <FaSignOutAlt /> },
+  { title: "লগ আউট", link: "/", icon: <FaSignOutAlt /> ,isLogout: true},
 ];
 
 export const doctorMenuItems = [
@@ -37,7 +37,7 @@ export const doctorMenuItems = [
   { title: "ইনকাম", link: "/doctorDashboard/income", icon: <FaMoneyBillWave /> },
   { title: "সাহায্য", link: "/doctorDashboard/doctorHelp", icon: <FaHandsHelping /> },
   { title: "প্রোফাইল", link: "/doctorDashboard/doctorProfile", icon: <FaUser /> },
-  { title: "লগ আউট", link: "/", icon: <FaSignOutAlt /> },
+  { title: "লগ আউট", link: "/", icon: <FaSignOutAlt /> ,isLogout: true},
 ];
 
 export const adminMenuItems = [
@@ -47,5 +47,5 @@ export const adminMenuItems = [
   { title: "রিপোর্টস", link: "/adminDashboard/reports", icon: <FaChartBar /> },
   { title: "সিস্টেম সেটিংস", link: "/adminDashboard/settings", icon: <FaCogs /> },
   { title: "প্রোফাইল", link: "/adminDashboard/profile", icon: <FaUserShield /> },
-  { title: "লগ আউট", link: "/", icon: <FaSignOutAlt /> },
+  { title: "লগ আউট", link: "/", icon: <FaSignOutAlt /> ,isLogout: true},
 ];
