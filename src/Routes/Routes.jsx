@@ -24,6 +24,9 @@ import VideoList from "../pages/videoList/VideoList";
 import ResourcesHome from "../pages/resources/ResourcesHome";
 import Doctors from "../pages/patient/Doctors";
 import PrivateRoute from "./PrivateRoute";
+import PatientProfile from "../pages/profile/PatientProfile";
+import AppointmentForm from "../pages/appointment/AppointmentForm";
+import DoctorProfile from "../pages/profile/DoctorProfile";
 
 export const router = createBrowserRouter([
   {
@@ -90,6 +93,10 @@ export const router = createBrowserRouter([
           }
         ]
       },
+      {
+        path: "appointmentForm/:doctorId",
+        element: <AppointmentForm></AppointmentForm>
+      },
 
 
       {
@@ -115,13 +122,17 @@ export const router = createBrowserRouter([
 
         ]
       },
+      {
+        path: "patientProfile",
+        element: <PatientProfile></PatientProfile>
+      }
 
 
     ]
   },
   {
     path: "/dashboardDoctor",
-    element: <DoctorDashboardLayout></DoctorDashboardLayout>,
+    element: <PrivateRoute role="doctor"><DoctorDashboardLayout></DoctorDashboardLayout></PrivateRoute>,
     children: [
       // Dashboard routes can be added here
       {
@@ -129,6 +140,8 @@ export const router = createBrowserRouter([
         element: <DoctorHome></DoctorHome>
       },
       {
+        path: "doctorProfile",
+        element: <DoctorProfile></DoctorProfile>
       }
     ]
   },

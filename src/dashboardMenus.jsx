@@ -18,25 +18,25 @@ import {
 } from "react-icons/fa";
 
 export const patientMenuItems = [
-  { title: "হোম", link: "/patientDashboard", icon: <FaHome /> },
-  { title: "অ্যাসেসমেন্ট", link: "/patientDashboard/assessment", icon: <FaClipboardList /> },
-  { title: "অ্যাপয়েন্টমেন্ট", link: "/patientDashboard/appointment", icon: <FaCalendarAlt /> },
+  { title: "হোম", link: "/dashboardPatient", icon: <FaHome /> },
+  { title: "অ্যাসেসমেন্ট", link: "/dashboardPatient/assessment", icon: <FaClipboardList /> },
+  { title: "অ্যাপয়েন্টমেন্ট", link: "/dashboardPatient/appointment", icon: <FaCalendarAlt /> },
   { title: "ডাক্তার", link: "/dashboardPatient/doctorList", icon: <FaUserMd /> },
   { title: "প্রেসক্রিপশন", link: "/patientDashboard/prescription", icon: <FaFilePrescription /> },
   { title: "রিসোর্স", link: "/dashboardPatient/resources", icon: <FaBookOpen /> },
-  { title: "গেমস", link: "/patientDashboard/games", icon: <FaGamepad /> },
-  { title: "সাহায্য", link: "/patientDashboard/patientHelp", icon: <FaHandsHelping /> },
-  { title: "প্রোফাইল", link: "/patientDashboard/patientProfile", icon: <FaUser /> },
+  { title: "গেমস", link: "/dashboardPatient/games", icon: <FaGamepad /> },
+  { title: "সাহায্য", link: "/dashboardPatient/patientHelp", icon: <FaHandsHelping /> },
+  { title: "প্রোফাইল", link: "/dashboardPatient/patientProfile", icon: <FaUser /> },
   { title: "লগ আউট", link: "/", icon: <FaSignOutAlt /> ,isLogout: true},
 ];
 
 export const doctorMenuItems = [
-  { title: "হোম", link: "/doctorDashboard", icon: <FaHome /> },
-  { title: "অ্যাপয়েন্টমেন্ট", link: "/doctorDashboard/appointmentDoctor", icon: <FaCalendarAlt /> },
-  { title: "শিডিউল", link: "/doctorDashboard/schedule", icon: <FaClock /> },
-  { title: "ইনকাম", link: "/doctorDashboard/income", icon: <FaMoneyBillWave /> },
-  { title: "সাহায্য", link: "/doctorDashboard/doctorHelp", icon: <FaHandsHelping /> },
-  { title: "প্রোফাইল", link: "/doctorDashboard/doctorProfile", icon: <FaUser /> },
+  { title: "হোম", link: "/dashboardDoctor", icon: <FaHome /> },
+  { title: "অ্যাপয়েন্টমেন্ট", link: "/dashboardDoctor/appointmentDoctor", icon: <FaCalendarAlt /> },
+  { title: "শিডিউল", link: "/dashboardDoctor/schedule", icon: <FaClock /> },
+  { title: "ইনকাম", link: "/dashboardDoctor/income", icon: <FaMoneyBillWave /> },
+  { title: "সাহায্য", link: "/dashboardDoctor/doctorHelp", icon: <FaHandsHelping /> },
+  { title: "প্রোফাইল", link: "/dashboardDoctor/doctorProfile", icon: <FaUser /> },
   { title: "লগ আউট", link: "/", icon: <FaSignOutAlt /> ,isLogout: true},
 ];
 

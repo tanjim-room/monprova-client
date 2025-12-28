@@ -8,7 +8,22 @@ const DoctorLogin = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const from = location?.state?.from?.pathname || "/dashboardDoctor"
-    const { signInEmail } = useContext(AuthContext);
+    const { signInEmail, signInWithGoogle } = useContext(AuthContext);
+    const handleGoogleLogin = () => {
+        signInWithGoogle()
+            .then(result => {
+                const loggedUser = result.user;
+
+                // OPTIONAL: role check (recommended)
+                if (loggedUser) {
+                    navigate(from, { replace: true });
+                }
+            })
+            .catch(error => {
+                setError("গুগল লগইন ব্যর্থ হয়েছে");
+            });
+    };
+
     const handleLogin = (event) => {
         event.preventDefault();
         // Handle login logic here  
@@ -89,7 +104,7 @@ const DoctorLogin = () => {
                     <div className="divider">অথবা</div>
 
 
-                    <button className="btn btn-outline w-full flex gap-2 bg-primary-color text-white py-4">
+                    <button onClick={handleGoogleLogin} className="btn btn-outline w-full flex gap-2 bg-primary-color text-white py-4">
                         <img
                             src="https://www.svgrepo.com/show/475656/google-color.svg"
                             alt="Google"

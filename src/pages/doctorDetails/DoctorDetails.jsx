@@ -180,7 +180,7 @@ const DoctorDetails = () => {
           </div>
           {/* Appointment Button */}
           <div className="mt-8">
-            <Link to={`/patientDashboard/appointmentForm/${doctorId}`}>
+            <Link to={`/dashboardPatient/appointmentForm/${doctorId}`}>
               <Button btnName="অ্যাপয়েন্টমেন্ট নিন" bgColor="bg-primary-color w-full" />
             </Link>
           </div>
