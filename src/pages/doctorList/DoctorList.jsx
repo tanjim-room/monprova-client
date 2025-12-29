@@ -1,10 +1,10 @@
 import React from 'react';
 import PageCover from '../shared/PageCover';
-import useDoctors from '../../hooks/useDoctors';
 import DoctorCard from '../../components/cards/DoctorCard';
+import useDoctor from '../../hooks/useDoctor';
 
 const DoctorList = () => {
-    const [doctors] = useDoctors()
+    const [doctors] = useDoctor()
     
     return (
         <div>

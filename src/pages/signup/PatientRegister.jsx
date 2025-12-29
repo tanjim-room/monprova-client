@@ -1,25 +1,34 @@
-import React, { useContext, useState } from 'react';
-import Button from '../../components/Button';
+import React, { useState, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { AuthContext } from '../../providers/AuthProvider';
 import { sendEmailVerification } from 'firebase/auth';
 import Swal from 'sweetalert2';
+import useAxiosPublic from '../../hooks/useAxiosPublic';
 
 const PatientRegister = () => {
+    const axiosPublic = useAxiosPublic();
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
     const from = location?.state?.from?.pathname || "/dashboardPatient";
     const { signUpEmail, signInWithGoogle } = useContext(AuthContext);
 
+    // Handle Google Login
     const handleGoogleLogin = async () => {
         try {
             const result = await signInWithGoogle();
             const googleUser = result.user;
+            const patient = {
+                email: result.user?.email,
+                name: result.user?.displayName,
+                role: "patient",  // default role for a patient
+                createdAt: new Date(),
+            }
 
+             const response = await axiosPublic.post('/api/register', patient);
             // ✅ Google users are already verified
-            if (googleUser) {
+            if (response) {
                 navigate(from, { replace: true });
             }
         } catch (err) {
@@ -28,6 +37,7 @@ const PatientRegister = () => {
         }
     };
 
+    // Handle patient registration
     const handleSignUp = async (event) => {
         event.preventDefault();
         setError("");  // Reset error message
@@ -49,41 +59,32 @@ const PatientRegister = () => {
         if (!passwordRegex.test(password)) return setError("পাসওয়ার্ডে আপার, লোয়ার, সংখ্যা ও বিশেষ চিহ্ন থাকতে হবে");
 
         // ===== Patient profile (NO PASSWORD) =====
-        const profile = {
+        const patient = {
             name,
             email,
-            role: "patient",
+            role: "patient",  // default role for a patient
             createdAt: new Date(),
         };
 
         try {
-            /* ==========================
-               1️⃣ Save to MongoDB FIRST
-            ========================== */
-            const dbRes = await fetch("http://localhost:8000/api/patient/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(profile),
-            });
+            /* ========================== */
+            /* 1️⃣ Save to MongoDB FIRST */
+            /* ========================== */
+            const response = await axiosPublic.post('/api/register', patient);
+            console.log('Patient registered:', response.data);
 
-            const dbData = await dbRes.json();
-            if (!dbRes.ok) {
-                throw new Error(dbData.message || "ডাটাবেজে তথ্য সংরক্ষণ ব্যর্থ");
-            }
-
-            console.log("Patient profile saved to MongoDB:", dbData);
-
-            /* ==========================
-               2️⃣ Firebase Signup SECOND
-            ========================== */
+            /* ========================== */
+            /* 2️⃣ Firebase Signup SECOND */
+            /* ========================== */
             const result = await signUpEmail(email, password);
             const user = result.user;
 
+            // Send Email Verification
             await sendEmailVerification(user);
 
-            /* ==========================
-               ✅ SUCCESS
-            ========================== */
+            /* ========================== */
+            /* ✅ SUCCESS */
+            /* ========================== */
             Swal.fire({
                 title: "রেজিস্ট্রেশন সফল",
                 text: "ভেরিফিকেশন ইমেইল পাঠানো হয়েছে",
@@ -95,12 +96,7 @@ const PatientRegister = () => {
 
         } catch (err) {
             console.error("Error during registration:", err.message);
-            // Handle different error cases
-            if (err.message.includes("ডাটাবেজে তথ্য সংরক্ষণ ব্যর্থ")) {
-                setError("ডাটাবেজে তথ্য সংরক্ষণ ব্যর্থ। দয়া করে আবার চেষ্টা করুন");
-            } else {
-                setError("রেজিস্ট্রেশন ব্যর্থ হয়েছে");
-            }
+            setError("রেজিস্ট্রেশন ব্যর্থ হয়েছে: " + err.message);
         }
     };
 

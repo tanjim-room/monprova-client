@@ -2,32 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Button from '../../components/Button';
 import BackButton from '../../components/BackButton';
+import useDoctor from '../../hooks/useDoctor';
 
 const DoctorDetails = () => {
   const { doctorId } = useParams();
-  const [doctors, setDoctors] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  // Fetch doctors data
-  useEffect(() => {
-    fetch('/doctors.json')
-      .then(res => {
-        if (!res.ok) {
-          throw new Error('Failed to fetch doctors data');
-        }
-        return res.json();
-      })
-      .then(data => {
-        setDoctors(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setError(err.message || 'Something went wrong');
-        setLoading(false);
-      });
-  }, []);
+  const [doctors] = useDoctor();
 
   // Loading state
   if (loading) {
@@ -48,7 +29,7 @@ const DoctorDetails = () => {
   }
 
   // Find doctor by ID
-  const doctor = doctors.find(d => String(d.id) === String(doctorId));
+  const doctor = doctors.find(doctor => doctor._id === doctorId);
 
   if (!doctor) {
     return (
@@ -59,19 +40,8 @@ const DoctorDetails = () => {
   }
 
   // Destructure safely with defaults
-  const {
-    name,
-    designation,
-    specialities = [],
-    fee,
-    img,
-    experience_years,
-    degrees = [],
-    bmdc_reg_no,
-    current_working_institution,
-    bio,
-    consultation_type = 'Online / Offline', // optional field
-  } = doctor;
+  const { _id, name, designation, expertise, consultationFee, img, yearsOfExperience, degrees, regNo, institute, medium, shortBio } = doctor;
+ 
 
   return (
     <div className="bg-[#EFF7FE] p-4">
@@ -79,7 +49,7 @@ const DoctorDetails = () => {
         <div className="w-full text-left border p-8 rounded-md">
 
           {/* Back Button */}
-          <BackButton destination="/patientDashboard/doctors"></BackButton>
+          <BackButton destination="/dashboardPatient/doctors"></BackButton>
 
           {/* Doctor Name */}
           <h2 className="text-xl px-4 py-2 text-gray-800 mb-6 font-bold text-center rounded-md bg-[#EFF7FE] border">
@@ -89,21 +59,22 @@ const DoctorDetails = () => {
           {/* Doctor Info Card */}
           <div className="flex flex-col items-center justify-center border rounded-md p-4 mx-6 gap-6">
             <div className=''>
-              <img src={img} alt={name} className="w-72 h-72 object-cover rounded-full border" />
+              <img src={img || "https://i.ibb.co.com/zVcdq9PG/1704193051.jpg"} alt={name} className="w-72 h-72 object-cover rounded-full border" />
             </div>
             <div className="space-y-1">
               <h2 className="font-semibold text-xl text-center">{name}</h2>
               <p className="text-lg font-semibold text-gray-700 text-center">{designation}</p>
 
               <div className="mt-0 text-start text-center">
-                {degrees.map((degree, idx) => (
+                {/* {degrees.map((degree, idx) => (
                   <span key={idx} className="primary-color text-center">{degree}, </span>
-                ))}
+                ))} */}
+                <p className="primary-color text-center">{degrees}</p>
               </div>
 
               <div className="mt-2">
                 <p className="text-base text-gray-700 font-semibold text-center">
-                  BMDC Reg. No: <span className="bg-secondary-color px-2 py-1 text-white rounded-md text-sm font-semibold">{bmdc_reg_no}</span>
+                  BMDC Reg. No: <span className="bg-secondary-color px-2 py-1 text-white rounded-md text-sm font-semibold">{regNo}</span>
                 </p>
               </div>
             </div>
@@ -120,7 +91,7 @@ const DoctorDetails = () => {
                 <p className="text-xl font-bold primary-color py-1">কর্মক্ষেত্র</p>
                 <div className="bg-[#EFF7FE] rounded-md px-2 py-2 border">
                   <span className='p-2'>{designation}</span>
-                  <p className="font-semibold p-2">{current_working_institution}</p>
+                  <p className="font-semibold p-2">{institute}</p>
                 </div>
               </div>
 
@@ -128,10 +99,11 @@ const DoctorDetails = () => {
               <div className="text-start mb-4">
                 <p className="text-xl font-bold primary-color py-1">দক্ষতাসমূহ</p>
                 <div className="bg-[#EFF7FE] rounded-md px-2 py-2 border">
-                 <p className='p-2'>
-                   {specialities.map((sp, idx) => (
+                 <p className='p-2 className="text-sm font-semibold'>
+                   {/* {specialities.map((sp, idx) => (
                     <span key={idx} className="text-sm font-semibold">{sp}, </span>
-                  ))}
+                  ))} */}
+                  {expertise}
                  </p>
                 </div>
               </div>
@@ -140,7 +112,7 @@ const DoctorDetails = () => {
               <div className="text-start">
                 <p className="text-xl font-bold primary-color py-1">অভিজ্ঞতা</p>
                 <div className="bg-[#EFF7FE] rounded-md px-2 py-2 border">
-                  <span className="font-semibold p-2">{experience_years} বছর</span>
+                  <span className="font-semibold p-2">{yearsOfExperience} বছর</span>
                 </div>
               </div>
             </div>
@@ -150,7 +122,7 @@ const DoctorDetails = () => {
               <div className="text-start">
                 <p className="text-xl font-bold primary-color py-1">সংক্ষিপ্ত পরিচয়</p>
                 <div className="bg-[#EFF7FE] rounded-md px-2 py-2 border">
-                  <p className="font-normal text-justify leading-loose p-2">{bio}</p>
+                  <p className="font-normal text-justify leading-loose p-2">{shortBio}</p>
                 </div>
               </div>
 
@@ -166,7 +138,7 @@ const DoctorDetails = () => {
             <div className="text-start flex gap-4">
               <p className="text-xl font-bold primary-color py-1">রোগী দেখার মাধ্যম:</p>
               <div className="bg-secondary-color inline-block rounded-md px-2 py-2 border">
-                <p className="text-sm text-white font-semibold">{consultation_type}</p>
+                <p className="text-sm text-white font-semibold">{medium == 'online'? "অনলাইন": medium == 'offline'? "অফলাইন" : "অনলাইন/অফলাইন"}</p>
               </div>
             </div>
 
@@ -174,7 +146,7 @@ const DoctorDetails = () => {
             <div className="text-start flex gap-4">
               <p className="text-xl font-bold primary-color py-1">পরামর্শ ফি:</p>
               <div className="bg-secondary-color inline-block rounded-md px-2 py-2 border">
-                <p className="text-sm text-white font-semibold">{fee} টাকা</p>
+                <p className="text-sm text-white font-semibold">{consultationFee} টাকা</p>
               </div>
             </div>
           </div>

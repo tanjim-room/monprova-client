@@ -4,32 +4,43 @@ import { Helmet } from 'react-helmet-async';
 import { AuthContext } from '../../providers/AuthProvider';
 import { sendEmailVerification } from 'firebase/auth';
 import Swal from 'sweetalert2';
+import useAxiosPublic from '../../hooks/useAxiosPublic';
 
 const DoctorRegister = () => {
+     const axiosPublic = useAxiosPublic();
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location?.state?.from?.pathname || "/dashboardDoctor";
+    const from = location?.state?.from?.pathname || "/dashboardPatient";
     const { signUpEmail, signInWithGoogle } = useContext(AuthContext);
 
+    // Handle Google Login
     const handleGoogleLogin = async () => {
         try {
             const result = await signInWithGoogle();
             const googleUser = result.user;
+            const doctor = {
+                email: result.user?.email,
+                name: result.user?.displayName,
+                role: "doctor",  // default role for a patient
+                createdAt: new Date(),
+            }
 
+             const response = await axiosPublic.post('/api/register', doctor);
             // ✅ Google users are already verified
-            if (googleUser) {
+            if (response) {
                 navigate(from, { replace: true });
             }
         } catch (err) {
-            setError("গুগল দিয়ে সাইন আপ করা যায়নি");
+            setError("গুগল দিয়ে লগইন করা যায়নি");
             console.error(err.message);
         }
     };
 
+    // Handle patient registration
     const handleSignUp = async (event) => {
         event.preventDefault();
-        setError(""); // reset error
+        setError("");  // Reset error message
 
         const form = event.target;
         const name = form.name.value.trim();
@@ -37,92 +48,55 @@ const DoctorRegister = () => {
         const password = form.password.value;
 
         // ===== Validation =====
-        if (!name) {
-            setError("আপনার নাম দিন");
-            return;
-        }
+        if (!name) return setError("আপনার নাম দিন");
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            setError("আপনার সঠিক ইমেইল দিন");
-            return;
-        }
+        if (!emailRegex.test(email)) return setError("আপনার সঠিক ইমেইল দিন");
 
-        if (password.length < 6) {
-            setError("কমপক্ষে ৬ সংখ্যার পাসওয়ার্ড দিন");
-            return;
-        }
+        if (password.length < 6) return setError("কমপক্ষে ৬ সংখ্যার পাসওয়ার্ড দিন");
 
-        const passwordRegex =
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/;
-        if (!passwordRegex.test(password)) {
-            setError(
-                "পাসওয়ার্ড এ কমপক্ষে একটি করে আপার কেস, লোয়ার কেস, সংখ্যা ও বিশেষ চিহ্ন দিন "
-            );
-            return;
-        }
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/;
+        if (!passwordRegex.test(password)) return setError("পাসওয়ার্ডে আপার, লোয়ার, সংখ্যা ও বিশেষ চিহ্ন থাকতে হবে");
 
-        // ===== Doctor profile (NO PASSWORD) =====
-        const profile = {
+        // ===== Patient profile (NO PASSWORD) =====
+        const doctor = {
             name,
             email,
-            role: "doctor",
+            role: "doctor",  // default role for a patient
             createdAt: new Date(),
         };
 
         try {
-            /* ==========================
-               1️⃣ Save to MongoDB FIRST
-            ========================== */
-            const dbRes = await fetch("http://localhost:8000/api/doctor/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(profile),
-            });
+            /* ========================== */
+            /* 1️⃣ Save to MongoDB FIRST */
+            /* ========================== */
+            const response = await axiosPublic.post('/api/register', doctor);
+            console.log('Doctor registered:', response.data);
 
-            const dbData = await dbRes.json();
-            if (!dbRes.ok) {
-                throw new Error(dbData.message || "ডাটাবেজে তথ্য সংরক্ষণ ব্যর্থ");
-            }
-
-            console.log("Doctor profile saved to MongoDB:", dbData);
-
-            /* ==========================
-               2️⃣ Firebase Signup SECOND
-            ========================== */
+            /* ========================== */
+            /* 2️⃣ Firebase Signup SECOND */
+            /* ========================== */
             const result = await signUpEmail(email, password);
             const user = result.user;
 
+            // Send Email Verification
             await sendEmailVerification(user);
 
-            /* ==========================
-               ✅ SUCCESS
-            ========================== */
+            /* ========================== */
+            /* ✅ SUCCESS */
+            /* ========================== */
             Swal.fire({
-                title: "রেজিস্ট্রেশন সফল হয়েছে",
-                text: "ভেরিফিকেশন ইমেইল পাঠানো হয়েছে। লগইন করার আগে ভেরিফাই করুন।",
+                title: "রেজিস্ট্রেশন সফল",
+                text: "ভেরিফিকেশন ইমেইল পাঠানো হয়েছে",
                 icon: "success",
                 confirmButtonText: "OK",
-                showClass: {
-                    popup: `animate__animated animate__fadeInUp animate__faster`,
-                },
-                hideClass: {
-                    popup: `animate__animated animate__fadeOutDown animate__faster`,
-                },
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    navigate("/doctorLogin");
-                }
+            }).then(() => {
+                navigate("/doctorLogin");
             });
 
         } catch (err) {
             console.error("Error during registration:", err.message);
-            // Handle different error cases
-            if (err.message.includes("ডাটাবেজে তথ্য সংরক্ষণ ব্যর্থ")) {
-                setError("ডাটাবেজে তথ্য সংরক্ষণ ব্যর্থ। দয়া করে আবার চেষ্টা করুন");
-            } else {
-                setError("রেজিস্ট্রেশন ব্যর্থ হয়েছে");
-            }
+            setError("রেজিস্ট্রেশন ব্যর্থ হয়েছে: " + err.message);
         }
     };
 

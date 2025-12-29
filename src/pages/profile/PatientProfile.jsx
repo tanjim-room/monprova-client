@@ -1,43 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import useAuth from '../../hooks/useAuth';
-import axios from 'axios';
-import Swal from 'sweetalert2';
+import { useState } from "react";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import useUser from "../../hooks/useUser";
+import useAuth from "../../hooks/useAuth";
+import Swal from "sweetalert2"; // Ensure Swal is imported
+import usePatient from "../../hooks/usePatient";
 
 const PatientProfile = () => {
-  const { user } = useAuth(); // your auth hook
-  // const [profile, setProfile] = useState({
-  //   name: user?.name || "",
-  //   email: user?.email || "",
-  // });
-
+  const axiosSecure = useAxiosSecure();
+  const axiosPublic = useAxiosPublic();
+  const [patients] = usePatient();
+  const [users] = useUser();
+  const { user } = useAuth(); // Get the current logged-in user from useAuth
   const [isEditable, setIsEditable] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Fetch profile from backend
-  // useEffect(() => {
-  //   if (!user?.email) return;
+  console.log(user);
+  // Ensure patient is fetched correctly
+  const patient = users?.find(dbUser => dbUser.email === user?.email); // Since user already contains the patient details, we use user directly.
+  console.log(patient)
+  const patientInfo = patients?.find(patient => patient.email === user?.email);
 
-  //   axios.get(`http://localhost:8000/api/patient/${user.email}`)
-  //     .then(res => {
-  //       if (res.data) {
-  //         setProfile(res.data);
-  //       }
-  //     })
-  //     .catch(err => console.log("Error fetching profile:", err));
-  // }, [user?.email]);
+  // if (!patientInfo) {
+  //   return <div>Loading...</div>; // Handle the case where patient information isn't available yet
+  // }
 
-
-  // const handleFileChange = (e) => {
-  //   const file = e.target.files[0];
-  //   if (!file) return;
-
-  //   const reader = new FileReader();
-  //   reader.onloadend = () => {
-  //     setProfile(prev => ({ ...prev, profilePicture: reader.result })); // save as Base64
-  //   };
-  //   reader.readAsDataURL(file);
-  // };
-
+  // Handle form submission to update the profile
   const handleSave = async (event) => {
     event.preventDefault();
 
@@ -52,22 +40,20 @@ const PatientProfile = () => {
     const emergencyContact = form.emergencyContact.value;
     const profession = form.profession.value;
 
-    const profile = {name, age, gender, phone, email, bloodGroup, address, emergencyContact, profession}
+    const patientInfo = {
+      name,
+      age,
+      gender,
+      phone,
+      email,
+      bloodGroup,
+      address,
+      emergencyContact,
+      profession,
+      createdAt: new Date(),
+    };
 
-    fetch('http://localhost:8000//api/patient', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify(profile)
-
-    })
-    .then(res => res.json())
-    .then(data => {
-      console.log(data)
-  })
-
-
+    // Confirm before saving the profile
     const confirmResult = await Swal.fire({
       title: 'আপনি কি নিশ্চিত?',
       text: 'আপনার প্রোফাইল সংরক্ষণ করতে চান?',
@@ -82,7 +68,7 @@ const PatientProfile = () => {
     if (!confirmResult.isConfirmed) return;
 
     // Basic validation
-    if (0) { /*!profile.name || !profile.email*/
+    if (!patientInfo.name) {
       return Swal.fire({
         icon: 'error',
         title: 'ত্রুটি!',
@@ -94,13 +80,10 @@ const PatientProfile = () => {
 
     try {
       setIsSaving(true);
-      // console.log("Saving profile:", profile);
 
-      // const res = await axios.post("http://localhost:8000/api/patient", profile);
+      // Send the updated profile data to the backend
+      const response = await axiosPublic.post('/api/patient', patientInfo);
 
-      // console.log("Profile saved:", res.data);
-
-      setIsEditable(false);
       Swal.fire({
         icon: 'success',
         title: '✅ প্রোফাইল সংরক্ষণ হয়েছে!',
@@ -108,10 +91,12 @@ const PatientProfile = () => {
         confirmButtonText: 'ঠিক আছে',
         confirmButtonColor: '#2563eb',
       });
-    } catch (err) {
-      console.error("Error saving profile:", err);
 
-      let errorMessage = "প্রোফাইল সংরক্ষণ করা যায়নি।";
+      setIsEditable(false); // Disable editing after save
+    } catch (err) {
+      console.error('Error saving profile:', err);
+
+      let errorMessage = 'প্রোফাইল সংরক্ষণ করা যায়নি।';
       if (err.response?.data?.message) {
         errorMessage = err.response.data.message;
       }
@@ -131,38 +116,27 @@ const PatientProfile = () => {
   return (
     <div className="min-h-screen p-16 bg-[#E1ECFF] mt-16">
       <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-xl">
-        <h1 className="text-3xl font-semibold text-center mb-8">
-          রোগীর প্রোফাইল
-        </h1>
+        <h1 className="text-3xl font-semibold text-center mb-8">রোগীর প্রোফাইল</h1>
 
         {/* Profile Picture */}
         <div className="flex justify-center mb-6">
           <div className="w-32 h-32 rounded-full border-2 overflow-hidden">
             <img
-              src={"https://via.placeholder.com/150"} /* ||profile.profilePicture*/
+              src={"https://via.placeholder.com/150"} // Placeholder image for profile picture
               alt="Profile"
               className="w-full h-full object-cover"
             />
           </div>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSave}>
-          {/* Upload */}
-          <div className="flex justify-center mb-6">
-            <input
-              type="file"
-              // onChange={handleFileChange}
-              // disabled={!isEditable || isSaving}
-              className="file-input file-input-bordered"
-            />
-          </div>
-
-          {/* Inputs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label className="label">পূর্ণ নাম</label>
+              <label className="label">নাম</label>
               <input
                 name="name"
+                defaultValue={patientInfo?.name || patient?.name} /* || patient.name*/
                 disabled={!isEditable}
                 className="input input-bordered w-full border-2 p-2"
               />
@@ -172,7 +146,7 @@ const PatientProfile = () => {
               <label className="label">বয়স</label>
               <input
                 name="age"
-                // value={profile.age}
+                defaultValue={patientInfo?.age} // Populate the patient's age
                 disabled={!isEditable}
                 className="input input-bordered w-full border-2 p-2"
               />
@@ -182,7 +156,7 @@ const PatientProfile = () => {
               <label className="label">জেন্ডার</label>
               <select
                 name="gender"
-                // value={profile.gender}
+                defaultValue={patientInfo?.gender} // Populate the patient's gender
                 disabled={!isEditable}
                 className="select select-bordered w-full border-2 p-2"
               >
@@ -197,7 +171,7 @@ const PatientProfile = () => {
               <label className="label">মোবাইল</label>
               <input
                 name="phone"
-                // value={profile.phone}
+                defaultValue={patientInfo?.phone} // Populate phone number
                 disabled={!isEditable}
                 className="input input-bordered w-full border-2 p-2"
               />
@@ -208,9 +182,9 @@ const PatientProfile = () => {
               <input
                 type="email"
                 name="email"
-                // value={profile.email}
-                // disabled
+                defaultValue={patientInfo?.email || patient?.email}
                 className="input input-bordered w-full border-2 p-2"
+                disabled
               />
             </div>
 
@@ -218,14 +192,16 @@ const PatientProfile = () => {
               <label className="label">রক্তের গ্রুপ</label>
               <select
                 name="bloodGroup"
-                // value={profile.bloodGroup}
+                defaultValue={patientInfo?.bloodGroup} // Populate blood group
                 disabled={!isEditable}
                 className="select select-bordered w-full border-2 p-2"
               >
                 <option value="">নির্বাচন করুন</option>
-                {["A+", "B+", "O+", "AB+", "A-", "B-", "O-", "AB-"].map(bg =>
-                  <option key={bg} value={bg}>{bg}</option>
-                )}
+                {["A+", "B+", "O+", "AB+", "A-", "B-", "O-", "AB-"].map(bg => (
+                  <option key={bg} value={bg}>
+                    {bg}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -233,7 +209,7 @@ const PatientProfile = () => {
               <label className="label">ঠিকানা</label>
               <textarea
                 name="address"
-                // value={profile.address}
+                defaultValue={patientInfo?.address} // Populate address
                 disabled={!isEditable}
                 className="textarea textarea-bordered w-full border-2 p-2"
               />
@@ -243,7 +219,7 @@ const PatientProfile = () => {
               <label className="label">জরুরি যোগাযোগ</label>
               <input
                 name="emergencyContact"
-                // value={profile.emergencyContact}
+                defaultValue={patientInfo?.emergencyContact} // Populate emergency contact
                 disabled={!isEditable}
                 className="input input-bordered w-full border-2 p-2"
               />
@@ -253,7 +229,7 @@ const PatientProfile = () => {
               <label className="label">পেশা</label>
               <input
                 name="profession"
-                // value={profile.profession}
+                defaultValue={patientInfo?.profession} // Populate profession
                 disabled={!isEditable}
                 className="input input-bordered w-full border-2 p-2"
               />
@@ -274,13 +250,12 @@ const PatientProfile = () => {
 
             {isEditable && (
               <>
-                <button
+                <input
                   type="submit"
                   disabled={isSaving}
-                  className="btn btn-outline w-1/2 flex gap-2 bg-primary-color text-white py-4"
-                >
-                  {isSaving ? "সংরক্ষণ হচ্ছে..." : "সংরক্ষণ করুন"}
-                </button>
+                  className="btn bg-primary-color text-white w-1/2 px-8"
+                  value="সংরক্ষণ করুন"
+                />
 
                 <button
                   type="button"

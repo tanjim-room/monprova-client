@@ -1,70 +1,63 @@
 import React, { useState, useEffect } from 'react';
-
 import { X } from 'lucide-react';
 import Swal from 'sweetalert2';
+import useUser from '../../hooks/useUser';
+import useAuth from '../../hooks/useAuth';
+import useAxiosPublic from '../../hooks/useAxiosPublic';
+import useDoctor from '../../hooks/useDoctor';
 
 const DoctorProfile = () => {
-    const savedProfile = JSON.parse(localStorage.getItem('doctorProfile')) || null;
+    const axiosPublic = useAxiosPublic();
+    const [users] = useUser();
+    const [doctors] = useDoctor();
+    const { user } = useAuth(); // Get the current logged-in user from useAuth
+    const [isEditable, setIsEditable] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
-    const [formData, setFormData] = useState(
-        savedProfile || {
-            image: null,
-            fullName: '',
-            specialization: '',
-            designation: '',
-            degrees: '',
-            consultationFee: '',
-            expertise: '',
-            institute: '',
-            regNo: '',
-            yearsOfExperience: '',
-            shortBio: '',
-            medium: '',
-            certificates: [null],
-            email: '',
-            mobileNo: '',
-            bkashAccount: '',
-        }
-    );
-
-    const [isEditing, setIsEditing] = useState(false);
-    const [backupData, setBackupData] = useState(null);
-
-    useEffect(() => {
-        if (savedProfile) {
-            setFormData(savedProfile);
-        }
-    }, []);
-
-    const handleChange = (e) => {
-        const { name, value, files } = e.target;
-        setFormData({
-            ...formData,
-            [name]: files ? files[0] : value,
-        });
-    };
-
-    const handleCertificateChange = (e, index) => {
-        const files = e.target.files;
-        const updated = [...formData.certificates];
-        updated[index] = files[0];
-        setFormData({ ...formData, certificates: updated });
-    };
-
-    const addCertificateField = () => {
-        setFormData({ ...formData, certificates: [...formData.certificates, null] });
-    };
-
-    const removeCertificateField = (index) => {
-        const updated = formData.certificates.filter((_, i) => i !== index);
-        setFormData({ ...formData, certificates: updated });
-    };
+    // Safely check if doctor data is available
+    const doctor = users?.find(dbUser => dbUser.email === user?.email) || {};  // Default to empty object if undefined
+    const doctorInfo = doctors?.find(doctor => doctor.email === user?.email) || {};  // Default to empty object if undefined
 
     // ✅ Save profile with double confirmation
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
-        const confirmSave = await Swal.fire({
+        const form = event.target;
+        const name = form.name.value;
+        const email = form.email.value;
+        const designation = form.designation.value;
+        const degrees = form.degrees.value;
+        const expertise = form.expertise.value;
+        const consultationFee = form.consultationFee.value;
+        const regNo = form.regNo.value;
+        const institute = form.institute.value;
+        const chamber = form.chamber.value;
+        const yearsOfExperience = form.yearsOfExperience.value;
+        const medium = form.medium.value;
+        const mobileNo = form.mobileNo.value;
+        const bkashAccount = form.bkashAccount.value;
+        const shortBio = form.shortBio.value;
+
+        const doctorData = {
+            name,
+            email,
+            designation,
+            degrees,
+            expertise,
+            consultationFee,
+            regNo,
+            institute,
+            chamber,
+            yearsOfExperience,
+            medium,
+            mobileNo,
+            bkashAccount,
+            shortBio,
+            status: '',
+            createdAt: new Date(),
+        };
+
+        const confirmResult = await Swal.fire({
             title: 'আপনি কি নিশ্চিত?',
             text: 'আপনার প্রোফাইল সংরক্ষণ করতে চান?',
             icon: 'question',
@@ -75,44 +68,60 @@ const DoctorProfile = () => {
             cancelButtonColor: '#6b7280',
         });
 
-        if (confirmSave.isConfirmed) {
-            const confirmFinal = await Swal.fire({
-                title: 'শেষবার যাচাই করুন',
-                text: 'আপনি কি সত্যিই প্রোফাইলটি সংরক্ষণ করতে চান?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'হ্যাঁ, নিশ্চিত',
-                cancelButtonText: 'না, অপেক্ষা করুন',
+        if (!confirmResult.isConfirmed) return;
+
+        // Basic validation
+        if (!doctorData.name) {
+            return Swal.fire({
+                icon: 'error',
+                title: 'ত্রুটি!',
+                text: 'নাম এবং ইমেইল আবশ্যক।',
+                confirmButtonText: 'ঠিক আছে',
                 confirmButtonColor: '#2563eb',
-                cancelButtonColor: '#6b7280',
+            });
+        }
+
+        try {
+            setIsSaving(true);
+
+            // Send the updated profile data to the backend
+            const response = await axiosPublic.post('/api/doctor', doctorData);
+
+            Swal.fire({
+                icon: 'success',
+                title: '✅ প্রোফাইল সংরক্ষণ হয়েছে!',
+                text: 'আপনার প্রোফাইল সফলভাবে সংরক্ষণ হয়েছে।',
+                confirmButtonText: 'ঠিক আছে',
+                confirmButtonColor: '#2563eb',
             });
 
-            if (confirmFinal.isConfirmed) {
-                localStorage.setItem('doctorProfile', JSON.stringify(formData));
+            setIsEditable(false); // Disable editing after save
+        } catch (err) {
+            console.error('Error saving profile:', err);
 
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'প্রোফাইল সংরক্ষণ হয়েছে!',
-                    text: 'আপনার প্রোফাইল সফলভাবে সংরক্ষণ হয়েছে।',
-                    confirmButtonText: 'ঠিক আছে',
-                    confirmButtonColor: '#2563eb',
-                });
-
-                setIsEditing(false);
-                setBackupData(null);
+            let errorMessage = 'প্রোফাইল সংরক্ষণ করা যায়নি।';
+            if (err.response?.data?.message) {
+                errorMessage = err.response.data.message;
             }
+
+            Swal.fire({
+                icon: 'error',
+                title: 'ত্রুটি!',
+                text: errorMessage,
+                confirmButtonText: 'ঠিক আছে',
+                confirmButtonColor: '#2563eb',
+            });
+        } finally {
+            setIsSaving(false);
         }
     };
 
     const handleEdit = () => {
-        setBackupData(formData);
-        setIsEditing(true);
+        setIsEditable(true);
     };
 
     const handleCancel = () => {
-        if (backupData) setFormData(backupData);
-        setIsEditing(false);
-        setBackupData(null);
+        setIsEditable(false);
     };
 
     const handleVerify = async () => {
@@ -140,13 +149,12 @@ const DoctorProfile = () => {
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-[#E6F0FF]">
-            
             <form
                 onSubmit={handleSubmit}
                 className="bg-white shadow-lg rounded-xl p-8 w-full max-w-7xl pb-8 mb-8 mt-16"
             >
                 <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
-                ডাক্তারের প্রোফাইল
+                    ডাক্তারের প্রোফাইল
                 </h2>
 
                 {/* Profile Picture */}
@@ -154,28 +162,22 @@ const DoctorProfile = () => {
                     <label className="font-semibold mb-2">ছবি যোগ করুন</label>
                     <div className="avatar placeholder mb-3">
                         <div className="bg-gray-200 rounded-full w-36 h-36 flex items-center justify-center">
-                            {formData.image ? (
-                                <img
-                                    src={
-                                        formData.image instanceof File
-                                            ? URL.createObjectURL(formData.image)
-                                            : formData.image
-                                    }
-                                    alt="doctor"
-                                    className="rounded-full w-36 h-36 object-cover"
-                                />
-                            ) : (
-                                <span className="text-3xl"></span>
-                            )}
+                            {/* Display doctor image */}
+                            {/* {doctorInfo?.image && (
+                <img
+                  src={doctorInfo?.image}
+                  alt="doctor"
+                  className="rounded-full w-36 h-36 object-cover"
+                />
+              )} */}
                         </div>
                     </div>
-                    {isEditing && (
+                    {isEditable && (
                         <input
                             type="file"
                             name="image"
                             accept="image/*"
                             className="file-input file-input-bordered file-input-sm w-full max-w-xs"
-                            onChange={handleChange}
                         />
                     )}
                 </div>
@@ -183,25 +185,23 @@ const DoctorProfile = () => {
                 {/* Fields with Labels */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                        <label className="label-text font-semibold mb-1">পূর্ণ নাম</label>
+                        <label className="label-text font-semibold mb-1">নাম</label>
                         <input
                             type="text"
-                            name="fullName"
-                            value={formData.fullName}
-                            onChange={handleChange}
-                            disabled={!isEditing}
+                            name="name"
+                            defaultValue={doctorInfo?.name || doctor?.name} // Default value fallback
+                            disabled={!isEditable}
                             className="input input-bordered w-full border-2 p-2"
                             required
                         />
                     </div>
                     <div>
-                         <label className="label-text font-semibold mb-1">পদবি</label>
+                        <label className="label-text font-semibold mb-1">পদবি</label>
                         <input
                             type="text"
                             name="designation"
-                            value={formData.designation}
-                            onChange={handleChange}
-                            disabled={!isEditing}
+                            defaultValue={doctorInfo?.designation || doctor?.designation} // Default value fallback
+                            disabled={!isEditable}
                             className="input input-bordered w-full border-2 p-2"
                             required
                         />
@@ -210,26 +210,23 @@ const DoctorProfile = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                       
-                         <label className="label-text font-semibold mb-1">ডিগ্রি</label>
+                        <label className="label-text font-semibold mb-1">ডিগ্রি</label>
                         <input
                             type="text"
                             name="degrees"
-                            value={formData.degrees}
-                            onChange={handleChange}
-                            disabled={!isEditing}
+                            defaultValue={doctorInfo?.degrees || ''} // Default to empty if undefined
+                            disabled={!isEditable}
                             className="input input-bordered w-full border-2 p-2"
                             required
                         />
                     </div>
                     <div>
-                       <label className="label-text font-semibold mb-1">বিশেষ দক্ষতা</label>
+                        <label className="label-text font-semibold mb-1">বিশেষ দক্ষতা</label>
                         <input
                             type="text"
                             name="expertise"
-                            value={formData.expertise}
-                            onChange={handleChange}
-                            disabled={!isEditing}
+                            defaultValue={doctorInfo?.expertise || ''} // Default to empty if undefined
+                            disabled={!isEditable}
                             className="input input-bordered w-full border-2 p-2"
                         />
                     </div>
@@ -241,21 +238,19 @@ const DoctorProfile = () => {
                         <input
                             type="number"
                             name="consultationFee"
-                            value={formData.consultationFee}
-                            onChange={handleChange}
-                            disabled={!isEditing}
+                            defaultValue={doctorInfo?.consultationFee || ''} // Default to empty if undefined
+                            disabled={!isEditable}
                             className="input input-bordered w-full border-2 p-2"
                             required
                         />
                     </div>
                     <div>
-                         <label className="label-text font-semibold mb-1">রেজিস্ট্রেশন নাম্বার</label>
+                        <label className="label-text font-semibold mb-1">রেজিস্ট্রেশন নাম্বার</label>
                         <input
                             type="text"
                             name="regNo"
-                            value={formData.regNo}
-                            onChange={handleChange}
-                            disabled={!isEditing}
+                            defaultValue={doctorInfo?.regNo || ''} // Default to empty if undefined
+                            disabled={!isEditable}
                             className="input input-bordered w-full border-2 p-2"
                         />
                     </div>
@@ -267,20 +262,18 @@ const DoctorProfile = () => {
                         <input
                             type="text"
                             name="institute"
-                            value={formData.institute}
-                            onChange={handleChange}
-                            disabled={!isEditing}
+                            defaultValue={doctorInfo?.institute || ''} // Default to empty if undefined
+                            disabled={!isEditable}
                             className="input input-bordered w-full border-2 p-2"
                         />
                     </div>
                     <div>
-                       <label className="label-text font-semibold mb-1">চেম্বারের ঠিকানা</label>
+                        <label className="label-text font-semibold mb-1">চেম্বারের ঠিকানা</label>
                         <input
                             type="text"
-                            name="institute"
-                            value={formData.institute}
-                            onChange={handleChange}
-                            disabled={!isEditing}
+                            name="chamber"
+                            defaultValue={doctorInfo?.chamber || ''} // Default to empty if undefined
+                            disabled={!isEditable}
                             className="input input-bordered w-full border-2 p-2"
                         />
                     </div>
@@ -292,9 +285,8 @@ const DoctorProfile = () => {
                         <input
                             type="number"
                             name="yearsOfExperience"
-                            value={formData.yearsOfExperience}
-                            onChange={handleChange}
-                            disabled={!isEditing}
+                            defaultValue={doctorInfo?.yearsOfExperience || ''} // Default to empty if undefined
+                            disabled={!isEditable}
                             className="input input-bordered w-full border-2 p-2"
                         />
                     </div>
@@ -302,9 +294,8 @@ const DoctorProfile = () => {
                         <label className="label-text font-semibold mb-1">পরামর্শের মাধ্যম</label>
                         <select
                             name="medium"
-                            value={formData.medium}
-                            onChange={handleChange}
-                            disabled={!isEditing}
+                            value={doctorInfo?.medium || ''} // Controlled value
+                            disabled={!isEditable}
                             className="select select-bordered w-full border-2 p-2"
                             required
                         >
@@ -314,6 +305,7 @@ const DoctorProfile = () => {
                             <option value="both">উভয়ই</option>
                         </select>
                     </div>
+
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -322,9 +314,8 @@ const DoctorProfile = () => {
                         <input
                             type="email"
                             name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            disabled={!isEditing}
+                            defaultValue={doctor?.email || ''} // Default to empty if undefined
+                            disabled
                             className="input input-bordered w-full border-2 p-2"
                         />
                     </div>
@@ -333,9 +324,8 @@ const DoctorProfile = () => {
                         <input
                             type="text"
                             name="mobileNo"
-                            value={formData.mobileNo}
-                            onChange={handleChange}
-                            disabled={!isEditing}
+                            defaultValue={doctorInfo?.mobileNo || ''} // Default to empty if undefined
+                            disabled={!isEditable}
                             className="input input-bordered w-full border-2 p-2"
                         />
                     </div>
@@ -344,74 +334,26 @@ const DoctorProfile = () => {
                         <input
                             type="text"
                             name="bkashAccount"
-                            value={formData.bkashAccount}
-                            onChange={handleChange}
-                            disabled={!isEditing}
+                            defaultValue={doctorInfo?.bkashAccount || ''} // Default to empty if undefined
+                            disabled={!isEditable}
                             className="input input-bordered w-full border-2 p-2"
                         />
                     </div>
-                </div>
-
-                {/* Certificates */}
-                <div className="mb-4">
-                    <label className="label-text font-semibold mb-2">
-                        সনদপত্র (Certificates)
-                    </label>
-                    {formData.certificates.map((cert, index) => (
-                        <div key={index} className="mb-2 flex items-center gap-2">
-                            {isEditing ? (
-                                <input
-                                    type="file"
-                                    accept=".pdf,.jpg,.png"
-                                    className="file-input file-input-bordered w-full border-2 p-2"
-                                    onChange={(e) => handleCertificateChange(e, index)}
-                                />
-                            ) : (
-                                cert && (
-                                    <span className="text-sm text-green-600 truncate w-full">
-                                        {cert.name || 'Uploaded File'}
-                                    </span>
-                                )
-                            )}
-                            {isEditing && formData.certificates.length > 1 && (
-                                <button
-                                    type="button"
-                                    onClick={() => removeCertificateField(index)}
-                                    className="btn btn-sm btn-circle btn-error text-white bg-secondary-color"
-                                >
-                                    <X size={16} />
-                                </button>
-                            )}
-                        </div>
-                    ))}
-                    {isEditing && (
-                        <button
-                            type="button"
-                            onClick={addCertificateField}
-                            className="btn text-white btn-outline btn-sm mt-2 bg-primary-color p-2"
-                        >
-                            + আরেকটি সনদপত্র যোগ করুন
-                        </button>
-                    )}
                 </div>
 
                 <div className="mb-6">
                     <label className="label-text font-semibold mb-1">সংক্ষিপ্ত বায়ো</label>
                     <textarea
                         name="shortBio"
-                        value={formData.shortBio}
-                        onChange={handleChange}
-                        disabled={!isEditing}
+                        defaultValue={doctorInfo?.shortBio || ''} // Default to empty if undefined
+                        disabled={!isEditable}
                         className="textarea textarea-bordered w-full border-2 p-2"
                         rows="3"
                     ></textarea>
                 </div>
 
-                
-                {/* Buttons */}
                 <div className="space-y-3">
-
-                    {!isEditing ? (
+                    {!isEditable ? (
                         <>
                             <button
                                 type="button"
@@ -431,13 +373,12 @@ const DoctorProfile = () => {
                         </>
                     ) : (
                         <>
-                            <button
+                            <input
                                 type="submit"
-                                className="btn btn-outline w-full flex gap-2 bg-primary-color text-white py-4"
-                            >
-                                প্রোফাইল সংরক্ষণ করুন
-                            </button>
-
+                                disabled={isSaving}
+                                className="btn bg-primary-color text-white w-full px-8"
+                                value="সংরক্ষণ করুন"
+                            />
                             <button
                                 type="button"
                                 onClick={handleCancel}
@@ -447,9 +388,7 @@ const DoctorProfile = () => {
                             </button>
                         </>
                     )}
-
                 </div>
-
             </form>
         </div>
     );

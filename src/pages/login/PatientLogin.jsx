@@ -3,27 +3,37 @@ import Button from '../../components/Button';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { AuthContext } from '../../providers/AuthProvider';
+import useAxiosPublic from '../../hooks/useAxiosPublic';
 const PatientLogin = () => {
     const [error, setError] = useState("");
+    const axiosPublic = useAxiosPublic();
     const navigate = useNavigate();
     const location = useLocation();
     const from = location?.state?.from?.pathname || "/dashboardPatient"
     const { signInEmail, signInWithGoogle } = useContext(AuthContext);
     const handleGoogleLogin = async () => {
-    try {
-        const result = await signInWithGoogle();
-        const googleUser = result.user;
+        try {
+            const result = await signInWithGoogle();
+            const googleUser = result.user;
 
-        // ✅ Google users are already verified
-        if (googleUser) {
-            setError("");
-            navigate(from, { replace: true });
+            // ✅ Google users are already verified
+            const patient = {
+                email: result.user?.email,
+                name: result.user?.displayName,
+                role: "patient",  // default role for a patient
+                createdAt: new Date(),
+            }
+
+            const response = await axiosPublic.post('/api/register', patient);
+            if (response) {
+                setError("");
+                navigate(from, { replace: true });
+            }
+        } catch (err) {
+            setError("গুগল দিয়ে লগইন করা যায়নি");
+            console.error(err.message);
         }
-    } catch (err) {
-        setError("গুগল দিয়ে লগইন করা যায়নি");
-        console.error(err.message);
-    }
-};
+    };
 
     const handleLogin = (event) => {
         event.preventDefault();

@@ -2,26 +2,37 @@ import React, { useContext, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { AuthContext } from '../../providers/AuthProvider';
+import useAxiosPublic from '../../hooks/useAxiosPublic';
 
 const DoctorLogin = () => {
     const [error, setError] = useState("");
+    const axiosPublic = useAxiosPublic();
     const navigate = useNavigate();
     const location = useLocation();
     const from = location?.state?.from?.pathname || "/dashboardDoctor"
     const { signInEmail, signInWithGoogle } = useContext(AuthContext);
-    const handleGoogleLogin = () => {
-        signInWithGoogle()
-            .then(result => {
-                const loggedUser = result.user;
+    const handleGoogleLogin = async () => {
+        try {
+            const result = await signInWithGoogle();
+            const googleUser = result.user;
 
-                // OPTIONAL: role check (recommended)
-                if (loggedUser) {
-                    navigate(from, { replace: true });
-                }
-            })
-            .catch(error => {
-                setError("গুগল লগইন ব্যর্থ হয়েছে");
-            });
+            // ✅ Google users are already verified
+            const doctor = {
+                email: result.user?.email,
+                name: result.user?.displayName,
+                role: "doctor",  // default role for a patient
+                createdAt: new Date(),
+            }
+
+            const response = await axiosPublic.post('/api/register', doctor);
+            if (response) {
+                setError("");
+                navigate(from, { replace: true });
+            }
+        } catch (err) {
+            setError("গুগল দিয়ে লগইন করা যায়নি");
+            console.error(err.message);
+        }
     };
 
     const handleLogin = (event) => {

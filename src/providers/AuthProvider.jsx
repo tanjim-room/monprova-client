@@ -1,7 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { app } from "../firebase/firebase.config";
-
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -40,7 +39,17 @@ const AuthProvider = ({ children }) => {
     // Logout
     const logOut = () => {
         setLoading(true);
-        return signOut(auth);
+        return signOut(auth)
+            .then(() => {
+                // Clear localStorage if needed
+                localStorage.removeItem("user"); // Optionally clear localStorage
+                setUser(null); // Ensure user state is reset
+                setLoading(false);
+            })
+            .catch((error) => {
+                setError(error.message); // Handle error if any
+                setLoading(false);
+            });
     };
 
     // Auth state observer
