@@ -156,14 +156,14 @@ const PatientProfile = () => {
               <label className="label">জেন্ডার</label>
               <select
                 name="gender"
-                defaultValue={patientInfo?.gender} // Populate the patient's gender
+                value={patientInfo?.gender} // Populate the patient's gender
                 disabled={!isEditable}
                 className="select select-bordered w-full border-2 p-2"
               >
                 <option value="">নির্বাচন করুন</option>
-                <option value="পুরুষ">পুরুষ</option>
-                <option value="মহিলা">মহিলা</option>
-                <option value="অন্যান্য">অন্যান্য</option>
+                <option value="male">পুরুষ</option>
+                <option value="female">মহিলা</option>
+                <option value="other">অন্যান্য</option>
               </select>
             </div>
 
