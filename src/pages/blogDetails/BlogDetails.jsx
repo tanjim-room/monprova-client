@@ -18,7 +18,7 @@ const BlogDetails = () => {
             </div>
         );
     }
-    const blog = blogs.find((b) => b.id == blogId);
+    const blog = blogs.find((b) => b._id == blogId);
 
     if (!blog) {
         return (

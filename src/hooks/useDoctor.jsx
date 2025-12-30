@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
-import useAxiosSecure from "./useAxiosSecure";
-import { useQuery } from "@tanstack/react-query";
+import React from 'react';
+import useAxiosSecure from './useAxiosSecure';
+import { useQuery } from '@tanstack/react-query';
 
-
-const useDoctors = () => {
+const useDoctor = () => {
     const axiosSecure = useAxiosSecure();
     const { data: doctors = [] } = useQuery({
         queryKey: ['doctors'],
@@ -15,4 +14,4 @@ const useDoctors = () => {
     return [doctors]
 };
 
-export default useDoctors;
+export default useDoctor;
