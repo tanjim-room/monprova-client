@@ -12,6 +12,21 @@ import DoctorRegister from "../pages/signup/DoctorRegister";
 import DoctorList from "../pages/doctorList/DoctorList";
 import DoctorDetails from "../pages/doctorDetails/DoctorDetails";
 import BlogDetails from "../pages/blogDetails/BlogDetails";
+import PatientDashboardLayout from "../layouts/PatientDashboardLayout";
+import PatientHome from "../pages/patient/PatientHome";
+import DoctorDashboardLayout from "../layouts/DoctorDashboardLayout";
+import AdminDashboardLayout from "../layouts/AdminDashboardLayout";
+import AdminHome from "../pages/admin/AdminHome";
+import DoctorHome from "../pages/doctor/DoctorHome";
+import Resources from "../pages/resources/Resources";
+import BlogList from "../pages/blogList/BlogList";
+import VideoList from "../pages/videoList/VideoList";
+import ResourcesHome from "../pages/resources/ResourcesHome";
+import Doctors from "../pages/patient/Doctors";
+import PrivateRoute from "./PrivateRoute";
+import PatientProfile from "../pages/profile/PatientProfile";
+import AppointmentForm from "../pages/appointment/AppointmentForm";
+import DoctorProfile from "../pages/profile/DoctorProfile";
 
 export const router = createBrowserRouter([
   {
@@ -42,14 +57,105 @@ export const router = createBrowserRouter([
         path: "doctorList",
         element: <DoctorList></DoctorList>
       },
+
+
       {
-        path: "doctorDetails/:doctorId",
-        element: <DoctorDetails></DoctorDetails>,
+        path: "blogList",
+        element: <BlogList></BlogList>,
       },
       {
-        path: "/blogDetails/:blogId",
-        element: <BlogDetails></BlogDetails>,
-      }
-      ]
+        path: "videoList",
+        element: <VideoList></VideoList>,
+      },
+
+    ]
   },
+  {
+    path: "/dashboardPatient",
+    element: <PrivateRoute><PatientDashboardLayout></PatientDashboardLayout></PrivateRoute>,
+    children: [
+      // Dashboard routes can be added here
+      {
+        path: "/dashboardPatient",
+        element: <PatientHome></PatientHome>
+      },
+      {
+        path: "doctorList",
+        element: <Doctors></Doctors>,
+        children: [
+          {
+            index: true,
+            element: <DoctorList></DoctorList>
+          },
+          {
+            path: "doctorDetails/:doctorId",
+            element: <DoctorDetails></DoctorDetails>,
+          }
+        ]
+      },
+      {
+        path: "appointmentForm/:doctorId",
+        element: <AppointmentForm></AppointmentForm>
+      },
+
+
+      {
+        path: "resources",
+        element: <Resources></Resources>,
+        children: [
+          {
+            index: true,
+            element: <ResourcesHome></ResourcesHome>
+          },
+          {
+            path: "blogs",
+            element: <BlogList></BlogList>
+          },
+          {
+            path: "blogDetails/:blogId",
+            element: <BlogDetails></BlogDetails>,
+          },
+          {
+            path: "videos",
+            element: <VideoList></VideoList>
+          }
+
+        ]
+      },
+      {
+        path: "patientProfile",
+        element: <PatientProfile></PatientProfile>
+      }
+
+
+    ]
+  },
+  {
+    path: "/dashboardDoctor",
+    element: <PrivateRoute role="doctor"><DoctorDashboardLayout></DoctorDashboardLayout></PrivateRoute>,
+    children: [
+      // Dashboard routes can be added here
+      {
+        path: "/dashboardDoctor",
+        element: <DoctorHome></DoctorHome>
+      },
+      {
+        path: "doctorProfile",
+        element: <DoctorProfile></DoctorProfile>
+      }
+    ]
+  },
+  {
+    path: "/dashboardAdmin",
+    element: <AdminDashboardLayout></AdminDashboardLayout>,
+    children: [
+      // Dashboard routes can be added here
+      {
+        path: "/dashboardAdmin",
+        element: <AdminHome></AdminHome>
+      },
+      {
+      }
+    ]
+  }
 ]);

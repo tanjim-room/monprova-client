@@ -6,7 +6,7 @@ const useBlogs = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-       fetch('/blogs.json')
+       fetch('http://localhost:8000/blogs')
            .then(res => res.json())
            .then(data => {
             setBlogs(data)
