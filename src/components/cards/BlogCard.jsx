@@ -18,7 +18,7 @@ const BlogCard = ({blog}) => {
                 <p className='text-md font-semibold'></p>
             </div>
             <div className="mb-4 mx-6">
-                <Link to={`blogDetails/${blog._id}`}>
+                <Link to={`/dashboardPatient/resources/blogDetails/${blog._id}`}>
                     <Button btnName={"বিস্তারিত পড়ুন"} bgColor="bg-primary-color"></Button>
                 </Link>
             </div>

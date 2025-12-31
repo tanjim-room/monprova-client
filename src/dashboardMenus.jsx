@@ -32,7 +32,7 @@ export const patientMenuItems = [
 
 export const doctorMenuItems = [
   { title: "হোম", link: "/dashboardDoctor", icon: <FaHome /> },
-  { title: "অ্যাপয়েন্টমেন্ট", link: "/dashboardDoctor/appointmentDoctor", icon: <FaCalendarAlt /> },
+  { title: "অ্যাপয়েন্টমেন্ট", link: "/dashboardDoctor/appointment", icon: <FaCalendarAlt /> },
   { title: "শিডিউল", link: "/dashboardDoctor/schedule", icon: <FaClock /> },
   { title: "ইনকাম", link: "/dashboardDoctor/income", icon: <FaMoneyBillWave /> },
   { title: "সাহায্য", link: "/dashboardDoctor/doctorHelp", icon: <FaHandsHelping /> },
