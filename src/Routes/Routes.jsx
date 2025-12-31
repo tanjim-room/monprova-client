@@ -27,6 +27,9 @@ import PrivateRoute from "./PrivateRoute";
 import PatientProfile from "../pages/profile/PatientProfile";
 import AppointmentForm from "../pages/appointment/AppointmentForm";
 import DoctorProfile from "../pages/profile/DoctorProfile";
+import AppointmentPatient from "../pages/appointment/AppointmentPatient";
+import AppointmentDetailsPatient from "../pages/appointment/AppointmentDetailsPatient";
+import AppointmentDoctor from "../pages/appointment/AppointmentDoctor";
 
 export const router = createBrowserRouter([
   {
@@ -97,6 +100,15 @@ export const router = createBrowserRouter([
         path: "appointmentForm/:doctorId",
         element: <AppointmentForm></AppointmentForm>
       },
+      {
+        path: "appointment",
+        element: <AppointmentPatient></AppointmentPatient>
+      },
+      {
+        path: "appointmentDetailsPatient/:appointmentId",
+        element: <AppointmentDetailsPatient></AppointmentDetailsPatient>
+
+      },
 
 
       {
@@ -142,6 +154,10 @@ export const router = createBrowserRouter([
       {
         path: "doctorProfile",
         element: <DoctorProfile></DoctorProfile>
+      },
+      {
+        path: "appointment",
+        element:<AppointmentDoctor></AppointmentDoctor>
       }
     ]
   },

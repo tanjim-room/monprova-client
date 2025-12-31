@@ -7,18 +7,18 @@ import useBlogs from "../../hooks/useBlogs";
 
 
 const BlogDetails = () => {
-    const [blogs, loading] = useBlogs();
+    const [blogs] = useBlogs();
     const { blogId } = useParams();
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center min-h-[400px]">
+    // if (loading) {
+    //     return (
+    //         <div className="flex justify-center items-center min-h-[400px]">
 
-                <p className="text-center mt-10 text-lg text-gray-600"> Loading blog details...</p>
-            </div>
-        );
-    }
-    const blog = blogs.find((b) => b._id == blogId);
+    //             <p className="text-center mt-10 text-lg text-gray-600"> Loading blog details...</p>
+    //         </div>
+    //     );
+    // }
+    const blog = blogs.find(blog => blog._id === blogId);
 
     if (!blog) {
         return (

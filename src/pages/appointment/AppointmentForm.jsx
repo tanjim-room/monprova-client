@@ -15,7 +15,8 @@ const AppointmentForm = () => {
   const axiosPublic = useAxiosPublic();
   const doctor = doctors?.find(doctor => doctor?._id === doctorId);
   const patient = patients?.find(patient => patient.email === user?.email);
-
+  const doctorID = doctor?._id;
+  const patientID = patient?._id;
   const [errors, setErrors] = useState({});
 
   const handleSubmit = async (event) => {
@@ -51,7 +52,8 @@ const AppointmentForm = () => {
     if (Object.keys(newErrors).length > 0) return;
     console.log(doctor)
     const appointmentInfo = {
-      ...doctor,
+      doctorID,
+      patientID,
       patientName,
       age,
       gender,
@@ -61,7 +63,8 @@ const AppointmentForm = () => {
       emergencyContact,
       profession,
       problem,
-      mode
+      mode,
+      state: "upcoming"
     };
 
     console.log(appointmentInfo)
