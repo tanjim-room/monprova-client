@@ -22,7 +22,7 @@ export const patientMenuItems = [
   { title: "অ্যাসেসমেন্ট", link: "/dashboardPatient/assessment", icon: <FaClipboardList /> },
   { title: "অ্যাপয়েন্টমেন্ট", link: "/dashboardPatient/appointment", icon: <FaCalendarAlt /> },
   { title: "ডাক্তার", link: "/dashboardPatient/doctorList", icon: <FaUserMd /> },
-  { title: "প্রেসক্রিপশন", link: "/patientDashboard/prescription", icon: <FaFilePrescription /> },
+  { title: "প্রেসক্রিপশন", link: "/dashboardPatient/prescription", icon: <FaFilePrescription /> },
   { title: "রিসোর্স", link: "/dashboardPatient/resources", icon: <FaBookOpen /> },
   { title: "গেমস", link: "/dashboardPatient/games", icon: <FaGamepad /> },
   { title: "সাহায্য", link: "/dashboardPatient/patientHelp", icon: <FaHandsHelping /> },

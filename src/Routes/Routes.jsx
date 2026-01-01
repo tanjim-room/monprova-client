@@ -30,6 +30,11 @@ import DoctorProfile from "../pages/profile/DoctorProfile";
 import AppointmentPatient from "../pages/appointment/AppointmentPatient";
 import AppointmentDetailsPatient from "../pages/appointment/AppointmentDetailsPatient";
 import AppointmentDoctor from "../pages/appointment/AppointmentDoctor";
+import DoctorSchedule from "../pages/schedule/DoctorSchedule";
+import AppointmentDetailsDoctor from "../pages/appointment/AppointmentDetailsDoctor";
+import CreatePrescription from "../pages/prescription/CreatePrescription";
+import PrescriptionDetails from "../pages/prescription/PrescriptionDetails";
+import Prescription from "../pages/prescription/Prescription";
 
 export const router = createBrowserRouter([
   {
@@ -83,6 +88,10 @@ export const router = createBrowserRouter([
         element: <PatientHome></PatientHome>
       },
       {
+        path: "prescription",
+        element: <Prescription></Prescription>
+      },
+      {
         path: "doctorList",
         element: <Doctors></Doctors>,
         children: [
@@ -110,7 +119,7 @@ export const router = createBrowserRouter([
 
       },
 
-
+      
       {
         path: "resources",
         element: <Resources></Resources>,
@@ -157,7 +166,23 @@ export const router = createBrowserRouter([
       },
       {
         path: "appointment",
-        element:<AppointmentDoctor></AppointmentDoctor>
+        element: <AppointmentDoctor></AppointmentDoctor>
+      },
+      {
+        path: "schedule",
+        element: <DoctorSchedule></DoctorSchedule>
+      },
+      {
+        path: "appointmentDetailsDoctor/:appointmentId",
+        element: <AppointmentDetailsDoctor></AppointmentDetailsDoctor>,
+      },
+      {
+        path: "createPrescription/:appointmentId",
+        element: <CreatePrescription></CreatePrescription>
+      },
+      {
+        path: "prescriptionDetails/:appointmentId",
+        element: <PrescriptionDetails></PrescriptionDetails>
       }
     ]
   },
