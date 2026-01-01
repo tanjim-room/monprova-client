@@ -64,7 +64,8 @@ const AppointmentForm = () => {
       profession,
       problem,
       mode,
-      state: "upcoming"
+      state: "upcoming",
+      sessionLink: ""
     };
 
     console.log(appointmentInfo)
