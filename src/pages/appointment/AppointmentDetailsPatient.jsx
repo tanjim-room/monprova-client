@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import useAppointment from "../../hooks/useAppointment";
 import useDoctor from "../../hooks/useDoctor";
+import { IoMdDownload } from "react-icons/io";
 
 const AppointmentDetailsPatient = () => {
     const [appointments] = useAppointment();
@@ -20,7 +21,21 @@ const AppointmentDetailsPatient = () => {
     if (!appointment || !doctor) {
         return <div>Appointment or doctor not found</div>;
     }
+    const handleDownload = () => {
+    const fileContent = `
+      ডাক্তারঃ ${pres.doctorName || 'N/A'}
+      রোগীঃ ${pres.patientName || 'N/A'}
+      তারিখঃ ${pres.date}
+      প্রেসক্রিপশনঃ
+      ${pres.prescription || 'No prescription available'}
+    `;
 
+    const blob = new Blob([fileContent], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Prescription_${pres.patientName || 'Unknown'}_${pres.date}.txt`;
+    link.click();
+  };
     return (
         <div>
             <div className="min-h-[850px] p-16 bg-[#E1ECFF] rounded-lg mt-16">
@@ -77,7 +92,18 @@ const AppointmentDetailsPatient = () => {
                             </div>
                         </div>
                     </div>
+                    
                 </div>
+                <div className="mt-4">
+                        <button onClick={handleDownload} className="w-full border-2 rounded-md flex justify-center items-center bg-primary-color text-white">
+                            <div className="flex items-center gap-6 px-4 py-2 font-semibold text-xl rounded-md">
+                                <div className="flex gap-4 items-center bg-primary-color">
+                                    <span className="text-xl"><IoMdDownload /></span>
+                                    <span className="text-center text-lg">প্রেসক্রিপশন ডাউনলোড করুন</span>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
             </div>
         </div>
     );
