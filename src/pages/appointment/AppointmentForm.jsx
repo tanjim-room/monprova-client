@@ -56,6 +56,7 @@ const AppointmentForm = () => {
     if (!patientEmail) newErrors.patientEmail = "ইমেইল আবশ্যক";
     if (!age) newErrors.age = "বয়স আবশ্যক";
     if (!gender) newErrors.gender = "জেন্ডার আবশ্যক";
+    // if (!gender) newErrors.gender = "লিঙ্গ আবশ্যক";
     if (!bloodGroup) newErrors.bloodGroup = "রক্তের গ্রুপ আবশ্যক";
     if (!profession) newErrors.profession = "পেশা আবশ্যক";
     if (!emergencyContact) newErrors.emergencyContact = "জরুরি যোগাযোগ আবশ্যক";
