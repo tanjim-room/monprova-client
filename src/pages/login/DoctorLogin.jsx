@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { AuthContext } from '../../providers/AuthProvider';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
+import useUser from '../../hooks/useUser';
 
 const DoctorLogin = () => {
     const [error, setError] = useState("");
@@ -11,6 +12,8 @@ const DoctorLogin = () => {
     const location = useLocation();
     const from = location?.state?.from?.pathname || "/dashboardDoctor"
     const { signInEmail, signInWithGoogle } = useContext(AuthContext);
+    const [users] = useUser();
+
     const handleGoogleLogin = async () => {
         try {
             const result = await signInWithGoogle();
@@ -36,33 +39,44 @@ const DoctorLogin = () => {
     };
 
     const handleLogin = (event) => {
-        event.preventDefault();
-        // Handle login logic here  
-        const form = event.target;
-        const email = form.email.value;
-        const password = form.password.value;
+    event.preventDefault();
+    const form = event.target;
+    const email = form.email.value;
+    const password = form.password.value;
+    
+    // Check if the email exists in the user list
+    const dbUser = users?.find(user => user.email === email);
 
-        console.log('Email:', email);
-        console.log('Password:', password);
+    console.log('Email:', email);
+    console.log('Password:', password);
 
-        signInEmail(email, password)
-            .then(result => {
-                const loggedUser = result.user;
-                console.log(loggedUser);
-                if (loggedUser.emailVerified) {
-                    setError("")
-                    navigate(from, { replace: true })
-
-                }
-                else {
-                    setError("ইমেইল ভেরিফিকেশন করুন");
-                }
-
-            })
-            .catch(error => {
-                setError("ভুল ইমেইল বা পাসওয়ার্ড দিয়েছেন")
-            });
-    };
+    if (dbUser) {
+        // If the user is a patient, proceed with login
+        if (dbUser?.role === "doctor") {
+            signInEmail(email, password)
+                .then(result => {
+                    const loggedUser = result.user;
+                    if (loggedUser.emailVerified) {
+                        setError(""); // Clear any previous error
+                        navigate(from, { replace: true }); // Redirect to the patient dashboard
+                    } else {
+                        setError("ইমেইল ভেরিফিকেশন করুন"); // Show email verification message
+                    }
+                })
+                .catch(error => {
+                    setError("ভুল ইমেইল বা পাসওয়ার্ড দিয়েছেন"); // Incorrect email or password
+                });
+        } 
+        // If the user is a doctor, show error message
+        else if (dbUser?.role === "patient") {
+            setError("রোগীর ইমেইল ব্যবহার করছেন। দয়া করে রোগীর লগইন পেজে যান।");
+        } else {
+            setError("অপরিচিত ব্যবহারকারী। দয়া করে সঠিক লগইন পদ্ধতি ব্যবহার করুন।");
+        }
+    } else {
+        setError("ইমেইল খুঁজে পাওয়া যায়নি। দয়া করে সঠিক ইমেইল দিন।");
+    }
+};
     return (
         <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
             <Helmet>

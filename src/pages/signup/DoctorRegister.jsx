@@ -23,7 +23,7 @@ const DoctorRegister = () => {
                 email: result.user?.email,
                 name: result.user?.displayName,
                 role: "doctor",  // default role for a patient
-                createdAt: new Date(),
+                
             }
 
              const response = await axiosPublic.post('/api/register', doctor);
