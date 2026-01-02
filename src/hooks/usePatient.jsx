@@ -7,7 +7,11 @@ const usePatient = () => {
     const { data: patients = [] } = useQuery({
         queryKey: ['patients'],
         queryFn: async () => {
-            const res = await axiosSecure.get('/api/patients')
+            const res = await axiosSecure.get('/api/patients', {
+                headers : {
+                    authorization: `Bearer ${localStorage.getItem('access-token')}`
+                }
+            })
             return res.data
         }
     })

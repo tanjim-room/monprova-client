@@ -14,7 +14,7 @@ const DashboardNavBar = ({ fullName, role }) => {
         if (role === "doctor") {
             navigate("/doctorLogin", { replace: true });
         } else if (role === "admin") {
-            navigate("/adminLogin", { replace: true });
+            navigate("/admin", { replace: true });
         } else {
             navigate("/patientLogin", { replace: true });
         }

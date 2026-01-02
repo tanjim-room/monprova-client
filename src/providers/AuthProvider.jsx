@@ -7,6 +7,7 @@ import {
     signOut,
     signInWithPopup,
 } from "firebase/auth";
+import useAxiosPublic from "../hooks/useAxiosPublic";
 
 export const AuthContext = createContext(null);
 
@@ -17,6 +18,7 @@ const AuthProvider = ({ children }) => {
     const [error, setError] = useState(false);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const axiosPublic = useAxiosPublic();
 
     // Email signup
     const signUpEmail = (email, password) => {
@@ -56,6 +58,18 @@ const AuthProvider = ({ children }) => {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((currentUser) => {
             setUser(currentUser);
+            if(currentUser){
+                const userInfo = {email: currentUser.email}
+                axiosPublic.post('/api/jwt', userInfo)
+                .then(res => {
+                    if(res.data.token){
+                        localStorage.setItem("access-token", res.data.token)
+                    }
+                })
+            } 
+            else{
+                localStorage.removeItem('access-token')
+            }
             setLoading(false);
         });
 
