@@ -297,7 +297,7 @@ const DoctorProfile = () => {
                             value={doctorInfo?.medium || ''} // Controlled value
                             disabled={!isEditable}
                             className="select select-bordered w-full border-2 p-2"
-                            required
+                            
                         >
                             <option value="">নির্বাচন করুন</option>
                             <option value="online">অনলাইন</option>

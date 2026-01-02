@@ -35,6 +35,7 @@ import AppointmentDetailsDoctor from "../pages/appointment/AppointmentDetailsDoc
 import CreatePrescription from "../pages/prescription/CreatePrescription";
 import PrescriptionDetails from "../pages/prescription/PrescriptionDetails";
 import Prescription from "../pages/prescription/Prescription";
+import PatientHelp from "../pages/help/PatientHelp";
 
 export const router = createBrowserRouter([
   {
@@ -90,6 +91,10 @@ export const router = createBrowserRouter([
       {
         path: "prescription",
         element: <Prescription></Prescription>
+      },
+      {
+        path: "patientHelp",
+        element: <PatientHelp></PatientHelp>
       },
       {
         path: "doctorList",
