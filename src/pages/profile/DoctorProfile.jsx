@@ -283,29 +283,20 @@ const DoctorProfile = () => {
                             />
                         </div>
                     </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label className="label-text font-semibold mb-1">পরামর্শ ফি (টাকা)</label>
-                            <input
-                                type="number"
-                                name="consultationFee"
-                                defaultValue={doctorInfo?.consultationFee || ''} // Default to empty if undefined
-                                disabled={!isEditable}
-                                className="input input-bordered w-full border-2 p-2"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label className="label-text font-semibold mb-1">রেজিস্ট্রেশন নাম্বার</label>
-                            <input
-                                type="text"
-                                name="regNo"
-                                defaultValue={doctorInfo?.regNo || ''} // Default to empty if undefined
-                                disabled={!isEditable}
-                                className="input input-bordered w-full border-2 p-2"
-                            />
-                        </div>
+                    <div>
+                        <label className="label-text font-semibold mb-1">পরামর্শের মাধ্যম</label>
+                        <select
+                            name="medium"
+                            value={doctorInfo?.medium || ''} // Controlled value
+                            disabled={!isEditable}
+                            className="select select-bordered w-full border-2 p-2"
+                            
+                        >
+                            <option value="">নির্বাচন করুন</option>
+                            <option value="online">অনলাইন</option>
+                            <option value="offline">অফলাইন</option>
+                            <option value="both">উভয়ই</option>
+                        </select>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
