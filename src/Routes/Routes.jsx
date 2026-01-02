@@ -35,6 +35,8 @@ import AppointmentDetailsDoctor from "../pages/appointment/AppointmentDetailsDoc
 import CreatePrescription from "../pages/prescription/CreatePrescription";
 import PrescriptionDetails from "../pages/prescription/PrescriptionDetails";
 import Prescription from "../pages/prescription/Prescription";
+import AdminLogin from "../pages/admin/AdminLogin";
+import PatientHelp from "../pages/help/PatientHelp";
 import AssessmentList from "../pages/assessment/AssessmentList";
 import AssessmentForm from "../pages/assessment/AssessmentForm";
 import AssessmentResults from "../pages/assessment/AssessmentResults";
@@ -48,6 +50,20 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <Home></Home>,
+      },
+      {
+        path: "admin",
+        element: <AdminLogin></AdminLogin>
+      },
+      {
+        path: "/dashboardAdmin",
+        element: <AdminDashboardLayout></AdminDashboardLayout>,
+        children: [
+          {
+            path:"/dashboardAdmin",
+            element: <AdminHome></AdminHome>
+          }
+        ]
       },
       {
         path: "patientLogin",
@@ -94,6 +110,10 @@ export const router = createBrowserRouter([
       {
         path: "prescription",
         element: <Prescription></Prescription>
+      },
+      {
+        path: "patientHelp",
+        element: <PatientHelp></PatientHelp>
       },
       {
         path: "doctorList",
@@ -206,17 +226,5 @@ export const router = createBrowserRouter([
       }
     ]
   },
-  {
-    path: "/dashboardAdmin",
-    element: <AdminDashboardLayout></AdminDashboardLayout>,
-    children: [
-      // Dashboard routes can be added here
-      {
-        path: "/dashboardAdmin",
-        element: <AdminHome></AdminHome>
-      },
-      {
-      }
-    ]
-  }
+  
 ]);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from 'react-router-dom';
 import Swal from "sweetalert2";
 import useDoctor from '../../hooks/useDoctor';
@@ -18,7 +18,21 @@ const AppointmentForm = () => {
   const doctorID = doctor?._id;
   const patientID = patient?._id;
   const [errors, setErrors] = useState({});
+  const [gender, setGender] = useState(""); // State for gender
+  const [bloodGroup, setBloodGroup] = useState("");
+  const [medium, setMedium] = useState(""); // State for bloodGroup
 
+
+  useEffect(() => {
+    if (patient) {
+      setGender(patient.gender || "");  // Set gender from the patientInfo, default to empty string if undefined
+      setBloodGroup(patient.bloodGroup || ""); // Set bloodGroup from the patientInfo, default to empty string if undefined
+    }
+    if(doctor){
+      setMedium(doctor.medium || "");
+    }
+
+  }, [patient, doctor]);
   const handleSubmit = async (event) => {
     event.preventDefault();
     const form = event.target;
@@ -33,7 +47,7 @@ const AppointmentForm = () => {
     const problem = form.problem.value;
     const mode = form.mode.value;
 
-    
+
 
     // Validate the form data
     const newErrors = {};
@@ -41,11 +55,13 @@ const AppointmentForm = () => {
     if (!phone) newErrors.phone = "মোবাইল আবশ্যক";
     if (!patientEmail) newErrors.patientEmail = "ইমেইল আবশ্যক";
     if (!age) newErrors.age = "বয়স আবশ্যক";
+    if (!gender) newErrors.gender = "জেন্ডার আবশ্যক";
     // if (!gender) newErrors.gender = "লিঙ্গ আবশ্যক";
     if (!bloodGroup) newErrors.bloodGroup = "রক্তের গ্রুপ আবশ্যক";
     if (!profession) newErrors.profession = "পেশা আবশ্যক";
     if (!emergencyContact) newErrors.emergencyContact = "জরুরি যোগাযোগ আবশ্যক";
     if (!problem) newErrors.problem = "সমস্যা/রোগের বিবরণ আবশ্যক";
+    if (!mode) newErrors.mode = "মাধ্যম আবশ্যক";
     setErrors(newErrors);
 
     // If there are errors, stop form submission
@@ -83,7 +99,7 @@ const AppointmentForm = () => {
       try {
         // Save appointment (local)
         const response = await axiosPublic.post('/api/appointment', appointmentInfo);
-        
+
         Swal.fire({
           title: "অ্যাপয়েন্টমেন্ট সফল!",
           text: "আপনার অ্যাপয়েন্টমেন্ট বুক করা হয়েছে।",
@@ -153,39 +169,43 @@ const AppointmentForm = () => {
           </div>
 
           <div>
-            <label className="block mb-1 font-semibold">লিঙ্গ</label>
+            <label className="label">জেন্ডার</label>
             <select
               name="gender"
-              value={patient?.gender || ''}
-              className="w-full p-2 border rounded"
+              value={gender} // Bind gender state to the select value
+              onChange={(e) => setGender(e.target.value)} // Update gender state on change
+              className="select select-bordered w-full border-2 p-2"
             >
-              <option value="">লিঙ্গ নির্বাচন করুন</option>
+              <option value="">নির্বাচন করুন</option>
               <option value="male">পুরুষ</option>
-              <option value="female">মহিলা</option>
+              <option value="female">নারী</option>
               <option value="other">অন্যান্য</option>
             </select>
             {errors.gender && <span className="text-red-500">{errors.gender}</span>}
           </div>
 
+
+
+
           <div>
-            <label className="block mb-1 font-semibold">রক্তের গ্রুপ</label>
+            <label className="label">রক্তের গ্রুপ</label>
             <select
               name="bloodGroup"
-              value={patient?.bloodGroup || ''}
-              className="w-full p-2 border rounded"
+              value={bloodGroup} // Bind bloodGroup state to the select value
+              onChange={(e) => setBloodGroup(e.target.value)} // Update bloodGroup state on change
+
+              className="select select-bordered w-full border-2 p-2"
             >
-              <option value="">রক্তের গ্রুপ নির্বাচন করুন</option>
-              <option value="A+">A+</option>
-              <option value="A-">A-</option>
-              <option value="B+">B+</option>
-              <option value="B-">B-</option>
-              <option value="AB+">AB+</option>
-              <option value="AB-">AB-</option>
-              <option value="O+">O+</option>
-              <option value="O-">O-</option>
+              <option value="">নির্বাচন করুন</option>
+              {["A+", "B+", "O+", "AB+", "A-", "B-", "O-", "AB-"].map(bg => (
+                <option key={bg} value={bg}>
+                  {bg}
+                </option>
+              ))}
             </select>
             {errors.bloodGroup && <span className="text-red-500">{errors.bloodGroup}</span>}
           </div>
+
 
           <div>
             <label className="block mb-1 font-semibold">পেশা</label>
@@ -225,9 +245,25 @@ const AppointmentForm = () => {
         <div className="mb-4">
           <label className="mr-4 font-semibold">মাধ্যম:</label>
           <select name="mode" className="p-2 border rounded">
-            <option value="online">অনলাইন</option>
-            <option value="offline">অফলাইন</option>
+            <option value="">নির্বাচন করুন</option>
+           
+              {
+                doctor?.medium === "online"
+                  ? <option value="online">অনলাইন</option> // Show only the online option
+                  : doctor?.medium === "offline"
+                    ? <option value="offline">অফলাইন</option> // Show only the offline option
+                    : (
+                      <>
+                        <option value="online">অনলাইন</option> // Show both options
+                        <option value="offline">অফলাইন</option>
+                      </>
+                    )
+              }
+           
+
+
           </select>
+          {errors.mode && <span className="text-red-500 ml-2">{errors.mode}</span>}
         </div>
 
         <input

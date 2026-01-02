@@ -63,7 +63,7 @@ const PatientRegister = () => {
             name,
             email,
             role: "patient",  // default role for a patient
-            createdAt: new Date(),
+            
         };
 
         try {
