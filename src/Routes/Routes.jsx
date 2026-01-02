@@ -35,6 +35,10 @@ import AppointmentDetailsDoctor from "../pages/appointment/AppointmentDetailsDoc
 import CreatePrescription from "../pages/prescription/CreatePrescription";
 import PrescriptionDetails from "../pages/prescription/PrescriptionDetails";
 import Prescription from "../pages/prescription/Prescription";
+import AssessmentList from "../pages/assessment/AssessmentList";
+import AssessmentForm from "../pages/assessment/AssessmentForm";
+import AssessmentResults from "../pages/assessment/AssessmentResults";
+import AssessmentHistory from "../pages/assessment/AssessmentHistory";
 
 export const router = createBrowserRouter([
   {
@@ -146,6 +150,22 @@ export const router = createBrowserRouter([
       {
         path: "patientProfile",
         element: <PatientProfile></PatientProfile>
+      },
+      {
+        path: "assessment",
+        element: <AssessmentList></AssessmentList>
+      },
+      {
+        path: "assessment/:assessmentId/form",
+        element: <AssessmentForm></AssessmentForm>
+      },
+      {
+        path: "assessment/:assessmentId/results",
+        element: <AssessmentResults></AssessmentResults>
+      },
+      {
+        path: "assessment/history",
+        element: <AssessmentHistory></AssessmentHistory>
       }
 
 
