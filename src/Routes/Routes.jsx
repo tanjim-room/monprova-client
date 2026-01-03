@@ -41,6 +41,7 @@ import AssessmentList from "../pages/assessment/AssessmentList";
 import AssessmentForm from "../pages/assessment/AssessmentForm";
 import AssessmentResults from "../pages/assessment/AssessmentResults";
 import AssessmentHistory from "../pages/assessment/AssessmentHistory";
+import DoctorHelp from "../pages/help/DoctorHelp";
 
 export const router = createBrowserRouter([
   {
@@ -199,6 +200,11 @@ export const router = createBrowserRouter([
       {
         path: "/dashboardDoctor",
         element: <DoctorHome></DoctorHome>
+      },
+      {
+        path: "doctorHelp",
+        element: <DoctorHelp></DoctorHelp>
+
       },
       {
         path: "doctorProfile",
