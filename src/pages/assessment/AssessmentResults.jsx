@@ -66,12 +66,6 @@ const AssessmentResults = () => {
                             অন্য মূল্যায়ন নিন
                         </button>
                         <button
-                            onClick={() => navigate('/dashboardPatient/assessment/history')}
-                            className="w-full py-3 px-6 bg-gray-300 text-gray-800 rounded-lg font-semibold hover:bg-gray-400 transition"
-                        >
-                            আপনার ইতিহাস দেখুন
-                        </button>
-                        <button
                             onClick={() => navigate('/dashboardPatient')}
                             className="w-full py-3 px-6 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition"
                         >
