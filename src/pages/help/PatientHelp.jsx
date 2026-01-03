@@ -2,16 +2,19 @@ import useAuth from "../../hooks/useAuth";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import usePatient from "../../hooks/usePatient";
 import useQuestion from "../../hooks/useQuestion";
+import useReply from "../../hooks/useReply";
 
 const PatientHelp = () => {
   const axiosPublic = useAxiosPublic();
   const [patients] = usePatient();
   const { user } = useAuth();
   const [questions] = useQuestion();
+  const [replies] = useReply();
 
-  const patient = patients.find(p => p.email === user?.email);
+  const patient = patients?.find(p => p.email === user?.email);
   const patientID = patient?._id;
 
+  // Only this patient's questions
   const patientQuestions = questions.filter(
     q => q.patientID === patientID
   );
@@ -34,7 +37,7 @@ const PatientHelp = () => {
   return (
     <div className="max-w-4xl mx-auto h-screen flex flex-col">
 
-      {/* 🔒 FIXED / STICKY QUESTION FORM */}
+      {/* Header + Question Form */}
       <div className="sticky top-0 bg-white z-10 shadow-md p-4 rounded-b-2xl">
         <h1 className="text-2xl font-bold text-center mb-3">
           🩺 Patient Help Center
@@ -43,7 +46,7 @@ const PatientHelp = () => {
         <form onSubmit={handleQuestionSubmit} className="space-y-3">
           <textarea
             name="question"
-            className="border-2 p-3 w-full rounded-xl text-lg focus:outline-none focus:ring-2 focus:ring-primary"
+            className="border-2 p-3 w-full rounded-xl text-lg"
             placeholder="আপনার প্রশ্ন লিখুন..."
             rows={3}
             required
@@ -52,14 +55,8 @@ const PatientHelp = () => {
           <div className="flex justify-center">
             <button
               type="submit"
-              className="
-    px-10 py-2 rounded-full text-lg font-semibold text-white
-    bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
-    hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600
-    transition-all duration-300
-    shadow-lg hover:shadow-xl
-    active:scale-95
-  "
+              className="px-10 py-2 rounded-full text-lg font-semibold text-white
+              bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
             >
               প্রশ্ন পাঠান
             </button>
@@ -67,21 +64,18 @@ const PatientHelp = () => {
         </form>
       </div>
 
-      {/* 🧾 SCROLLABLE COMMENTS SECTION */}
+      {/* Questions + Replies */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 mt-8 bg-gray-50">
         {
-          patientQuestions.map(q => (
-            <div
-              key={q._id}
-              className="bg-white shadow rounded-2xl p-4 flex gap-4"
-            >
-              {/* Avatar */}
-              <div className="w-12 h-12 rounded-full bg-primary-color flex items-center justify-center text-white font-bold text-xl">
-                {patient?.name?.charAt(0)}
-              </div>
+          patientQuestions.map(q => {
+            const questionReplies = replies.filter(
+              r => r.questionId === q._id
+            );
 
-              {/* Content */}
-              <div className="flex-1">
+            return (
+              <div key={q._id} className="bg-white shadow rounded-2xl p-4">
+
+                {/* Question */}
                 <h3 className="font-semibold text-lg">
                   {patient?.name}
                 </h3>
@@ -93,9 +87,39 @@ const PatientHelp = () => {
                 <p className="text-xs text-gray-400 mt-2">
                   {new Date(q.createdAt).toLocaleString()}
                 </p>
+
+                {/* Replies */}
+                <div className="ml-6 mt-4 space-y-2">
+                  {
+                    questionReplies.length > 0 ? (
+                      questionReplies.map((r, i) => (
+                        <div
+                          key={i}
+                          className="bg-gray-100 rounded-xl p-3"
+                        >
+                          <p className="text-sm font-semibold text-blue-600">
+                            👨‍⚕️ {r.doctorName}
+                          </p>
+
+                          <p className="text-gray-700">
+                            {r.reply}
+                          </p>
+
+                          <p className="text-xs text-gray-400">
+                            {new Date(r.createdAt).toLocaleString()}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-400 italic">
+                        এখনো ডাক্তারের কোনো উত্তর আসেনি।
+                      </p>
+                    )
+                  }
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         }
 
         {
@@ -106,7 +130,6 @@ const PatientHelp = () => {
           )
         }
       </div>
-
     </div>
   );
 };
