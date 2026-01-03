@@ -18,6 +18,7 @@ const AssessmentForm = () => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [duplicateMessage, setDuplicateMessage] = useState('');
 
     // Debug logging
     console.log('Assessment ID from URL:', assessmentId);
@@ -127,7 +128,12 @@ const AssessmentForm = () => {
             console.error('Error submitting assessment:', error);
             console.error('Error details:', error.response?.data);
             console.error('Full error object:', JSON.stringify(error, null, 2));
-            alert(`মূল্যায়ন জমা দিতে ত্রুটি হয়েছে: ${error.response?.data?.message || error.message}`);
+            const apiMessage = error.response?.data?.message;
+            if (error.response?.status === 409) {
+                setDuplicateMessage(apiMessage || 'আপনি আজ এই মূল্যায়নটি আগে সম্পন্ন করেছেন');
+            } else {
+                alert(`মূল্যায়ন জমা দিতে ত্রুটি হয়েছে: ${apiMessage || error.message}`);
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -146,6 +152,22 @@ const AssessmentForm = () => {
                         {assessment.subtitle}
                     </p>
                 </div>
+
+                {duplicateMessage && (
+                    <div className="mb-6 bg-gradient-to-r from-amber-100 via-yellow-50 to-white border border-amber-200 text-amber-800 rounded-lg p-4 shadow-sm flex items-start gap-3">
+                        <span className="text-xl">⚠️</span>
+                        <div className="flex-1">
+                            <p className="font-semibold">আজকের সীমা পূর্ণ</p>
+                            <p className="text-sm leading-relaxed">{duplicateMessage}</p>
+                        </div>
+                        <button
+                            onClick={() => setDuplicateMessage('')}
+                            className="text-amber-700 hover:text-amber-900 font-semibold"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                )}
 
                 <QuestionComponent
                     question={currentQuestion}
