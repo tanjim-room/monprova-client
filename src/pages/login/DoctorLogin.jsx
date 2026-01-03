@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { AuthContext } from '../../providers/AuthProvider';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
 import useUser from '../../hooks/useUser';
+import Swal from 'sweetalert2';
 
 const DoctorLogin = () => {
     const [error, setError] = useState("");
@@ -39,44 +40,56 @@ const DoctorLogin = () => {
     };
 
     const handleLogin = (event) => {
-    event.preventDefault();
-    const form = event.target;
-    const email = form.email.value;
-    const password = form.password.value;
-    
-    // Check if the email exists in the user list
-    const dbUser = users?.find(user => user.email === email);
+        event.preventDefault();
+        const form = event.target;
+        const email = form.email.value;
+        const password = form.password.value;
 
-    console.log('Email:', email);
-    console.log('Password:', password);
+        // Check if the email exists in the user list
+        const dbUser = users?.find(user => user.email === email);
 
-    if (dbUser) {
-        // If the user is a patient, proceed with login
-        if (dbUser?.role === "doctor") {
-            signInEmail(email, password)
-                .then(result => {
-                    const loggedUser = result.user;
-                    if (loggedUser.emailVerified) {
-                        setError(""); // Clear any previous error
-                        navigate(from, { replace: true }); // Redirect to the patient dashboard
-                    } else {
-                        setError("ইমেইল ভেরিফিকেশন করুন"); // Show email verification message
-                    }
-                })
-                .catch(error => {
-                    setError("ভুল ইমেইল বা পাসওয়ার্ড দিয়েছেন"); // Incorrect email or password
-                });
-        } 
-        // If the user is a doctor, show error message
-        else if (dbUser?.role === "patient") {
-            setError("রোগীর ইমেইল ব্যবহার করছেন। দয়া করে রোগীর লগইন পেজে যান।");
+        console.log('Email:', email);
+        console.log('Password:', password);
+        Swal.fire({
+            title: "লগইন হচ্ছে...",
+            text: "অনুগ্রহ করে অপেক্ষা করুন",
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading(),
+        });
+
+        if (dbUser) {
+            // If the user is a patient, proceed with login
+            if (dbUser?.role === "doctor") {
+                signInEmail(email, password)
+                    .then(result => {
+                        const loggedUser = result.user;
+                        if (loggedUser.emailVerified) {
+                            setError(""); // Clear any previous error
+                            navigate(from, { replace: true }); // Redirect to the patient dashboard
+                            Swal.close();
+                        } else {
+                            setError("ইমেইল ভেরিফিকেশন করুন"); // Show email verification message
+                            Swal.close();
+                        }
+                    })
+                    .catch(error => {
+                        setError("ভুল ইমেইল বা পাসওয়ার্ড দিয়েছেন");
+                        Swal.close(); // Incorrect email or password
+                    });
+            }
+            // If the user is a doctor, show error message
+            else if (dbUser?.role === "patient") {
+                setError("রোগীর ইমেইল ব্যবহার করছেন। দয়া করে রোগীর লগইন পেজে যান।");
+                Swal.close();
+            } else {
+                setError("অপরিচিত ব্যবহারকারী। দয়া করে সঠিক লগইন পদ্ধতি ব্যবহার করুন।");
+                Swal.close();
+            }
         } else {
-            setError("অপরিচিত ব্যবহারকারী। দয়া করে সঠিক লগইন পদ্ধতি ব্যবহার করুন।");
+            setError("ইমেইল খুঁজে পাওয়া যায়নি। দয়া করে সঠিক ইমেইল দিন।");
+            Swal.close();
         }
-    } else {
-        setError("ইমেইল খুঁজে পাওয়া যায়নি। দয়া করে সঠিক ইমেইল দিন।");
-    }
-};
+    };
     return (
         <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
             <Helmet>
