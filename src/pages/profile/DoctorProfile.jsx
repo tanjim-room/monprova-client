@@ -37,123 +37,123 @@ const DoctorProfile = () => {
         setImagePreview(URL.createObjectURL(file));
     };
     // ✅ Save profile with double confirmation
-   const handleSubmit = async (event) => {
-  event.preventDefault();
+    const handleSubmit = async (event) => {
+        event.preventDefault();
 
-  const form = event.target;
-  const name = form.name.value.trim();
-  const email = form.email.value.trim();
-  const designation = form.designation.value.trim();
-  const degrees = form.degrees.value.trim();
-  const expertise = form.expertise.value.trim();
-  const consultationFee = form.consultationFee.value;
-  const regNo = form.regNo.value.trim();
-  const institute = form.institute.value.trim();
-  const chamber = form.chamber.value.trim();
-  const yearsOfExperience = form.yearsOfExperience.value;
-  const mediumValue = form.medium.value;
-  const mobileNo = form.mobileNo.value.trim();
-  const bkashAccount = form.bkashAccount.value.trim();
-  const shortBio = form.shortBio.value.trim();
+        const form = event.target;
+        const name = form.name.value.trim();
+        const email = form.email.value.trim();
+        const designation = form.designation.value.trim();
+        const degrees = form.degrees.value.trim();
+        const expertise = form.expertise.value.trim();
+        const consultationFee = form.consultationFee.value;
+        const regNo = form.regNo.value.trim();
+        const institute = form.institute.value.trim();
+        const chamber = form.chamber.value.trim();
+        const yearsOfExperience = form.yearsOfExperience.value;
+        const mediumValue = form.medium.value;
+        const mobileNo = form.mobileNo.value.trim();
+        const bkashAccount = form.bkashAccount.value.trim();
+        const shortBio = form.shortBio.value.trim();
 
-  // ✅ Basic validation (doctorData নয়)
-  if (!name || !email) {
-    return Swal.fire({
-      icon: "error",
-      title: "ত্রুটি!",
-      text: "নাম এবং ইমেইল আবশ্যক।",
-      confirmButtonText: "ঠিক আছে",
-      confirmButtonColor: "#2563eb",
-    });
-  }
+        // ✅ Basic validation (doctorData নয়)
+        if (!name || !email) {
+            return Swal.fire({
+                icon: "error",
+                title: "ত্রুটি!",
+                text: "নাম এবং ইমেইল আবশ্যক।",
+                confirmButtonText: "ঠিক আছে",
+                confirmButtonColor: "#2563eb",
+            });
+        }
 
-  const confirmResult = await Swal.fire({
-    title: "আপনি কি নিশ্চিত?",
-    text: "আপনার প্রোফাইল সংরক্ষণ করতে চান?",
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonText: "হ্যাঁ, সংরক্ষণ করুন",
-    cancelButtonText: "না, বাতিল",
-    confirmButtonColor: "#16a34a",
-    cancelButtonColor: "#6b7280",
-  });
+        const confirmResult = await Swal.fire({
+            title: "আপনি কি নিশ্চিত?",
+            text: "আপনার প্রোফাইল সংরক্ষণ করতে চান?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "হ্যাঁ, সংরক্ষণ করুন",
+            cancelButtonText: "না, বাতিল",
+            confirmButtonColor: "#16a34a",
+            cancelButtonColor: "#6b7280",
+        });
 
-  if (!confirmResult.isConfirmed) return;
+        if (!confirmResult.isConfirmed) return;
 
-  try {
-    setIsSaving(true);
+        try {
+            setIsSaving(true);
 
-    // ✅ Nice: loading indicator
-    
+            // ✅ Nice: loading indicator
 
-    // ✅ Image upload only if new image selected
-    let imageUrl = doctorInfo?.image || doctor?.image || "";
-    Swal.fire({
-      title: "সেভ হচ্ছে...",
-      text: "অনুগ্রহ করে অপেক্ষা করুন",
-      allowOutsideClick: false,
-      didOpen: () => Swal.showLoading(),
-    });
 
-    if (selectedImage) {
-      const imageData = new FormData();
-      imageData.append("image", selectedImage);
+            // ✅ Image upload only if new image selected
+            let imageUrl = doctorInfo?.image || doctor?.image || "";
+            Swal.fire({
+                title: "সেভ হচ্ছে...",
+                text: "অনুগ্রহ করে অপেক্ষা করুন",
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+            });
 
-      const imgbbRes = await axiosPublic.post(image_hosting_api, imageData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+            if (selectedImage) {
+                const imageData = new FormData();
+                imageData.append("image", selectedImage);
 
-      imageUrl = imgbbRes?.data?.data?.display_url || imageUrl;
-    }
+                const imgbbRes = await axiosPublic.post(image_hosting_api, imageData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
 
-    const doctorData = {
-      name,
-      image: imageUrl,
-      email,
-      designation,
-      degrees,
-      expertise,
-      consultationFee,
-      regNo,
-      institute,
-      chamber,
-      yearsOfExperience,
-      medium: mediumValue,
-      mobileNo,
-      bkashAccount,
-      shortBio,
-      status: "",
+                imageUrl = imgbbRes?.data?.data?.display_url || imageUrl;
+            }
+
+            const doctorData = {
+                name,
+                image: imageUrl,
+                email,
+                designation,
+                degrees,
+                expertise,
+                consultationFee,
+                regNo,
+                institute,
+                chamber,
+                yearsOfExperience,
+                medium: mediumValue,
+                mobileNo,
+                bkashAccount,
+                shortBio,
+                status: "",
+            };
+
+            await axiosPublic.post("/api/doctor", doctorData);
+
+            Swal.fire({
+                icon: "success",
+                title: "প্রোফাইল সংরক্ষণ হয়েছে!",
+                text: "আপনার প্রোফাইল সফলভাবে সংরক্ষণ হয়েছে।",
+                confirmButtonText: "ঠিক আছে",
+                confirmButtonColor: "#16a34a",
+            });
+
+            setIsEditable(false);
+
+            // optional reset preview after save
+            setSelectedImage(null);
+            setImagePreview("");
+        } catch (err) {
+            console.error("Error saving profile:", err);
+
+            Swal.fire({
+                icon: "error",
+                title: "ত্রুটি!",
+                text: err.response?.data?.message || "প্রোফাইল সংরক্ষণ করা যায়নি।",
+                confirmButtonText: "ঠিক আছে",
+                confirmButtonColor: "#2563eb",
+            });
+        } finally {
+            setIsSaving(false);
+        }
     };
-
-    await axiosPublic.post("/api/doctor", doctorData);
-
-    Swal.fire({
-      icon: "success",
-      title: "✅ প্রোফাইল সংরক্ষণ হয়েছে!",
-      text: "আপনার প্রোফাইল সফলভাবে সংরক্ষণ হয়েছে।",
-      confirmButtonText: "ঠিক আছে",
-      confirmButtonColor: "#2563eb",
-    });
-
-    setIsEditable(false);
-
-    // optional reset preview after save
-    setSelectedImage(null);
-    setImagePreview("");
-  } catch (err) {
-    console.error("Error saving profile:", err);
-
-    Swal.fire({
-      icon: "error",
-      title: "ত্রুটি!",
-      text: err.response?.data?.message || "প্রোফাইল সংরক্ষণ করা যায়নি।",
-      confirmButtonText: "ঠিক আছে",
-      confirmButtonColor: "#2563eb",
-    });
-  } finally {
-    setIsSaving(false);
-  }
-};
 
     const handleEdit = () => {
         setIsEditable(true);
@@ -188,16 +188,16 @@ const DoctorProfile = () => {
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-[#E6F0FF]">
-            <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-xl">
-                <h2 className="text-3xl font-bold text-center mb-2 text-gray-800">
+            <div className="mx-auto p-6 bg-white shadow-lg rounded-xl">
+                <h2 className="text-3xl font-bold text-center text-gray-800 my-4 mb-4">
                     ডাক্তারের প্রোফাইল
                 </h2>
 
                 {/* Profile Picture */}
-                <div className="flex flex-col items-center mb-2">
+                <div className="flex flex-col items-center">
 
-                    <div className="avatar placeholder mb-3">
-                        <div className="bg-gray-200 rounded-full w-36 h-36 flex items-center justify-center">
+                    <div className="avatar placeholder">
+                        <div className="bg-gray-200 rounded-full w-36 h-36 flex items-center justify-center border-2">
                             <img
                                 src={
                                     imagePreview ||
@@ -220,7 +220,7 @@ const DoctorProfile = () => {
 
                     {/* Fields with Labels */}
                     <div className="mt-2 mb-4 flex justify-center">
-                        <div className="w-full max-w-xs">
+                        <div className="w-full max-w-xs mb-2">
                             <label className="block text-center mb-2 text-sm font-semibold">
                                 প্রোফাইল ছবি দিন
                             </label>
@@ -283,20 +283,29 @@ const DoctorProfile = () => {
                             />
                         </div>
                     </div>
-                    <div>
-                        <label className="label-text font-semibold mb-1">পরামর্শের মাধ্যম</label>
-                        <select
-                            name="medium"
-                            value={doctorInfo?.medium || ''} // Controlled value
-                            disabled={!isEditable}
-                            className="select select-bordered w-full border-2 p-2"
-                            
-                        >
-                            <option value="">নির্বাচন করুন</option>
-                            <option value="online">অনলাইন</option>
-                            <option value="offline">অফলাইন</option>
-                            <option value="both">উভয়ই</option>
-                        </select>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label className="label-text font-semibold mb-1">পরামর্শ ফি (টাকা)</label>
+                            <input
+                                type="number"
+                                name="consultationFee"
+                                defaultValue={doctorInfo?.consultationFee || ''} // Default to empty if undefined
+                                disabled={!isEditable}
+                                className="input input-bordered w-full border-2 p-2"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="label-text font-semibold mb-1">রেজিস্ট্রেশন নাম্বার</label>
+                            <input
+                                type="text"
+                                name="regNo"
+                                defaultValue={doctorInfo?.regNo || ''} // Default to empty if undefined
+                                disabled={!isEditable}
+                                className="input input-bordered w-full border-2 p-2"
+                            />
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -351,7 +360,7 @@ const DoctorProfile = () => {
                             </select>
                         </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label className="label-text font-semibold mb-1">ইমেইল</label>
                             <input
@@ -362,6 +371,19 @@ const DoctorProfile = () => {
                                 className="input input-bordered w-full border-2 p-2"
                             />
                         </div>
+                        <div>
+                            <label className="label-text font-semibold mb-1">এনআইডি নাম্বার</label>
+                            <input
+                                type="number"
+                                name="nidNo"
+                                defaultValue={doctor?.nidNo || ''} // Default to empty if undefined
+                                disabled={!isEditable}
+                                className="input input-bordered w-full border-2 p-2"
+                            />
+                        </div>
+
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label className="label-text font-semibold mb-1">মোবাইল নাম্বার</label>
                             <input
