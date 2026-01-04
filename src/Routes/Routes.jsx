@@ -42,6 +42,10 @@ import AssessmentForm from "../pages/assessment/AssessmentForm";
 import AssessmentResults from "../pages/assessment/AssessmentResults";
 import AssessmentHistory from "../pages/assessment/AssessmentHistory";
 import DoctorHelp from "../pages/help/DoctorHelp";
+import Games from "../pages/games/Games";
+import BreathingExercise from "../pages/games/BreathingExercise";
+import ColourTheBlock from "../pages/games/ColourTheBlock";
+import PopTheBalloon from "../pages/games/PopTheBalloon";
 
 export const router = createBrowserRouter([
   {
@@ -187,6 +191,22 @@ export const router = createBrowserRouter([
       {
         path: "assessment/history",
         element: <AssessmentHistory></AssessmentHistory>
+      },
+      {
+        path: "games",
+        element: <Games></Games>
+      },
+      {
+        path: "games/breathing",
+        element: <BreathingExercise></BreathingExercise>
+      },
+      {
+        path: "games/colour",
+        element: <ColourTheBlock></ColourTheBlock>
+      },
+      {
+        path: "games/balloon",
+        element: <PopTheBalloon></PopTheBalloon>
       }
 
 
