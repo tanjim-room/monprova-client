@@ -181,16 +181,24 @@ const AssessmentForm = () => {
                     <button
                         onClick={handlePrevious}
                         disabled={currentQuestionIndex === 0}
-                        className="flex-1 py-3 px-6 bg-gray-300 text-gray-800 rounded-lg font-semibold hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                        className="py-3 px-6 bg-primary-color text-white rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
                     >
                         ← পূর্ববর্তী
+                    </button>
+
+                    <button
+                        onClick={() => navigate('/dashboardPatient/assessment')}
+                        className="py-3 px-6 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition flex items-center gap-2"
+                    >
+                        <span>✕</span>
+                        <span>বাতিল করুন</span>
                     </button>
 
                     {currentQuestionIndex === assessment.questions.length - 1 ? (
                         <button
                             onClick={handleSubmit}
                             disabled={!isAnswered || isSubmitting}
-                            className="flex-1 py-3 px-6 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                            className="py-3 px-6 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
                         >
                             {isSubmitting ? 'জমা দিচ্ছেন...' : 'জমা দিন'}
                         </button>
@@ -198,7 +206,7 @@ const AssessmentForm = () => {
                         <button
                             onClick={handleNext}
                             disabled={!currentAnswer}
-                            className="flex-1 py-3 px-6 bg-primary-color text-white rounded-lg font-semibold hover:bg-primary-color disabled:opacity-50 disabled:cursor-not-allowed transition"
+                            className="py-3 px-6 bg-primary-color text-white rounded-lg font-semibold hover:bg-primary-color disabled:opacity-50 disabled:cursor-not-allowed transition"
                         >
                             পরবর্তী →
                         </button>

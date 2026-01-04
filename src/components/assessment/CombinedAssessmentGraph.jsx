@@ -38,9 +38,35 @@ const CombinedAssessmentGraph = ({ assessments = [], isLoading }) => {
     const timeSeries = useMemo(() => {
         if (!assessments || assessments.length === 0) return [];
 
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setDate(endDate.getDate() - 29);
+        // Calculate dynamic date range based on test dates
+        const validAssessments = assessments.filter(item => {
+            const dateObj = new Date(item.date);
+            return !Number.isNaN(dateObj.getTime());
+        });
+
+        if (validAssessments.length === 0) return [];
+
+        const allDates = validAssessments.map(item => new Date(item.date));
+        const earliestDate = new Date(Math.min(...allDates.map(d => d.getTime())));
+        const latestDate = new Date(Math.max(...allDates.map(d => d.getTime())));
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+        
+        // Calculate the span of tests
+        const daySpan = Math.floor((latestDate - earliestDate) / (1000 * 60 * 60 * 24));
+        
+        // Determine the date range: 15 days from earliest or last 15 days, but cap at today
+        let startDate, endDate;
+        if (daySpan <= 15) {
+            // If tests are within 15 days, start from earliest test
+            startDate = new Date(earliestDate);
+            endDate = new Date(Math.min(new Date(earliestDate.getTime() + 15 * 24 * 60 * 60 * 1000), today));
+        } else {
+            // If tests span more than 15 days, show last 15 days
+            endDate = new Date(Math.min(latestDate, today));
+            startDate = new Date(endDate);
+            startDate.setDate(startDate.getDate() - 15);
+        }
 
         const typeKeys = Object.values(assessmentTypes);
         const perTypeDaily = typeKeys.reduce((acc, type) => ({ ...acc, [type]: {} }), {});
@@ -63,8 +89,9 @@ const CombinedAssessmentGraph = ({ assessments = [], isLoading }) => {
 
         const lastScore = {};
         const series = [];
+        const daysToShow = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
 
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i <= daysToShow; i++) {
             const date = new Date(startDate);
             date.setDate(startDate.getDate() + i);
             const dayKey = date.toISOString().split('T')[0];
@@ -103,7 +130,7 @@ const CombinedAssessmentGraph = ({ assessments = [], isLoading }) => {
     if (timeSeries.length === 0) {
         return (
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg shadow-lg p-8 text-center border border-blue-200">
-                <p className="text-gray-600 text-lg">গত ৩০ দিনের কোনো মূল্যায়ন পাওয়া যায়নি</p>
+                <p className="text-gray-600 text-lg">কোনো মূল্যায়ন ডেটা পাওয়া যায়নি</p>
             </div>
         );
     }
@@ -117,7 +144,7 @@ const CombinedAssessmentGraph = ({ assessments = [], isLoading }) => {
                         পূর্বের ফলাফল দেখুন
                     </h3>
                 </div>
-                <p className="text-gray-600 ml-12">শেষ ৩০ দিনের তিনটি পরীক্ষার ধারাবাহিক স্কোর গ্রাফ</p>
+                <p className="text-gray-600 ml-12">সর্বশেষ ১৫ দিনের ট্রেন্ড</p>
             </div>
 
             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
