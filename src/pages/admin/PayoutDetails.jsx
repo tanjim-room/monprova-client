@@ -83,7 +83,7 @@ const PayoutDetails = () => {
   return (
     <div className="min-h-screen bg-[#E6F0FF] p-8">
       <div className="max-w-4xl mx-auto">
-        <BackButton />
+        <BackButton destination="/dashboardAdmin/payout" />
         
         <div className="bg-white shadow-lg rounded-lg p-8 mt-6">
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
@@ -121,10 +121,10 @@ const PayoutDetails = () => {
               <p className="text-2xl font-bold text-green-600">৳ {Number(payout.amount).toFixed(2)}</p>
             </div>
 
-            {/* Charge - Calculated dynamically */}
-            <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-              <p className="text-sm text-gray-600 mb-1 font-semibold">সিস্টেম চার্জ (২০%)</p>
-              <p className="text-xl font-bold text-red-600">৳ {((Number(payout.amount) / 0.8) * 0.2).toFixed(2)}</p>
+            {/* Transaction ID */}
+            <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
+              <p className="text-sm text-gray-600 mb-1 font-semibold">ট্রানজেকশন আইডি</p>
+              <p className="text-lg text-gray-800">{payout.transactionId}</p>
             </div>
 
             {/* Payment Method */}

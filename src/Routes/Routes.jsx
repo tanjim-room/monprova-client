@@ -45,6 +45,12 @@ import DoctorHelp from "../pages/help/DoctorHelp";
 import Income from "../pages/doctor/Income";
 import Payout from "../pages/admin/Payout";
 import PayoutDetails from "../pages/admin/PayoutDetails";
+import UserManagement from "../pages/admin/UserManagement";
+import UserDetails from "../pages/admin/UserDetails";
+import DoctorManagement from "../pages/admin/DoctorManagement";
+import AdminDoctorDetails from "../pages/admin/DoctorDetails";
+import AppointmentInfo from "../pages/admin/AppointmentInfo";
+import AppointmentDetails from "../pages/admin/AppointmentDetails";
 import Games from "../pages/games/Games";
 import BreathingExercise from "../pages/games/BreathingExercise";
 import ColourTheBlock from "../pages/games/ColourTheBlock";
@@ -70,6 +76,30 @@ export const router = createBrowserRouter([
           {
             path:"/dashboardAdmin",
             element: <AdminHome></AdminHome>          },
+          {
+            path: "users",
+            element: <UserManagement></UserManagement>
+          },
+          {
+            path: "users/:id",
+            element: <UserDetails></UserDetails>
+          },
+          {
+            path: "doctors",
+            element: <DoctorManagement></DoctorManagement>
+          },
+          {
+            path: "doctors/:id",
+            element: <AdminDoctorDetails></AdminDoctorDetails>
+          },
+          {
+            path: "appointmentInfo",
+            element: <AppointmentInfo></AppointmentInfo>
+          },
+          {
+            path: "appointments/:id",
+            element: <AppointmentDetails></AppointmentDetails>
+          },
           {
             path: "payout",
             element: <Payout></Payout>
