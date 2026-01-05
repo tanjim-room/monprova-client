@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { patientMenuItems, doctorMenuItems, adminMenuItems } from "../../dashboardMenus.jsx";
 import { useContext } from "react";
 import { AuthContext } from "../../providers/AuthProvider.jsx";
+import Logo from "../Logo.jsx";
 
 const DashboardNavBar = ({ fullName, role }) => {
     const { logOut } = useContext(AuthContext)
@@ -29,15 +30,19 @@ const DashboardNavBar = ({ fullName, role }) => {
 
     return (
         <aside className="w-1/5 bg-white shadow-lg p-6 fixed h-full overflow-y-auto">
-            <div className="mb-12 bg-[#27b294] rounded-md py-4 px-4">
-                <h2 className="text-xl font-bold text-[#E8594A]">{fullName}</h2>
+            <div className="mb-4">
+                <Logo></Logo>
+            </div>
+            <div className="mb-12 bg-secondary-color rounded-md py-4 px-4">
+                
+                {/* <h2 className="text-xl font-bold text-[#E8594A]">{fullName}</h2> */}
                 <p className="text-white">
                     {role === "admin" ? "অ্যাডমিন ড্যাশবোর্ড"
                         : role === "doctor" ? "ডাক্তারের ড্যাশবোর্ড"
                             : "রোগীর ড্যাশবোর্ড"}
                 </p>
             </div>
-
+                        
             <ul className="space-y-4">
                 {menuItems.map((item, index) => {
                     const isActive = location.pathname === item.link;
@@ -76,6 +81,8 @@ const DashboardNavBar = ({ fullName, role }) => {
                     );
                 })}
             </ul>
+
+            
 
         </aside>
     );
