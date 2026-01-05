@@ -5,13 +5,42 @@ const AssessmentGraph = ({ historyData, assessmentType }) => {
     if (!historyData || historyData.length === 0) {
         return (
             <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                <p className="text-gray-600 text-lg">No assessment data available for the last 30 days</p>
+                <p className="text-gray-600 text-lg">No assessment data available</p>
             </div>
         );
     }
 
-    // Process data for 30-day period
-    const processedData = historyData.map(item => ({
+    // Calculate dynamic date range based on test dates
+    const allDates = historyData.map(item => new Date(item.date));
+    const earliestDate = new Date(Math.min(...allDates.map(d => d.getTime())));
+    const latestDate = new Date(Math.max(...allDates.map(d => d.getTime())));
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    
+    // Calculate the span of tests
+    const daySpan = Math.floor((latestDate - earliestDate) / (1000 * 60 * 60 * 24));
+    
+    // Determine the date range: 15 days from earliest or last 15 days, but cap at today
+    let startDate, endDate;
+    if (daySpan <= 15) {
+        // If tests are within 15 days, start from earliest test
+        startDate = new Date(earliestDate);
+        endDate = new Date(Math.min(new Date(earliestDate.getTime() + 15 * 24 * 60 * 60 * 1000), today));
+    } else {
+        // If tests span more than 15 days, show last 15 days
+        endDate = new Date(Math.min(latestDate, today));
+        startDate = new Date(endDate);
+        startDate.setDate(startDate.getDate() - 15);
+    }
+
+    // Filter data within the calculated date range
+    const filteredData = historyData.filter(item => {
+        const itemDate = new Date(item.date);
+        return itemDate >= startDate && itemDate <= endDate;
+    });
+
+    // Process data for the determined period
+    const processedData = filteredData.map(item => ({
         date: new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
         score: item.score,
         type: item.assessmentType
