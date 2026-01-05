@@ -17,6 +17,7 @@ import PatientHome from "../pages/patient/PatientHome";
 import DoctorDashboardLayout from "../layouts/DoctorDashboardLayout";
 import AdminDashboardLayout from "../layouts/AdminDashboardLayout";
 import AdminHome from "../pages/admin/AdminHome";
+import AdminResources from "../pages/admin/AdminResources";
 import DoctorHome from "../pages/doctor/DoctorHome";
 import Resources from "../pages/resources/Resources";
 import BlogList from "../pages/blogList/BlogList";
@@ -69,6 +70,10 @@ export const router = createBrowserRouter([
           {
             path:"/dashboardAdmin",
             element: <AdminHome></AdminHome>          },
+          {
+            path: "resources",
+            element: <AdminResources></AdminResources>
+          },
           {
             path: "payout",
             element: <Payout></Payout>          }
