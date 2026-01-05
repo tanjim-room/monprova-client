@@ -44,6 +44,7 @@ import AssessmentHistory from "../pages/assessment/AssessmentHistory";
 import DoctorHelp from "../pages/help/DoctorHelp";
 import Income from "../pages/doctor/Income";
 import Payout from "../pages/admin/Payout";
+import PayoutDetails from "../pages/admin/PayoutDetails";
 import Games from "../pages/games/Games";
 import BreathingExercise from "../pages/games/BreathingExercise";
 import ColourTheBlock from "../pages/games/ColourTheBlock";
@@ -71,7 +72,12 @@ export const router = createBrowserRouter([
             element: <AdminHome></AdminHome>          },
           {
             path: "payout",
-            element: <Payout></Payout>          }
+            element: <Payout></Payout>
+          },
+          {
+            path: "payout/:id",
+            element: <PayoutDetails></PayoutDetails>
+          }
         ]
       },
       {
