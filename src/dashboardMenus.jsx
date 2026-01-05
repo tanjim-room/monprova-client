@@ -15,6 +15,9 @@ import {
   FaUserShield,
   FaChartBar,
   FaCogs,
+  FaCheckCircle,
+  FaUpload,
+  FaMoneyCheckAlt,
 } from "react-icons/fa";
 
 export const patientMenuItems = [
@@ -41,11 +44,15 @@ export const doctorMenuItems = [
 ];
 
 export const adminMenuItems = [
-  { title: "হোম", link: "/adminDashboard", icon: <FaHome /> },
-  { title: "ইউজার ম্যানেজমেন্ট", link: "/adminDashboard/users", icon: <FaUsers /> },
-  { title: "ডাক্তার ম্যানেজমেন্ট", link: "/adminDashboard/doctors", icon: <FaUserMd /> },
-  { title: "রিপোর্টস", link: "/adminDashboard/reports", icon: <FaChartBar /> },
-  { title: "সিস্টেম সেটিংস", link: "/adminDashboard/settings", icon: <FaCogs /> },
-  { title: "প্রোফাইল", link: "/adminDashboard/profile", icon: <FaUserShield /> },
+  { title: "হোম", link: "/dashboardAdmin", icon: <FaHome /> },
+  { title: "ইউজার ম্যানেজমেন্ট", link: "/dashboardAdmin/users", icon: <FaUsers /> },
+  { title: "ডাক্তার ম্যানেজমেন্ট", link: "/dashboardAdmin/doctors", icon: <FaUserMd /> },
+  { title: "অ্যাপয়েন্টমেন্ট তথ্য", link: "/dashboardAdmin/appointmentInfo", icon: <FaCalendarAlt /> },
+  { title: "ভেরিফাই রিকুয়েস্ট", link: "/dashboardAdmin/verification", icon: <FaCheckCircle /> },
+  { title: "রিসোর্স", link: "/dashboardAdmin/resources", icon: <FaBookOpen /> },
+  { title: "রিসোর্স আপলোড", link: "/dashboardAdmin/uploadResource", icon: <FaUpload /> },
+  { title: "হেল্প সেকশন", link: "/dashboardAdmin/help", icon: <FaHandsHelping /> },
+  { title: "পেআউট", link: "/dashboardAdmin/payout", icon: <FaMoneyCheckAlt /> },
+  { title: "প্রোফাইল", link: "/dashboardAdmin/profile", icon: <FaUserShield /> },
   { title: "লগ আউট", link: "/", icon: <FaSignOutAlt /> ,isLogout: true},
 ];
