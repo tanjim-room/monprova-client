@@ -11,27 +11,27 @@ const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_ke
 
 const DoctorProfile = () => {
     const axiosPublic = useAxiosPublic();
-    const initialized = useRef(false); // Ref to track initialization
+    // const initialized = useRef(false); // Ref to track initialization
     const [users] = useUser();
     const [doctors] = useDoctor();
     const { user } = useAuth(); // Get the current logged-in user from useAuth
     const [isEditable, setIsEditable] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-
+    const [medium, setMedium] = useState("");
+    const [division, setDivision] = useState("")
 
     // Safely check if doctor data is available
     const doctor = users?.find(dbUser => dbUser.email === user?.email) || {};  // Default to empty object if undefined
     const doctorInfo = doctors?.find(doctor => doctor.email === user?.email) || {};  // Default to empty object if undefined
     const [selectedImage, setSelectedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState("");
-    const [medium, setMedium] = useState("");
-    const [division, setDivision] = useState("")
+    
     // Update medium from doctorInfo when available
     useEffect(() => {
         // run only once when doctorInfo arrives
-        if (doctorInfo && !initialized.current) {
-            setMedium(doctorInfo.medium ?? "");
-            initialized.current = true;
+        if (doctorInfo ) {
+            setMedium(doctorInfo.medium || "");
+            setDivision(doctorInfo.division || "");
         }
     }, [doctorInfo]);
     const handleFileChange = (e) => {
@@ -386,9 +386,10 @@ const DoctorProfile = () => {
                                 name="medium"
                                 value={medium} // Controlled value
                                 onChange={(e) => setMedium(e.target.value)} // Handle value change
+                                disabled={!isEditable}
                                 className="select select-bordered w-full border-2 p-2"
-                                // required
-                                disabled={!isEditable} // Control editability
+                                required
+                                 // Control editability
                             >
                                 <option value="">নির্বাচন করুন</option>
                                 <option value="online">অনলাইন</option>
