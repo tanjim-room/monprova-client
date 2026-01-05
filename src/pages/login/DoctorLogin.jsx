@@ -5,6 +5,7 @@ import { AuthContext } from '../../providers/AuthProvider';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
 import useUser from '../../hooks/useUser';
 import Swal from 'sweetalert2';
+import Logo from '../../components/Logo';
 
 const DoctorLogin = () => {
     const [error, setError] = useState("");
@@ -92,6 +93,9 @@ const DoctorLogin = () => {
     };
     return (
         <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 mt-8">
+                <Logo />
+            </div>
             <Helmet>
                 <title>Doctor Login</title>
             </Helmet>
