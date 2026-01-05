@@ -5,6 +5,7 @@ import { AuthContext } from '../../providers/AuthProvider';
 import { sendEmailVerification } from 'firebase/auth';
 import Swal from 'sweetalert2';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
+import Logo from '../../components/Logo';
 
 const PatientRegister = () => {
     const axiosPublic = useAxiosPublic();
@@ -102,6 +103,9 @@ const PatientRegister = () => {
 
     return (
         <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 mt-8">
+                <Logo />
+            </div>
             <Helmet>
                 <title>Patient Register</title>
             </Helmet>

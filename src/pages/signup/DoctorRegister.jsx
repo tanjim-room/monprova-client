@@ -5,9 +5,10 @@ import { AuthContext } from '../../providers/AuthProvider';
 import { sendEmailVerification } from 'firebase/auth';
 import Swal from 'sweetalert2';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
+import Logo from '../../components/Logo';
 
 const DoctorRegister = () => {
-     const axiosPublic = useAxiosPublic();
+    const axiosPublic = useAxiosPublic();
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
@@ -23,10 +24,10 @@ const DoctorRegister = () => {
                 email: result.user?.email,
                 name: result.user?.displayName,
                 role: "doctor",  // default role for a patient
-                
+
             }
 
-             const response = await axiosPublic.post('/api/register', doctor);
+            const response = await axiosPublic.post('/api/register', doctor);
             // ✅ Google users are already verified
             if (response) {
                 navigate(from, { replace: true });
@@ -102,11 +103,16 @@ const DoctorRegister = () => {
 
     return (
         <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 mt-8">
+                <Logo />
+            </div>
+
             <Helmet>
                 <title>Doctor Register</title>
             </Helmet>
             <div className="w-full max-w-6xl bg-base-100 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-2 overflow-hidden">
                 {/* Left Section */}
+
                 <div className="p-8 md:p-12 flex flex-col justify-center">
                     <h2 className="text-3xl font-bold mb-2">মনপ্রভায় স্বাগতম</h2>
                     <p className="text-sm text-gray-500 mb-8">
