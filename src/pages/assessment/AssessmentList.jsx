@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AssessmentCard from '../../components/assessment/AssessmentCard';
 import { assessmentConfig, assessmentTypes } from '../../assessmentConfig';
@@ -7,6 +7,7 @@ import useAssessment from '../../hooks/useAssessment';
 const AssessmentList = () => {
     const navigate = useNavigate();
     const { assessments, isLoading } = useAssessment();
+    const [showAlreadyTakenModal, setShowAlreadyTakenModal] = useState(false);
 
     const assessmentOptions = [
         assessmentConfig[assessmentTypes.PHQ9],
@@ -30,7 +31,7 @@ const AssessmentList = () => {
 
     const handleSelectAssessment = (assessment) => {
         if (hasTakenToday(assessment.id)) {
-            alert('আজ আপনি এই পরীক্ষাটি ইতোমধ্যেই সম্পন্ন করেছেন। অনুগ্রহ করে আগামীকাল চেষ্টা করুন।');
+            setShowAlreadyTakenModal(true);
             return;
         }
         navigate(`/dashboardPatient/assessment/${assessment.id}/form`);
@@ -38,6 +39,34 @@ const AssessmentList = () => {
 
     return (
         <div className="min-h-[850px] bg-[#E1ECFF] rounded-lg mt-16 p-10">
+            {/* Already Taken Today Modal */}
+            {showAlreadyTakenModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full transform transition-all">
+                        <div className="text-center">
+                            <div className="text-6xl mb-4">⏰</div>
+                            <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                                আপনি আজ পরীক্ষা সম্পন্ন করেছেন
+                            </h2>
+                            <p className="text-gray-600 text-lg mb-6 leading-relaxed">
+                                আজ আপনি এই পরীক্ষাটি ইতোমধ্যেই সম্পন্ন করেছেন। অনুগ্রহ করে আগামীকাল চেষ্টা করুন।
+                            </p>
+                            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-6 border border-blue-200">
+                                <p className="text-sm text-gray-700">
+                                    💡 <span className="font-semibold">পরামর্শ:</span> আপনার পূর্বের ফলাফল দেখুন এবং আপনার অগ্রগতি ট্র্যাক করুন
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setShowAlreadyTakenModal(false)}
+                                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition shadow-lg hover:shadow-xl"
+                            >
+                                বুঝেছি
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="max-w-4xl mx-auto">
                 <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
                     মানসিক স্বাস্থ্য মূল্যায়ন

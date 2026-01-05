@@ -27,7 +27,16 @@ const PrescriptionCard = ({ prescription }) => {
           ডাক্তারঃ {prescription?.doctorName || "N/A"}
         </h3>
         <p><strong>রোগীঃ</strong> {prescription?.patientName || "N/A"}</p>
-        <p><strong>তারিখঃ</strong> {prescription?.date}</p>
+        <p><strong>তারিখঃ {new Date(prescription?.updatedAt || prescription?.createdAt).toLocaleString('default', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        })
+        }</strong></p>
 
         <div className="mt-4">
           <button onClick={handleDownload} className="w-full border-2 rounded-md flex justify-center items-center bg-primary-color text-white">

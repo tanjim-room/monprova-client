@@ -34,17 +34,17 @@ const AppointmentPatient = () => {
                 <div className="flex gap-4 mb-8">
                     <button
                         className={`px-4 py-2 rounded-lg font-semibold ${activeTab === "upcoming"
-                            ? "bg-[#1998df] text-white"
-                            : "bg-white text-[#1998df] border border-[#1998df]"
+                            ? "bg-secondary-color text-white"
+                            : "bg-white text-secondary-color border border-secondary-color"
                             }`}
                         onClick={() => setActiveTab("upcoming")}
                     >
-                        আসছে
+                        আপকামিং
                     </button>
                     <button
                         className={`px-4 py-2 rounded-lg font-semibold ${activeTab === "completed"
-                            ? "bg-[#76a4f1] text-white"
-                            : "bg-white text-[#76a4f1] border border-[#76a4f1]"
+                            ? "bg-secondary-color text-white"
+                            : "bg-white text-secondary-color border border-secondary-color"
                             }`}
                         onClick={() => setActiveTab("completed")}
                     >
