@@ -387,7 +387,7 @@ const DoctorProfile = () => {
                                 value={medium} // Controlled value
                                 onChange={(e) => setMedium(e.target.value)} // Handle value change
                                 className="select select-bordered w-full border-2 p-2"
-                                required
+                                // required
                                 disabled={!isEditable} // Control editability
                             >
                                 <option value="">নির্বাচন করুন</option>
