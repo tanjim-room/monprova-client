@@ -156,13 +156,13 @@ const PatientRegister = () => {
 
                     <div className="divider">অথবা</div>
 
-                    <button onClick={handleGoogleLogin} className="btn btn-outline w-full flex gap-2 bg-primary-color text-white py-4">
+                    <button onClick={handleGoogleLogin} className="btn btn-outline w-full flex gap-2 border-2 border-primary-color text-gray-700 py-4">
                         <img
                             src="https://www.svgrepo.com/show/475656/google-color.svg"
                             alt="Google"
                             className="w-5 h-5 "
                         />
-                        গুগল দিয়ে সাইন আপ করুন
+                        গুগল দিয়ে শুরু করুন
                     </button>
 
                     <p className="text-sm text-center mt-6">
