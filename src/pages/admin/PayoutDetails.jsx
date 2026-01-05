@@ -3,11 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import BackButton from "../../components/BackButton";
 import Swal from "sweetalert2";
+import useUser from "../../hooks/useUser";
 
 const PayoutDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
+ 
   const [payout, setPayout] = useState(null);
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
