@@ -60,18 +60,42 @@ const Payout = () => {
     }
   };
 
-  const calculateDoctorEarnings = async (doctorId, doctorName) => {
+  const calculateDoctorEarnings = async (doctorId, doctorName, doctor) => {
     try {
-      // Fetch completed appointments for this doctor
-      const appointmentsResponse = await axiosSecure.get(`/api/appointments?doctorName=${doctorName}&status=completed`);
-      const completedAppointments = appointmentsResponse.data;
+      console.log("Calculating earnings for:", { doctorId, doctorName, doctor });
+      
+      // Fetch ALL appointments first to see the structure
+      const allAppointmentsResponse = await axiosSecure.get(`/api/appointments`);
+      const allAppointments = allAppointmentsResponse.data;
+      
+      console.log("Total appointments in database:", allAppointments.length);
+      console.log("Sample appointment:", allAppointments[0]);
+      
+      // Filter appointments by doctorID (matching the field name used in appointment creation)
+      const doctorAppointments = allAppointments.filter(app => app.doctorID === doctorId);
+      
+      console.log("Doctor appointments found:", doctorAppointments.length);
+      console.log("Doctor appointments:", doctorAppointments);
+      
+      // Filter completed appointments (state field is used, not status)
+      const completedAppointments = doctorAppointments.filter(app => 
+        app.state === 'completed' || 
+        app.state === 'Completed'
+      );
+      
+      console.log("Completed appointments found:", completedAppointments.length);
+      console.log("Completed appointments data:", completedAppointments);
+      
       setCompletedAppointments(completedAppointments);
 
-      // Calculate total income (before charge)
-      const totalIncome = completedAppointments.reduce(
-        (sum, app) => sum + (Number(app.consultationFee) || 0),
-        0
-      );
+      // Get doctor's consultation fee
+      const doctorFee = Number(doctor?.consultationFee) || 0;
+      console.log("Doctor's consultation fee from profile:", doctorFee);
+
+      // Calculate total income (before charge) - use doctor's fee × number of appointments
+      const totalIncome = completedAppointments.length * doctorFee;
+
+      console.log("Total income calculated:", totalIncome, "=", completedAppointments.length, "appointments ×", doctorFee);
 
       // Calculate net income (after 20% charge)
       const netIncome = totalIncome * 0.8;
@@ -79,6 +103,9 @@ const Payout = () => {
       // Fetch existing payouts for this doctor
       const payoutsResponse = await axiosSecure.get(`/api/payouts?doctorId=${doctorId}`);
       const doctorPayouts = payoutsResponse.data;
+      
+      console.log("Previous payouts found:", doctorPayouts.length);
+      
       setDoctorPayoutHistory(doctorPayouts);
       
       const totalReceived = doctorPayouts.reduce(
@@ -87,6 +114,8 @@ const Payout = () => {
       );
 
       const pending = netIncome - totalReceived;
+
+      console.log("Earnings summary:", { totalIncome, netIncome, totalReceived, pending });
 
       setDoctorEarnings({
         totalIncome,
@@ -137,7 +166,7 @@ const Payout = () => {
       accountNumber: doctor.phone || ""
     });
     
-    await calculateDoctorEarnings(doctor._id, doctor.fullName);
+    await calculateDoctorEarnings(doctor._id, doctor.fullName, doctor);
   };
 
   const handleResetDoctor = () => {
@@ -372,16 +401,22 @@ const Payout = () => {
                       </tr>
                     ) : (
                       completedAppointments.map((app, index) => {
-                        const fee = Number(app.consultationFee) || 0;
+                        const fee = Number(selectedDoctor?.consultationFee) || 0;
                         const charge = fee * 0.2;
                         const doctorAmount = fee * 0.8;
+                        const appointmentDate = app.createdAt || app.date || new Date().toISOString();
+                        const displayDate = new Date(appointmentDate).toLocaleDateString('bn-BD', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        });
                         return (
-                          <tr key={index} className="border-b hover:bg-blue-50">
-                            <td className="px-4 py-2">{app.date}</td>
-                            <td className="px-4 py-2">{app.name}</td>
-                            <td className="px-4 py-2">৳ {fee}</td>
-                            <td className="px-4 py-2 text-red-600">৳ {charge}</td>
-                            <td className="px-4 py-2 text-green-600 font-semibold">৳ {doctorAmount}</td>
+                          <tr key={app._id || index} className="border-b hover:bg-blue-50">
+                            <td className="px-4 py-2">{displayDate}</td>
+                            <td className="px-4 py-2">{app.patientName || app.name || 'N/A'}</td>
+                            <td className="px-4 py-2">৳ {fee.toFixed(2)}</td>
+                            <td className="px-4 py-2 text-red-600">৳ {charge.toFixed(2)}</td>
+                            <td className="px-4 py-2 text-green-600 font-semibold">৳ {doctorAmount.toFixed(2)}</td>
                           </tr>
                         );
                       })
