@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import Swal from 'sweetalert2';
 import useUser from '../../hooks/useUser';
@@ -11,22 +11,27 @@ const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_ke
 
 const DoctorProfile = () => {
     const axiosPublic = useAxiosPublic();
+    const initialized = useRef(false); // Ref to track initialization
     const [users] = useUser();
     const [doctors] = useDoctor();
     const { user } = useAuth(); // Get the current logged-in user from useAuth
     const [isEditable, setIsEditable] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [medium, setMedium] = useState(""); // State for medium
+
 
     // Safely check if doctor data is available
     const doctor = users?.find(dbUser => dbUser.email === user?.email) || {};  // Default to empty object if undefined
     const doctorInfo = doctors?.find(doctor => doctor.email === user?.email) || {};  // Default to empty object if undefined
     const [selectedImage, setSelectedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState("");
+    const [medium, setMedium] = useState("");
+    const [division, setDivision] = useState("")
     // Update medium from doctorInfo when available
     useEffect(() => {
-        if (doctorInfo) {
-            setMedium(doctorInfo.medium || "");  // Set medium from the doctorInfo, default to empty string if undefined
+        // run only once when doctorInfo arrives
+        if (doctorInfo && !initialized.current) {
+            setMedium(doctorInfo.medium ?? "");
+            initialized.current = true;
         }
     }, [doctorInfo]);
     const handleFileChange = (e) => {
@@ -36,6 +41,9 @@ const DoctorProfile = () => {
         setSelectedImage(file);
         setImagePreview(URL.createObjectURL(file));
     };
+
+     // State for medium
+    
     // ✅ Save profile with double confirmation
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -50,9 +58,11 @@ const DoctorProfile = () => {
         const regNo = form.regNo.value.trim();
         const institute = form.institute.value.trim();
         const chamber = form.chamber.value.trim();
+        const division = form.division.value;
         const yearsOfExperience = form.yearsOfExperience.value;
         const mediumValue = form.medium.value;
         const mobileNo = form.mobileNo.value.trim();
+        const nidNo = form.nidNo.value.trim();
         const bkashAccount = form.bkashAccount.value.trim();
         const shortBio = form.shortBio.value.trim();
 
@@ -117,10 +127,12 @@ const DoctorProfile = () => {
                 regNo,
                 institute,
                 chamber,
+                division,
                 yearsOfExperience,
                 medium: mediumValue,
                 mobileNo,
                 bkashAccount,
+                nidNo,
                 shortBio,
                 status: "",
             };
@@ -330,6 +342,31 @@ const DoctorProfile = () => {
                             />
                         </div>
                     </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label className="label-text font-semibold mb-1">বিভাগ</label>
+                            <select
+                                name="division"
+                                value={division} // Controlled value
+                                onChange={(e) => setDivision(e.target.value)} // Handle value change
+                                className="select select-bordered w-full border-2 p-2"
+                                required
+                                disabled={!isEditable} // Control editability
+                            >
+                                <option value="">নির্বাচন করুন</option>
+                                <option value="Dhaka">ঢাকা</option>
+                                <option value="Chattogram">চট্টগ্রাম</option>
+                                <option value="Rajshahi">রাজশাহী</option>
+                                <option value="Khulna">খুলনা</option>
+                                <option value="Barishal">বরিশাল</option>
+                                <option value="Sylhet">সিলেট</option>
+                                <option value="Mymensingh">ময়মনসিংহ</option>
+                                <option value="Rangpur">রংপুর</option>
+                            </select>
+                        </div>
+                    </div>
+                
 
                     {/* Medium Selection */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">

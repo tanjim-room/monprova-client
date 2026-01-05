@@ -4,13 +4,13 @@ import docImg from '../../assets/doc1.jpg';
 import Button from '../Button';
 const DoctorCard = ({ doctor }) => {
    
-    const { _id, name, designation, expertise, consultationFee, img, yearsOfExperience, degrees, regNo, institute } = doctor;
+    const { _id, name, designation, expertise, consultationFee, img, yearsOfExperience, degrees, regNo, institute, image } = doctor;
     return (
         <div className="card bg-base-100 shadow-md border-1">
             <figure>
                 <img
                     className="object-cover w-full h-96"
-                    src={img || "https://i.ibb.co.com/zVcdq9PG/1704193051.jpg"} 
+                    src={image || "https://i.ibb.co.com/zVcdq9PG/1704193051.jpg"} 
                     alt="Shoes" />
             </figure>
             <div className="card-body">
