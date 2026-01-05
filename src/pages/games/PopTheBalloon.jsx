@@ -20,7 +20,7 @@ const PopTheBalloon = () => {
             color: balloonColors[Math.floor(Math.random() * balloonColors.length)],
             face: balloonFaces[Math.floor(Math.random() * balloonFaces.length)],
             size: Math.floor(Math.random() * 20) + 65,
-            speed: Math.random() * 3 + 2,
+            speed: 6,
             sway: Math.random() * 2 + 1.5,
         };
         return newBalloon;
@@ -32,12 +32,12 @@ const PopTheBalloon = () => {
         const balloonInterval = setInterval(() => {
             setBalloons(prev => {
                 const filtered = prev.filter(b => b.id);
-                if (filtered.length < 8) {
+                if (filtered.length < 15) {
                     return [...filtered, createBalloon()];
                 }
                 return filtered;
             });
-        }, 1000);
+        }, 700);
 
         return () => clearInterval(balloonInterval);
     }, [isPlaying, createBalloon]);
@@ -157,7 +157,7 @@ const PopTheBalloon = () => {
                             className="absolute cursor-pointer transition-all duration-100 hover:scale-110"
                             style={{
                                 left: balloon.left,
-                                bottom: '-60px',
+                                bottom: '-120px',
                                 animation: `floatUp ${balloon.speed}s linear, sway ${balloon.sway}s ease-in-out infinite`,
                                 width: `${balloon.size}px`,
                                 height: `${Math.round(balloon.size * 1.25)}px`,
@@ -210,7 +210,7 @@ const PopTheBalloon = () => {
             <style jsx>{`
                 @keyframes floatUp {
                     from {
-                        bottom: -60px;
+                        bottom: -120px;
                     }
                     to {
                         bottom: 100%;
