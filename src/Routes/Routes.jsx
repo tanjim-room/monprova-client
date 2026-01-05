@@ -42,6 +42,8 @@ import AssessmentForm from "../pages/assessment/AssessmentForm";
 import AssessmentResults from "../pages/assessment/AssessmentResults";
 import AssessmentHistory from "../pages/assessment/AssessmentHistory";
 import DoctorHelp from "../pages/help/DoctorHelp";
+import Income from "../pages/doctor/Income";
+import Payout from "../pages/admin/Payout";
 
 export const router = createBrowserRouter([
   {
@@ -62,8 +64,10 @@ export const router = createBrowserRouter([
         children: [
           {
             path:"/dashboardAdmin",
-            element: <AdminHome></AdminHome>
-          }
+            element: <AdminHome></AdminHome>          },
+          {
+            path: "payout",
+            element: <Payout></Payout>          }
         ]
       },
       {
@@ -229,6 +233,10 @@ export const router = createBrowserRouter([
       {
         path: "prescriptionDetails/:appointmentId",
         element: <PrescriptionDetails></PrescriptionDetails>
+      },
+      {
+        path: "income",
+        element: <Income></Income>
       }
     ]
   },
