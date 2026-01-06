@@ -83,23 +83,23 @@ const DoctorDetails = () => {
 
 
           {/* Doctor Details */}
-          <div className="flex gap-6 mt-4 mx-6 space-y- mb-8">
+          <div className="flex gap-6 mt-6 mx-6 space-y- mb-8">
 
             <div className='w-1/2'>
               {/* Workplace */}
               <div className="text-start mb-4">
                 <p className="text-xl font-bold primary-color py-1">কর্মক্ষেত্র</p>
-                <div className="bg-[#EFF7FE] rounded-md px-2 py-2 border">
-                  <span className='p-2'>{designation}</span>
-                  <p className="font-semibold p-2">{institute}</p>
+                <div className="rounded-md px-0 py-2">
+                  <span className='py-2'>{designation}</span>
+                  <p className="font-semibold py-2">{institute}</p>
                 </div>
               </div>
 
               {/* Specialities */}
               <div className="text-start mb-4">
                 <p className="text-xl font-bold primary-color py-1">দক্ষতাসমূহ</p>
-                <div className="bg-[#EFF7FE] rounded-md px-2 py-2 border">
-                 <p className='p-2 className="text-sm font-semibold'>
+                <div className="rounded-md px-0 py-2">
+                 <p className='py-2 className="text-sm'>
                    {/* {specialities.map((sp, idx) => (
                     <span key={idx} className="text-sm font-semibold">{sp}, </span>
                   ))} */}
@@ -111,18 +111,18 @@ const DoctorDetails = () => {
               {/* Experience */}
               <div className="text-start">
                 <p className="text-xl font-bold primary-color py-1">অভিজ্ঞতা</p>
-                <div className="bg-[#EFF7FE] rounded-md px-2 py-2 border">
-                  <span className="font-semibold p-2">{yearsOfExperience} বছর</span>
+                <div className="rounded-md px-0 py-2">
+                  <span className="font-semibold py-2">{yearsOfExperience} বছর</span>
                 </div>
               </div>
             </div>
 
-            <div className='w-1/2'>
+            <div className='w-1/2 border-l-2 pl-4'>
               {/* Bio */}
               <div className="text-start">
                 <p className="text-xl font-bold primary-color py-1">সংক্ষিপ্ত পরিচয়</p>
-                <div className="bg-[#EFF7FE] rounded-md px-2 py-2 border">
-                  <p className="font-normal text-justify leading-loose p-2">{shortBio}</p>
+                <div className=" px-0 p-2 ">
+                  <p className="font-normal text-justify leading-loose py-2">{shortBio}</p>
                 </div>
               </div>
 
