@@ -56,6 +56,7 @@ import Games from "../pages/games/Games";
 import BreathingExercise from "../pages/games/BreathingExercise";
 import ColourTheBlock from "../pages/games/ColourTheBlock";
 import PopTheBalloon from "../pages/games/PopTheBalloon";
+import AppointmentBookings from "../pages/appointment/AppointmentBookings";
 
 export const router = createBrowserRouter([
   {
@@ -184,6 +185,10 @@ export const router = createBrowserRouter([
       {
         path: "appointment",
         element: <AppointmentPatient></AppointmentPatient>
+      },
+      {
+        path: "bookings",
+        element: <AppointmentBookings></AppointmentBookings>
       },
       {
         path: "appointmentDetailsPatient/:appointmentId",

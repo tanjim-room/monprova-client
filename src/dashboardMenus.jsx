@@ -24,6 +24,7 @@ export const patientMenuItems = [
   { title: "হোম", link: "/dashboardPatient", icon: <FaHome /> },
   { title: "অ্যাসেসমেন্ট", link: "/dashboardPatient/assessment", icon: <FaClipboardList /> },
   { title: "অ্যাপয়েন্টমেন্ট", link: "/dashboardPatient/appointment", icon: <FaCalendarAlt /> },
+  { title: "বুকিংস", link: "/dashboardPatient/bookings", icon: <FaCalendarAlt /> },
   { title: "ডাক্তার", link: "/dashboardPatient/doctorList", icon: <FaUserMd /> },
   { title: "প্রেসক্রিপশন", link: "/dashboardPatient/prescription", icon: <FaFilePrescription /> },
   { title: "রিসোর্স", link: "/dashboardPatient/resources", icon: <FaBookOpen /> },
