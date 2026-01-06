@@ -17,6 +17,7 @@ import PatientHome from "../pages/patient/PatientHome";
 import DoctorDashboardLayout from "../layouts/DoctorDashboardLayout";
 import AdminDashboardLayout from "../layouts/AdminDashboardLayout";
 import AdminHome from "../pages/admin/AdminHome";
+import AdminResources from "../pages/admin/AdminResources";
 import DoctorHome from "../pages/doctor/DoctorHome";
 import Resources from "../pages/resources/Resources";
 import BlogList from "../pages/blogList/BlogList";
@@ -44,10 +45,18 @@ import AssessmentHistory from "../pages/assessment/AssessmentHistory";
 import DoctorHelp from "../pages/help/DoctorHelp";
 import Income from "../pages/doctor/Income";
 import Payout from "../pages/admin/Payout";
+import PayoutDetails from "../pages/admin/PayoutDetails";
+import UserManagement from "../pages/admin/UserManagement";
+import UserDetails from "../pages/admin/UserDetails";
+import DoctorManagement from "../pages/admin/DoctorManagement";
+import AdminDoctorDetails from "../pages/admin/DoctorDetails";
+import AppointmentInfo from "../pages/admin/AppointmentInfo";
+import AppointmentDetails from "../pages/admin/AppointmentDetails";
 import Games from "../pages/games/Games";
 import BreathingExercise from "../pages/games/BreathingExercise";
 import ColourTheBlock from "../pages/games/ColourTheBlock";
 import PopTheBalloon from "../pages/games/PopTheBalloon";
+import AppointmentBookings from "../pages/appointment/AppointmentBookings";
 
 export const router = createBrowserRouter([
   {
@@ -70,8 +79,39 @@ export const router = createBrowserRouter([
             path:"/dashboardAdmin",
             element: <AdminHome></AdminHome>          },
           {
+            path: "users",
+            element: <UserManagement></UserManagement>
+          },
+          {
+            path: "users/:id",
+            element: <UserDetails></UserDetails>
+          },
+          {
+            path: "doctors",
+            element: <DoctorManagement></DoctorManagement>
+          },
+          {
+            path: "doctors/:id",
+            element: <AdminDoctorDetails></AdminDoctorDetails>
+          },
+          {
+            path: "appointmentInfo",
+            element: <AppointmentInfo></AppointmentInfo>
+          },
+          {
+            path: "appointments/:id",
+            element: <AppointmentDetails></AppointmentDetails>
+            path: "resources",
+            element: <AdminResources></AdminResources>
+          },
+          {
             path: "payout",
-            element: <Payout></Payout>          }
+            element: <Payout></Payout>
+          },
+          {
+            path: "payout/:id",
+            element: <PayoutDetails></PayoutDetails>
+          }
         ]
       },
       {
@@ -145,6 +185,10 @@ export const router = createBrowserRouter([
       {
         path: "appointment",
         element: <AppointmentPatient></AppointmentPatient>
+      },
+      {
+        path: "bookings",
+        element: <AppointmentBookings></AppointmentBookings>
       },
       {
         path: "appointmentDetailsPatient/:appointmentId",

@@ -48,7 +48,7 @@ const BlogDetails = () => {
                     </button>
                 </div>
                 <div className="mb-8 ">
-                    <img src={blog.img} alt="" className="h-[480px] w-full object-cover rounded-md" />
+                    <img src={blog.thumbnail || ""} alt="" className="h-[480px] w-full object-cover rounded-md" />
                 </div>
                 <h1 className="text-3xl font-bold mb-6 primary-color text-left">{blog.title}</h1>
                 <div className="badge badge-error text-white bg-tertiary-color my-0">{blog.category}</div>

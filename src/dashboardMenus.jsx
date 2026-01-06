@@ -24,6 +24,7 @@ export const patientMenuItems = [
   { title: "হোম", link: "/dashboardPatient", icon: <FaHome /> },
   { title: "অ্যাসেসমেন্ট", link: "/dashboardPatient/assessment", icon: <FaClipboardList /> },
   { title: "অ্যাপয়েন্টমেন্ট", link: "/dashboardPatient/appointment", icon: <FaCalendarAlt /> },
+  { title: "বুকিংস", link: "/dashboardPatient/bookings", icon: <FaCalendarAlt /> },
   { title: "ডাক্তার", link: "/dashboardPatient/doctorList", icon: <FaUserMd /> },
   { title: "প্রেসক্রিপশন", link: "/dashboardPatient/prescription", icon: <FaFilePrescription /> },
   { title: "রিসোর্স", link: "/dashboardPatient/resources", icon: <FaBookOpen /> },
@@ -50,7 +51,7 @@ export const adminMenuItems = [
   { title: "অ্যাপয়েন্টমেন্ট তথ্য", link: "/dashboardAdmin/appointmentInfo", icon: <FaCalendarAlt /> },
   { title: "ভেরিফাই রিকুয়েস্ট", link: "/dashboardAdmin/verification", icon: <FaCheckCircle /> },
   { title: "রিসোর্স", link: "/dashboardAdmin/resources", icon: <FaBookOpen /> },
-  { title: "রিসোর্স আপলোড", link: "/dashboardAdmin/uploadResource", icon: <FaUpload /> },
+
   { title: "হেল্প সেকশন", link: "/dashboardAdmin/help", icon: <FaHandsHelping /> },
   { title: "পেআউট", link: "/dashboardAdmin/payout", icon: <FaMoneyCheckAlt /> },
   { title: "প্রোফাইল", link: "/dashboardAdmin/profile", icon: <FaUserShield /> },

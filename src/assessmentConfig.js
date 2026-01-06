@@ -25,101 +25,101 @@ export const assessmentConfig = {
         questions: [
             {
                 id: 1,
-                text: 'আমি অনেক সময় দুঃখিত বোধ করি বা আশাহীন বোধ করি',
-                bangla: 'আমি অনেক সময় দুঃখিত বোধ করি বা আশাহীন বোধ করি',
+                text: 'কখনো কখনো আপনি কি দুঃখিত বা হতাশ বোধ করেন, যেন সবকিছু বৃথা?',
+                bangla: 'কখনো কখনো আপনি কি দুঃখিত বা হতাশ বোধ করেন, যেন সবকিছু বৃথা?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, কখনোই না', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, কিছু দিন', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, বেশিরভাগ দিন', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, প্রায় সবসময়', text: 'Nearly every day' }
                 ]
             },
             {
                 id: 2,
-                text: 'আমি সাধারণত যে কাজগুলি আনন্দদায়ক ছিল তা করতে আগ্রহ হারিয়েছি',
-                bangla: 'আমি সাধারণত যে কাজগুলি আনন্দদায়ক ছিল তা করতে আগ্রহ হারিয়েছি',
+                text: 'যেসব কাজ বা শখ আগে আপনাকে খুশি করত, সেখানে এখন মজা পাচ্ছেন না?',
+                bangla: 'যেসব কাজ বা শখ আগে আপনাকে খুশি করত, সেখানে এখন মজা পাচ্ছেন না?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, তারা এখনও মজাদার', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, কিছু সময়', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, বেশিরভাগ সময়', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, আর কোনো মজা নেই', text: 'Nearly every day' }
                 ]
             },
             {
                 id: 3,
-                text: 'আমার ঘুমে সমস্যা রয়েছে (ঘুমাতে পারি না বা খুব বেশি ঘুমাই)',
-                bangla: 'আমার ঘুমে সমস্যা রয়েছে (ঘুমাতে পারি না বা খুব বেশি ঘুমাই)',
+                text: 'রাতে ঘুমাতে কি সমস্যা হচ্ছে (খুব দেরিতে ঘুমানো বা বেশি ঘুমানো)?',
+                bangla: 'রাতে ঘুমাতে কি সমস্যা হচ্ছে (খুব দেরিতে ঘুমানো বা বেশি ঘুমানো)?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, ভালো ঘুমাই', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, মাঝেমধ্যে', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, বেশিরভাগ রাত', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, প্রতি রাত', text: 'Nearly every day' }
                 ]
             },
             {
                 id: 4,
-                text: 'আমি ক্লান্ত বা শক্তিহীন বোধ করি',
-                bangla: 'আমি ক্লান্ত বা শক্তিহীন বোধ করি',
+                text: 'আপনি কি বেশিরভাগ সময় খুব দুর্বল বা পরিশ্রান্ত বোধ করছেন?',
+                bangla: 'আপনি কি বেশিরভাগ সময় খুব দুর্বল বা পরিশ্রান্ত বোধ করছেন?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, আমি শক্তিশালী বোধ করি', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, কিছু দিন', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, বেশিরভাগ দিন', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, সবসময়', text: 'Nearly every day' }
                 ]
             },
             {
                 id: 5,
-                text: 'আমার ক্ষুধার পরিবর্তন হয়েছে (খুব কম বা খুব বেশি খাই)',
-                bangla: 'আমার ক্ষুধার পরিবর্তন হয়েছে (খুব কম বা খুব বেশি খাই)',
+                text: 'আপনার খাওয়ার অভ্যাস পরিবর্তিত হয়েছে (খুব কম খাওয়া বা বেশি খাওয়া)?',
+                bangla: 'আপনার খাওয়ার অভ্যাস পরিবর্তিত হয়েছে (খুব কম খাওয়া বা বেশি খাওয়া)?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, স্বাভাবিক আছে', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, কিছুটা পরিবর্তন', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, যথেষ্ট পরিবর্তন', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, অনেক পরিবর্তন', text: 'Nearly every day' }
                 ]
             },
             {
                 id: 6,
-                text: 'আমি খারাপ মনে করি আমার নিজেকে - অথবা আমি একটি ব্যর্থতা অনুভব করি',
-                bangla: 'আমি খারাপ মনে করি আমার নিজেকে - অথবা আমি একটি ব্যর্থতা অনুভব করি',
+                text: 'আপনি কি নিজের প্রতি খারাপ বোধ করেন বা নিজেকে ব্যর্থ মনে করেন?',
+                bangla: 'আপনি কি নিজের প্রতি খারাপ বোধ করেন বা নিজেকে ব্যর্থ মনে করেন?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, আমি ঠিক আছি', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, মাঝেমধ্যে', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, বেশিরভাগ সময়', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, সবসময়', text: 'Nearly every day' }
                 ]
             },
             {
                 id: 7,
-                text: 'আমার মনোযোগ দিতে বা বিষয়গুলিতে মনোনিবেশ করতে অসুবিধা হয়',
-                bangla: 'আমার মনোযোগ দিতে বা বিষয়গুলিতে মনোনিবেশ করতে অসুবিধা হয়',
+                text: 'কাজ বা পড়াশোনায় ফোকাস রাখতে কি কষ্ট হচ্ছে?',
+                bangla: 'কাজ বা পড়াশোনায় ফোকাস রাখতে কি কষ্ট হচ্ছে?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, ফোকাস ভালো', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, কিছু সমস্যা', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, গুরুতর সমস্যা', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, খুব কঠিন', text: 'Nearly every day' }
                 ]
             },
             {
                 id: 8,
-                text: 'আমি এতটাই ধীরগতিতে চলি যে অন্যরা লক্ষ্য করেছে অথবা আমি কথায় কথায় দ্রুত কথা বলি',
-                bangla: 'আমি এতটাই ধীরগতিতে চলি যে অন্যরা লক্ষ্য করেছে অথবা আমি কথায় কথায় দ্রুত কথা বলি',
+                text: 'আপনি কি খুবই ধীর গতিতে চলেন বা কথা বলেন অথবা উল্টো বিষয়টি - অন্যরা এটি লক্ষ্য করেছে?',
+                bangla: 'আপনি কি খুবই ধীর গতিতে চলেন বা কথা বলেন অথবা উল্টো বিষয়টি - অন্যরা এটি লক্ষ্য করেছে?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, স্বাভাবিক', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, মাঝেমধ্যে', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, বেশিরভাগ সময়', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, সবসময়', text: 'Nearly every day' }
                 ]
             },
             {
                 id: 9,
-                text: 'আমি নিজেকে আহত করার চিন্তা বা মনে করি যে মরা ভাল হত',
-                bangla: 'আমি নিজেকে আহত করার চিন্তা বা মনে করি যে মরা ভাল হত',
+                text: 'কখনো কখনো আপনি কি নিজেকে আঘাত করার কথা চিন্তা করেন বা মরে যাওয়া ভালো হত এমন ভাবনা আসে?',
+                bangla: 'কখনো কখনো আপনি কি নিজেকে আঘাত করার কথা চিন্তা করেন বা মরে যাওয়া ভালো হত এমন ভাবনা আসে?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, কখনোই না', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, মাঝেমধ্যে', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, বেশিরভাগ সময়', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, অনেক', text: 'Nearly every day' }
                 ]
             }
         ]
@@ -141,79 +141,79 @@ export const assessmentConfig = {
         questions: [
             {
                 id: 1,
-                text: 'আমি উদ্বেগী, উদ্বিগ্ন বা উত্সাহী অনুভব করি',
-                bangla: 'আমি উদ্বেগী, উদ্বিগ্ন বা উত্সাহী অনুভব করি',
+                text: 'আপনি কি নিজেকে অস্থির, চিন্তিত বা তৎপর বোধ করেন?',
+                bangla: 'আপনি কি নিজেকে অস্থির, চিন্তিত বা তৎপর বোধ করেন?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, একদমই না', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, কিছু দিন', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, বেশিরভাগ দিন', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, প্রায় প্রতিদিন', text: 'Nearly every day' }
                 ]
             },
             {
                 id: 2,
-                text: 'আমি উদ্বেগ নিয়ন্ত্রণ করতে পারি না',
-                bangla: 'আমি উদ্বেগ নিয়ন্ত্রণ করতে পারি না',
+                text: 'আপনার চিন্তা কি আপনার নিয়ন্ত্রণের বাইরে চলে যায় এবং থামাতে পারেন না?',
+                bangla: 'আপনার চিন্তা কি আপনার নিয়ন্ত্রণের বাইরে চলে যায় এবং থামাতে পারেন না?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, আমি নিয়ন্ত্রণ করতে পারি', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, মাঝেমধ্যে', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, বেশিরভাগ সময়', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, সবসময়', text: 'Nearly every day' }
                 ]
             },
             {
                 id: 3,
-                text: 'আমি খুব বেশি জিনিস সম্পর্কে চিন্তা করি',
-                bangla: 'আমি খুব বেশি জিনিস সম্পর্কে চিন্তা করি',
+                text: 'আপনি কি অনেক কিছু নিয়ে চিন্তা করেন - কাজ, পরিবার, অর্থ, স্বাস্থ্য ইত্যাদি?',
+                bangla: 'আপনি কি অনেক কিছু নিয়ে চিন্তা করেন - কাজ, পরিবার, অর্থ, স্বাস্থ্য ইত্যাদি?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, স্বাভাবিক', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, কিছু বিষয়', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, অনেক বিষয়', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, সবকিছুই', text: 'Nearly every day' }
                 ]
             },
             {
                 id: 4,
-                text: 'আমি শান্ত থাকতে অসুবিধা হয়',
-                bangla: 'আমি শান্ত থাকতে অসুবিধা হয়',
+                text: 'শান্ত হয়ে বসতে বা থাকতে আপনার কি কঠিন লাগে?',
+                bangla: 'শান্ত হয়ে বসতে বা থাকতে আপনার কি কঠিন লাগে?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, আমি শান্ত থাকতে পারি', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, মাঝেমধ্যে', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, বেশিরভাগ সময়', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, সবসময়', text: 'Nearly every day' }
                 ]
             },
             {
                 id: 5,
-                text: 'আমি এত বিরক্ত বা তৃপ্তিহীন যে এটি কঠিন হয়ে যায়',
-                bangla: 'আমি এত বিরক্ত বা তৃপ্তিহীন যে এটি কঠিন হয়ে যায়',
+                text: 'আপনি কি এত বিচলিত বা অধীর বোধ করেন যে আপনার জন্য কিছু করা কঠিন হয়ে যায়?',
+                bangla: 'আপনি কি এত বিচলিত বা অধীর বোধ করেন যে আপনার জন্য কিছু করা কঠিন হয়ে যায়?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, কোনো সমস্যা নেই', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, মাঝেমধ্যে', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, যথেষ্ট', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, খুবই', text: 'Nearly every day' }
                 ]
             },
             {
                 id: 6,
-                text: 'আমি ভয় পাই যে কিছু ভয়ঙ্কর ঘটবে',
-                bangla: 'আমি ভয় পাই যে কিছু ভয়ঙ্কর ঘটবে',
+                text: 'আপনি কি ভয় পান যে খারাপ কিছু ঘটতে যাচ্ছে?',
+                bangla: 'আপনি কি ভয় পান যে খারাপ কিছু ঘটতে যাচ্ছে?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, আমি নিরাপদ বোধ করি', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, কখনো কখনো', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, বেশিরভাগ সময়', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, সবসময়', text: 'Nearly every day' }
                 ]
             },
             {
                 id: 7,
-                text: 'আমার শ্বাসকষ্ট হয় বা আমার বুক দ্রুত স্পন্দিত হয়',
-                bangla: 'আমার শ্বাসকষ্ট হয় বা আমার বুক দ্রুত স্পন্দিত হয়',
+                text: 'আপনি কি শ্বাসকষ্ট, বুক দ্রুত স্পন্দন বা শারীরিক অস্বস্তি অনুভব করেন?',
+                bangla: 'আপনি কি শ্বাসকষ্ট, বুক দ্রুত স্পন্দন বা শারীরিক অস্বস্তি অনুভব করেন?',
                 options: [
-                    { value: 0, label: 'কখনও নয়', text: 'Not at all' },
-                    { value: 1, label: 'কয়েক দিন', text: 'Several days' },
-                    { value: 2, label: 'অর্ধেক দিন বা তার বেশি', text: 'More than half the days' },
-                    { value: 3, label: 'প্রায় প্রতিদিন', text: 'Nearly every day' }
+                    { value: 0, label: 'না, কখনোই না', text: 'Not at all' },
+                    { value: 1, label: 'হ্যাঁ, মাঝেমধ্যে', text: 'Several days' },
+                    { value: 2, label: 'হ্যাঁ, বেশিরভাগ দিন', text: 'More than half the days' },
+                    { value: 3, label: 'হ্যাঁ, ঘন ঘন', text: 'Nearly every day' }
                 ]
             }
         ]
@@ -234,122 +234,122 @@ export const assessmentConfig = {
         questions: [
             {
                 id: 1,
-                text: 'গত মাসে, আপনি কতবার অপ্রত্যাশিত কিছুর কারণে চাপ অনুভব করেছেন?',
-                bangla: 'গত মাসে, আপনি কতবার অপ্রত্যাশিত কিছুর কারণে চাপ অনুভব করেছেন?',
+                text: 'গত মাসে, হঠাৎ কিছু ঘটে গেছে যা আপনাকে মানসিক চাপে ফেলেছে?',
+                bangla: 'গত মাসে, হঠাৎ কিছু ঘটে গেছে যা আপনাকে মানসিক চাপে ফেলেছে?',
                 options: [
-                    { value: 0, label: 'কখনও', text: 'Never' },
-                    { value: 1, label: 'প্রায় কখনও', text: 'Almost never' },
-                    { value: 2, label: 'মাঝে মাঝে', text: 'Sometimes' },
-                    { value: 3, label: 'বেশ বেশি', text: 'Fairly often' },
-                    { value: 4, label: 'খুব বেশি', text: 'Very often' }
+                    { value: 0, label: 'না, কখনোই না', text: 'Never' },
+                    { value: 1, label: 'খুব কমই হয়েছে', text: 'Almost never' },
+                    { value: 2, label: 'হ্যাঁ, মাঝেমধ্যে', text: 'Sometimes' },
+                    { value: 3, label: 'হ্যাঁ, বেশ কয়েকবার', text: 'Fairly often' },
+                    { value: 4, label: 'হ্যাঁ, প্রায়ই হয়েছে', text: 'Very often' }
                 ]
             },
             {
                 id: 2,
-                text: 'আপনি আপনার জীবন পরিচালনা করতে অক্ষম বোধ করেছেন?',
-                bangla: 'আপনি আপনার জীবন পরিচালনা করতে অক্ষম বোধ করেছেন?',
+                text: 'জীবনের গুরুত্বপূর্ণ দায়িত্বগুলো সামলাতে গিয়ে কি অসহায় বোধ করেছেন?',
+                bangla: 'জীবনের গুরুত্বপূর্ণ দায়িত্বগুলো সামলাতে গিয়ে কি অসহায় বোধ করেছেন?',
                 options: [
-                    { value: 0, label: 'কখনও', text: 'Never' },
-                    { value: 1, label: 'প্রায় কখনও', text: 'Almost never' },
-                    { value: 2, label: 'মাঝে মাঝে', text: 'Sometimes' },
-                    { value: 3, label: 'বেশ বেশি', text: 'Fairly often' },
-                    { value: 4, label: 'খুব বেশি', text: 'Very often' }
+                    { value: 0, label: 'না, সবকিছু নিয়ন্ত্রণে আছে', text: 'Never' },
+                    { value: 1, label: 'না, খুব কমই এমন হয়েছে', text: 'Almost never' },
+                    { value: 2, label: 'হ্যাঁ, মাঝেমধ্যে', text: 'Sometimes' },
+                    { value: 3, label: 'হ্যাঁ, বেশিরভাগ সময়', text: 'Fairly often' },
+                    { value: 4, label: 'হ্যাঁ, প্রায়শই', text: 'Very often' }
                 ]
             },
             {
                 id: 3,
-                text: 'আপনি নার্ভাস এবং স্ট্রেস করেছেন?',
-                bangla: 'আপনি নার্ভাস এবং স্ট্রেস করেছেন?',
+                text: 'কি মনের মধ্যে অস্থিরতা আর মানসিক চাপ অনুভব করেছেন?',
+                bangla: 'কি মনের মধ্যে অস্থিরতা আর মানসিক চাপ অনুভব করেছেন?',
                 options: [
-                    { value: 0, label: 'কখনও', text: 'Never' },
-                    { value: 1, label: 'প্রায় কখনও', text: 'Almost never' },
-                    { value: 2, label: 'মাঝে মাঝে', text: 'Sometimes' },
-                    { value: 3, label: 'বেশ বেশি', text: 'Fairly often' },
-                    { value: 4, label: 'খুব বেশি', text: 'Very often' }
+                    { value: 0, label: 'না, শান্ত ছিলাম', text: 'Never' },
+                    { value: 1, label: 'খুব সামান্য', text: 'Almost never' },
+                    { value: 2, label: 'হ্যাঁ, কিছুটা', text: 'Sometimes' },
+                    { value: 3, label: 'হ্যাঁ, বেশ অস্থির ছিলাম', text: 'Fairly often' },
+                    { value: 4, label: 'হ্যাঁ, খুব বেশি', text: 'Very often' }
                 ]
             },
             {
                 id: 4,
-                text: 'আপনি আত্মবিশ্বাস বোধ করেছেন আপনার ক্ষমতা কিছু করার?',
-                bangla: 'আপনি আত্মবিশ্বাস বোধ করেছেন আপনার ক্ষমতা কিছু করার?',
+                text: 'নিজের সমস্যা সমাধানের ক্ষমতার উপর কি আত্মবিশ্বাস ছিল?',
+                bangla: 'নিজের সমস্যা সমাধানের ক্ষমতার উপর কি আত্মবিশ্বাস ছিল?',
                 options: [
-                    { value: 4, label: 'কখনও', text: 'Never' },
-                    { value: 3, label: 'প্রায় কখনও', text: 'Almost never' },
-                    { value: 2, label: 'মাঝে মাঝে', text: 'Sometimes' },
-                    { value: 1, label: 'বেশ বেশি', text: 'Fairly often' },
-                    { value: 0, label: 'খুব বেশি', text: 'Very often' }
+                    { value: 4, label: 'হ্যাঁ, পুরোপুরি ছিল', text: 'Never' },
+                    { value: 3, label: 'হ্যাঁ, বেশিরভাগ সময়ই', text: 'Almost never' },
+                    { value: 2, label: 'মাঝামাঝি ছিল', text: 'Sometimes' },
+                    { value: 1, label: 'না, খুব কমই', text: 'Fairly often' },
+                    { value: 0, label: 'না, একদমই ছিল না', text: 'Very often' }
                 ]
             },
             {
                 id: 5,
-                text: 'জিনিসগুলি আপনার নিয়ন্ত্রণে চলছে?',
-                bangla: 'জিনিসগুলি আপনার নিয়ন্ত্রণে চলছে?',
+                text: 'মনে হয়েছে যে জীবনের ঘটনাগুলো আপনার হাতের মুঠোয় আছে?',
+                bangla: 'মনে হয়েছে যে জীবনের ঘটনাগুলো আপনার হাতের মুঠোয় আছে?',
                 options: [
-                    { value: 4, label: 'কখনও', text: 'Never' },
-                    { value: 3, label: 'প্রায় কখনও', text: 'Almost never' },
-                    { value: 2, label: 'মাঝে মাঝে', text: 'Sometimes' },
-                    { value: 1, label: 'বেশ বেশি', text: 'Fairly often' },
-                    { value: 0, label: 'খুব বেশি', text: 'Very often' }
+                    { value: 4, label: 'হ্যাঁ, সবকিছুই নিয়ন্ত্রণে', text: 'Never' },
+                    { value: 3, label: 'হ্যাঁ, অধিকাংশ সময়', text: 'Almost never' },
+                    { value: 2, label: 'মাঝামাঝি অবস্থা', text: 'Sometimes' },
+                    { value: 1, label: 'না, খুব কম সময়', text: 'Fairly often' },
+                    { value: 0, label: 'না, একেবারেই না', text: 'Very often' }
                 ]
             },
             {
                 id: 6,
-                text: 'আপনি যে সব কিছু সম্পন্ন করতে হবে তা মোকাবেলা করতে পেরেছিলেন?',
-                bangla: 'আপনি যে সব কিছু সম্পন্ন করতে হবে তা মোকাবেলা করতে পেরেছিলেন?',
+                text: 'আপনার প্রয়োজনীয় সব কাজ কি ঠিকমতো সামলাতে পেরেছেন?',
+                bangla: 'আপনার প্রয়োজনীয় সব কাজ কি ঠিকমতো সামলাতে পেরেছেন?',
                 options: [
-                    { value: 4, label: 'কখনও', text: 'Never' },
-                    { value: 3, label: 'প্রায় কখনও', text: 'Almost never' },
-                    { value: 2, label: 'মাঝে মাঝে', text: 'Sometimes' },
-                    { value: 1, label: 'বেশ বেশি', text: 'Fairly often' },
-                    { value: 0, label: 'খুব বেশি', text: 'Very often' }
+                    { value: 4, label: 'হ্যাঁ, সবকিছুই পেরেছি', text: 'Never' },
+                    { value: 3, label: 'হ্যাঁ, প্রায় সবই', text: 'Almost never' },
+                    { value: 2, label: 'কিছু কিছু কাজ', text: 'Sometimes' },
+                    { value: 1, label: 'না, খুব কমই', text: 'Fairly often' },
+                    { value: 0, label: 'না, কিছুই পারিনি', text: 'Very often' }
                 ]
             },
             {
                 id: 7,
-                text: 'আপনি নিয়ন্ত্রণ ছাড়াই রাগ অনুভব করেছেন?',
-                bangla: 'আপনি নিয়ন্ত্রণ ছাড়াই রাগ অনুভব করেছেন?',
+                text: 'রাগ এতটা বেড়ে গেছে যে নিজেকে সামলাতে কঠিন হয়েছে?',
+                bangla: 'রাগ এতটা বেড়ে গেছে যে নিজেকে সামলাতে কঠিন হয়েছে?',
                 options: [
-                    { value: 0, label: 'কখনও', text: 'Never' },
-                    { value: 1, label: 'প্রায় কখনও', text: 'Almost never' },
-                    { value: 2, label: 'মাঝে মাঝে', text: 'Sometimes' },
-                    { value: 3, label: 'বেশ বেশি', text: 'Fairly often' },
-                    { value: 4, label: 'খুব বেশি', text: 'Very often' }
+                    { value: 0, label: 'না, রাগ সামলাতে পেরেছি', text: 'Never' },
+                    { value: 1, label: 'না, প্রায় সামলাতে পেরেছি', text: 'Almost never' },
+                    { value: 2, label: 'হ্যাঁ, মাঝেমধ্যে', text: 'Sometimes' },
+                    { value: 3, label: 'হ্যাঁ, বেশ কয়েকবার', text: 'Fairly often' },
+                    { value: 4, label: 'হ্যাঁ, প্রায়ই হয়েছে', text: 'Very often' }
                 ]
             },
             {
                 id: 8,
-                text: 'আপনি সমস্যাগুলি মোকাবেলা করতে বেশি পেয়েছেন?',
-                bangla: 'আপনি সমস্যাগুলি মোকাবেলা করতে বেশি পেয়েছেন?',
+                text: 'সমস্যার সমাধান খুঁজে পেতে কি অনেক কষ্ট হয়েছে?',
+                bangla: 'সমস্যার সমাধান খুঁজে পেতে কি অনেক কষ্ট হয়েছে?',
                 options: [
-                    { value: 0, label: 'কখনও', text: 'Never' },
-                    { value: 1, label: 'প্রায় কখনও', text: 'Almost never' },
-                    { value: 2, label: 'মাঝে মাঝে', text: 'Sometimes' },
-                    { value: 3, label: 'বেশ বেশি', text: 'Fairly often' },
-                    { value: 4, label: 'খুব বেশি', text: 'Very often' }
+                    { value: 0, label: 'না, সহজেই পেরেছি', text: 'Never' },
+                    { value: 1, label: 'না, তেমন কষ্ট হয়নি', text: 'Almost never' },
+                    { value: 2, label: 'হ্যাঁ, কিছুটা কষ্ট', text: 'Sometimes' },
+                    { value: 3, label: 'হ্যাঁ, যথেষ্ট কষ্ট', text: 'Fairly often' },
+                    { value: 4, label: 'হ্যাঁ, খুব কষ্ট হয়েছে', text: 'Very often' }
                 ]
             },
             {
                 id: 9,
-                text: 'আপনি অভিভূত বোধ করেছেন?',
-                bangla: 'আপনি অভিভূত বোধ করেছেন?',
+                text: 'চাপের ভারে এতটাই ভারাক্রান্ত বোধ করেছেন যে কিছু করতে পারেননি?',
+                bangla: 'চাপের ভারে এতটাই ভারাক্রান্ত বোধ করেছেন যে কিছু করতে পারেননি?',
                 options: [
-                    { value: 0, label: 'কখনও', text: 'Never' },
-                    { value: 1, label: 'প্রায় কখনও', text: 'Almost never' },
-                    { value: 2, label: 'মাঝে মাঝে', text: 'Sometimes' },
-                    { value: 3, label: 'বেশ বেশি', text: 'Fairly often' },
-                    { value: 4, label: 'খুব বেশি', text: 'Very often' }
+                    { value: 0, label: 'না, আমি সক্রিয় ছিলাম', text: 'Never' },
+                    { value: 1, label: 'না, খুব কমই', text: 'Almost never' },
+                    { value: 2, label: 'হ্যাঁ, মাঝেমধ্যে', text: 'Sometimes' },
+                    { value: 3, label: 'হ্যাঁ, প্রায়ই', text: 'Fairly often' },
+                    { value: 4, label: 'হ্যাঁ, খুবই বেশি', text: 'Very often' }
                 ]
             },
             {
                 id: 10,
-                text: 'আপনি এমন অনুভব করেছেন যে আপনি শিঙ্গা নিয়ন্ত্রণ করতে পারছেন না?',
-                bangla: 'আপনি এমন অনুভব করেছেন যে আপনি চাপ নিয়ন্ত্রণ করতে পারছেন না?',
+                text: 'মনে হয়েছে যে মানসিক চাপ আপনার নিয়ন্ত্রণের বাইরে চলে গেছে?',
+                bangla: 'মনে হয়েছে যে মানসিক চাপ আপনার নিয়ন্ত্রণের বাইরে চলে গেছে?',
                 options: [
-                    { value: 0, label: 'কখনও', text: 'Never' },
-                    { value: 1, label: 'প্রায় কখনও', text: 'Almost never' },
-                    { value: 2, label: 'মাঝে মাঝে', text: 'Sometimes' },
-                    { value: 3, label: 'বেশ বেশি', text: 'Fairly often' },
-                    { value: 4, label: 'খুব বেশি', text: 'Very often' }
+                    { value: 0, label: 'না, সব নিয়ন্ত্রণে ছিল', text: 'Never' },
+                    { value: 1, label: 'না, প্রায় নিয়ন্ত্রণে ছিল', text: 'Almost never' },
+                    { value: 2, label: 'হ্যাঁ, কখনো কখনো', text: 'Sometimes' },
+                    { value: 3, label: 'হ্যাঁ, বেশিরভাগ সময়', text: 'Fairly often' },
+                    { value: 4, label: 'হ্যাঁ, প্রায় সবসময়', text: 'Very often' }
                 ]
             }
         ]
