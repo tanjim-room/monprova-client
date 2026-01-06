@@ -19,12 +19,27 @@ const DoctorProfile = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [medium, setMedium] = useState("");
     const [division, setDivision] = useState("")
+    const [verificationStatus, setVerificationStatus] = useState("not-verified");
+    const [isVerifying, setIsVerifying] = useState(false);
 
     // Safely check if doctor data is available
     const doctor = users?.find(dbUser => dbUser.email === user?.email) || {};  // Default to empty object if undefined
     const doctorInfo = doctors?.find(doctor => doctor.email === user?.email) || {};  // Default to empty object if undefined
     const [selectedImage, setSelectedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState("");
+
+    // NID Image States
+    const [nidFrontImage, setNidFrontImage] = useState(null);
+    const [nidFrontPreview, setNidFrontPreview] = useState("");
+    const [nidBackImage, setNidBackImage] = useState(null);
+    const [nidBackPreview, setNidBackPreview] = useState("");
+    const [deletedNidFront, setDeletedNidFront] = useState(false);
+    const [deletedNidBack, setDeletedNidBack] = useState(false);
+
+    // Certificates States
+    const [certificateFields, setCertificateFields] = useState([{ id: 1, file: null, preview: "" }]);
+    const [nextCertId, setNextCertId] = useState(2);
+    const [deletedCertificates, setDeletedCertificates] = useState([]);
     
     // Update medium from doctorInfo when available
     useEffect(() => {
@@ -32,6 +47,7 @@ const DoctorProfile = () => {
         if (doctorInfo ) {
             setMedium(doctorInfo.medium || "");
             setDivision(doctorInfo.division || "");
+            setVerificationStatus(doctorInfo.verificationStatus || "not-verified");
         }
     }, [doctorInfo]);
     const handleFileChange = (e) => {
@@ -40,6 +56,174 @@ const DoctorProfile = () => {
 
         setSelectedImage(file);
         setImagePreview(URL.createObjectURL(file));
+    };
+
+    // NID Front Image Handler
+    const handleNidFrontChange = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setNidFrontImage(file);
+        setNidFrontPreview(URL.createObjectURL(file));
+    };
+
+    // NID Back Image Handler
+    const handleNidBackChange = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setNidBackImage(file);
+        setNidBackPreview(URL.createObjectURL(file));
+    };
+
+    // Certificate Image Handler
+    const handleCertificateChange = (e, fieldId) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setCertificateFields(certificateFields.map(field =>
+            field.id === fieldId
+                ? { ...field, file, preview: URL.createObjectURL(file) }
+                : field
+        ));
+    };
+
+    // Add New Certificate Field
+    const addCertificateField = () => {
+        const totalCerts = certificateFields.length + (doctorInfo?.certificates?.length || 0);
+        if (totalCerts >= 10) {
+            Swal.fire({
+                icon: "error",
+                title: "ত্রুটি!",
+                text: "সর্বোচ্চ ১০টি সার্টিফিকেট আপলোড করতে পারবেন।",
+                confirmButtonText: "ঠিক আছে",
+                confirmButtonColor: "#2563eb",
+            });
+            return;
+        }
+
+        setCertificateFields([
+            ...certificateFields,
+            { id: nextCertId, file: null, preview: "" }
+        ]);
+        setNextCertId(nextCertId + 1);
+    };
+
+    // Remove Certificate Field
+    const removeCertificateField = (fieldId) => {
+        if (certificateFields.length === 1) {
+            Swal.fire({
+                icon: "warning",
+                title: "সতর্কতা!",
+                text: "অন্তত একটি সার্টিফিকেট ফিল্ড প্রয়োজন।",
+                confirmButtonText: "ঠিক আছে",
+                confirmButtonColor: "#2563eb",
+            });
+            return;
+        }
+
+        setCertificateFields(certificateFields.filter(field => field.id !== fieldId));
+    };
+
+    // Delete NID Front Image
+    const deleteNidFront = () => {
+        const confirmDelete = Swal.fire({
+            title: 'এনআইডি সামনের দিক মুছবেন?',
+            text: 'এটি মুছে দেওয়া হবে।',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'হ্যাঁ, মুছুন',
+            cancelButtonText: 'বাতিল',
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#6b7280',
+        });
+        confirmDelete.then((result) => {
+            if (result.isConfirmed) {
+                setDeletedNidFront(true);
+                setNidFrontPreview("");
+                setNidFrontImage(null);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'মুছা হয়েছে!',
+                    text: 'এনআইডি সামনের দিক মুছে দেওয়া হয়েছে।',
+                    confirmButtonText: 'ঠিক আছে',
+                    confirmButtonColor: '#2563eb',
+                });
+            }
+        });
+    };
+
+    // Delete NID Back Image
+    const deleteNidBack = () => {
+        const confirmDelete = Swal.fire({
+            title: 'এনআইডি পিছনের দিক মুছবেন?',
+            text: 'এটি মুছে দেওয়া হবে।',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'হ্যাঁ, মুছুন',
+            cancelButtonText: 'বাতিল',
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#6b7280',
+        });
+        confirmDelete.then((result) => {
+            if (result.isConfirmed) {
+                setDeletedNidBack(true);
+                setNidBackPreview("");
+                setNidBackImage(null);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'মুছা হয়েছে!',
+                    text: 'এনআইডি পিছনের দিক মুছে দেওয়া হয়েছে।',
+                    confirmButtonText: 'ঠিক আছে',
+                    confirmButtonColor: '#2563eb',
+                });
+            }
+        });
+    };
+
+    // Delete Certificate from existing
+    const deleteExistingCertificate = (index) => {
+        const confirmDelete = Swal.fire({
+            title: 'সার্টিফিকেট মুছবেন?',
+            text: 'এটি মুছে দেওয়া হবে।',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'হ্যাঁ, মুছুন',
+            cancelButtonText: 'বাতিল',
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#6b7280',
+        });
+        confirmDelete.then((result) => {
+            if (result.isConfirmed) {
+                setDeletedCertificates([...deletedCertificates, index]);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'মুছা হয়েছে!',
+                    text: 'সার্টিফিকেট মুছে দেওয়া হয়েছে।',
+                    confirmButtonText: 'ঠিক আছে',
+                    confirmButtonColor: '#2563eb',
+                });
+            }
+        });
+    };
+
+    // Delete new NID Front preview (before save)
+    const deleteNewNidFront = () => {
+        setNidFrontImage(null);
+        setNidFrontPreview("");
+    };
+
+    // Delete new NID Back preview (before save)
+    const deleteNewNidBack = () => {
+        setNidBackImage(null);
+        setNidBackPreview("");
+    };
+
+    // Delete new certificate field preview (before save)
+    const deleteNewCertificatePreview = (fieldId) => {
+        setCertificateFields(certificateFields.map(field =>
+            field.id === fieldId
+                ? { ...field, file: null, preview: "" }
+                : field
+        ));
     };
 
      // State for medium
@@ -98,6 +282,15 @@ const DoctorProfile = () => {
 
             // ✅ Image upload only if new image selected
             let imageUrl = doctorInfo?.image || doctor?.image || "";
+            let nidFrontUrl = deletedNidFront ? "" : (doctorInfo?.nidFront || "");
+            let nidBackUrl = deletedNidBack ? "" : (doctorInfo?.nidBack || "");
+            let certificateUrls = [];
+
+            // Handle deleted certificates
+            if (doctorInfo?.certificates && doctorInfo.certificates.length > 0) {
+                certificateUrls = doctorInfo.certificates.filter((_, index) => !deletedCertificates.includes(index));
+            }
+
             Swal.fire({
                 title: "সেভ হচ্ছে...",
                 text: "অনুগ্রহ করে অপেক্ষা করুন",
@@ -114,6 +307,49 @@ const DoctorProfile = () => {
                 });
 
                 imageUrl = imgbbRes?.data?.data?.display_url || imageUrl;
+            }
+
+            // Upload NID Front
+            if (nidFrontImage) {
+                const imageData = new FormData();
+                imageData.append("image", nidFrontImage);
+
+                const imgbbRes = await axiosPublic.post(image_hosting_api, imageData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+
+                nidFrontUrl = imgbbRes?.data?.data?.display_url || nidFrontUrl;
+            }
+
+            // Upload NID Back
+            if (nidBackImage) {
+                const imageData = new FormData();
+                imageData.append("image", nidBackImage);
+
+                const imgbbRes = await axiosPublic.post(image_hosting_api, imageData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+
+                nidBackUrl = imgbbRes?.data?.data?.display_url || nidBackUrl;
+            }
+
+            // Upload Certificates
+            if (certificateFields.some(field => field.file)) {
+                const newCertUrls = [];
+                for (const field of certificateFields) {
+                    if (field.file) {
+                        const imageData = new FormData();
+                        imageData.append("image", field.file);
+
+                        const imgbbRes = await axiosPublic.post(image_hosting_api, imageData, {
+                            headers: { "Content-Type": "multipart/form-data" },
+                        });
+
+                        newCertUrls.push(imgbbRes?.data?.data?.display_url);
+                    }
+                }
+                // Append new certificates to existing (after filtering deleted ones)
+                certificateUrls = [...certificateUrls, ...newCertUrls];
             }
 
             const doctorData = {
@@ -133,8 +369,11 @@ const DoctorProfile = () => {
                 mobileNo,
                 bkashAccount,
                 nidNo,
+                nidFront: nidFrontUrl,
+                nidBack: nidBackUrl,
+                certificates: certificateUrls,
                 shortBio,
-                status: "",
+                // Don't send verificationStatus - preserve it in database
             };
 
             await axiosPublic.post("/api/doctor", doctorData);
@@ -152,6 +391,15 @@ const DoctorProfile = () => {
             // optional reset preview after save
             setSelectedImage(null);
             setImagePreview("");
+            setNidFrontImage(null);
+            setNidFrontPreview("");
+            setNidBackImage(null);
+            setNidBackPreview("");
+            setDeletedNidFront(false);
+            setDeletedNidBack(false);
+            setCertificateFields([{ id: 1, file: null, preview: "" }]);
+            setNextCertId(2);
+            setDeletedCertificates([]);
         } catch (err) {
             console.error("Error saving profile:", err);
 
@@ -176,6 +424,27 @@ const DoctorProfile = () => {
     };
 
     const handleVerify = async () => {
+        // Check if already pending or verified
+        if (verificationStatus === 'pending') {
+            return Swal.fire({
+                icon: 'info',
+                title: 'ইতিমধ্যে পাঠানো হয়েছে',
+                text: 'আপনার ভেরিফিকেশন রিকুয়েস্ট ইতিমধ্যে অপেক্ষমাণ রয়েছে।',
+                confirmButtonText: 'ঠিক আছে',
+                confirmButtonColor: '#2563eb',
+            });
+        }
+
+        if (verificationStatus === 'verified') {
+            return Swal.fire({
+                icon: 'success',
+                title: 'ইতিমধ্যে ভেরিফাইড',
+                text: 'আপনার প্রোফাইল ইতিমধ্যে ভেরিফাইড হয়ে গেছে।',
+                confirmButtonText: 'ঠিক আছে',
+                confirmButtonColor: '#16a34a',
+            });
+        }
+
         const confirmVerify = await Swal.fire({
             title: 'প্রোফাইল ভেরিফিকেশন',
             text: 'আপনি কি প্রোফাইল ভেরিফিকেশনের জন্য পাঠাতে চান?',
@@ -188,13 +457,47 @@ const DoctorProfile = () => {
         });
 
         if (confirmVerify.isConfirmed) {
-            Swal.fire({
-                icon: 'info',
-                title: 'ভেরিফিকেশন প্রক্রিয়া শুরু হয়েছে!',
-                text: 'আপনার প্রোফাইল ভেরিফিকেশনের জন্য পাঠানো হয়েছে।',
-                confirmButtonText: 'ঠিক আছে',
-                confirmButtonColor: '#2563eb',
-            });
+            try {
+                setIsVerifying(true);
+                
+                Swal.fire({
+                    title: 'পাঠানো হচ্ছে...',
+                    text: 'অনুগ্রহ করে অপেক্ষা করুন',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading(),
+                });
+
+                const response = await axiosPublic.post('/api/doctors/request-verification', {
+                    email: user?.email
+                });
+
+                if (response.data.success) {
+                    // Update local state
+                    setVerificationStatus('pending');
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'সফলভাবে পাঠানো হয়েছে!',
+                        text: 'আপনার প্রোফাইল ভেরিফিকেশনের জন্য পাঠানো হয়েছে। অ্যাডমিন অনুমোদনের জন্য অপেক্ষা করুন।',
+                        confirmButtonText: 'ঠিক আছে',
+                        confirmButtonColor: '#16a34a',
+                    });
+                } else {
+                    throw new Error(response.data.message || 'Failed to submit request');
+                }
+            } catch (error) {
+                console.error('Error submitting verification request:', error);
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ত্রুটি!',
+                    text: error.response?.data?.message || 'ভেরিফিকেশন রিকুয়েস্ট পাঠানো যায়নি। অনুগ্রহ করে আপনার প্রোফাইল সম্পূর্ণ করুন এবং পুনরায় চেষ্টা করুন।',
+                    confirmButtonText: 'ঠিক আছে',
+                    confirmButtonColor: '#ef4444',
+                });
+            } finally {
+                setIsVerifying(false);
+            }
         }
     };
 
@@ -351,7 +654,7 @@ const DoctorProfile = () => {
                                 value={division} // Controlled value
                                 onChange={(e) => setDivision(e.target.value)} // Handle value change
                                 className="select select-bordered w-full border-2 p-2"
-                                required
+                                
                                 disabled={!isEditable} // Control editability
                             >
                                 <option value="">নির্বাচন করুন</option>
@@ -388,7 +691,7 @@ const DoctorProfile = () => {
                                 onChange={(e) => setMedium(e.target.value)} // Handle value change
                                 disabled={!isEditable}
                                 className="select select-bordered w-full border-2 p-2"
-                                required
+                                
                                  // Control editability
                             >
                                 <option value="">নির্বাচন করুন</option>
@@ -454,8 +757,201 @@ const DoctorProfile = () => {
                             rows="3"
                         ></textarea>
                     </div>
-                    {/* Buttons */}
+                    {/* NID Upload Section */}
+                    <div className="mb-6 border-t-2 pt-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-4">এনআইডি আপলোড করুন</h3>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            {/* NID Front */}
+                            <div>
+                                <label className="label-text font-semibold mb-2 block">এনআইডির সামনের দিক</label>
+                                {nidFrontPreview ? (
+                                    <div className="mb-2 relative">
+                                        <img src={nidFrontPreview} alt="NID Front Preview" className="w-full h-40 object-cover rounded border-2" />
+                                        {isEditable && (
+                                            <button
+                                                type="button"
+                                                onClick={deleteNewNidFront}
+                                                className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                                            >
+                                                <X size={16} />
+                                            </button>
+                                        )}
+                                    </div>
+                                ) : doctorInfo?.nidFront && !deletedNidFront ? (
+                                    <div className="mb-2 relative">
+                                        <img src={doctorInfo.nidFront} alt="NID Front" className="w-full h-40 object-cover rounded border-2" />
+                                        {isEditable && (
+                                            <button
+                                                type="button"
+                                                onClick={deleteNidFront}
+                                                className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                                            >
+                                                <X size={16} />
+                                            </button>
+                                        )}
+                                    </div>
+                                ) : null}
+                                <input
+                                    type="file"
+                                    onChange={handleNidFrontChange}
+                                    accept="image/*"
+                                    disabled={!isEditable}
+                                    className="file-input file-input-bordered w-full border-2"
+                                />
+                            </div>
+
+                            {/* NID Back */}
+                            <div>
+                                <label className="label-text font-semibold mb-2 block">এনআইডির পিছনের দিক</label>
+                                {nidBackPreview ? (
+                                    <div className="mb-2 relative">
+                                        <img src={nidBackPreview} alt="NID Back Preview" className="w-full h-40 object-cover rounded border-2" />
+                                        {isEditable && (
+                                            <button
+                                                type="button"
+                                                onClick={deleteNewNidBack}
+                                                className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                                            >
+                                                <X size={16} />
+                                            </button>
+                                        )}
+                                    </div>
+                                ) : doctorInfo?.nidBack && !deletedNidBack ? (
+                                    <div className="mb-2 relative">
+                                        <img src={doctorInfo.nidBack} alt="NID Back" className="w-full h-40 object-cover rounded border-2" />
+                                        {isEditable && (
+                                            <button
+                                                type="button"
+                                                onClick={deleteNidBack}
+                                                className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                                            >
+                                                <X size={16} />
+                                            </button>
+                                        )}
+                                    </div>
+                                ) : null}
+                                <input
+                                    type="file"
+                                    onChange={handleNidBackChange}
+                                    accept="image/*"
+                                    disabled={!isEditable}
+                                    className="file-input file-input-bordered w-full border-2"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Certificates Upload Section */}
+                    <div className="mb-6 border-t-2 pt-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">সার্টিফিকেট আপলোড করুন</h3>
+                        <p className="text-sm text-gray-600 mb-4">সর্বনিম্ন ১টি এবং সর্বোচ্চ ১০টি সার্টিফিকেট আপলোড করুন</p>
+
+                        {/* Display existing certificates */}
+                        {doctorInfo?.certificates && doctorInfo.certificates.length > 0 && (
+                            <div className="mb-6">
+                                <h4 className="text-sm font-semibold text-gray-700 mb-3">বিদ্যমান সার্টিফিকেট</h4>
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    {doctorInfo.certificates.map((cert, index) => (
+                                        !deletedCertificates.includes(index) && (
+                                            <div key={`existing-${index}`} className="relative">
+                                                <img src={cert} alt={`Certificate ${index + 1}`} className="w-full h-32 object-cover rounded border-2" />
+                                                <span className="absolute bottom-1 left-1 bg-green-500 text-white px-2 py-1 rounded text-xs">বিদ্যমান</span>
+                                                {isEditable && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => deleteExistingCertificate(index)}
+                                                        className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600"
+                                                    >
+                                                        <X size={16} />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Certificate Upload Fields */}
+                        <div className="space-y-4">
+                            {certificateFields.map((field, index) => (
+                                <div key={field.id} className="border-2 rounded-lg p-4 bg-gray-50">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <label className="label-text font-semibold">সার্টিফিকেট {index + 1}</label>
+                                        {certificateFields.length > 1 && (
+                                            <button
+                                                type="button"
+                                                onClick={() => removeCertificateField(field.id)}
+                                                className="btn btn-sm btn-error text-white flex gap-1"
+                                                disabled={!isEditable}
+                                            >
+                                                <X size={16} />
+                                                সরান
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* Image Preview */}
+                                    {field.preview && (
+                                        <div className="mb-3 relative">
+                                            <img src={field.preview} alt={`Preview ${field.id}`} className="w-full h-40 object-cover rounded border-2" />
+                                            {isEditable && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => deleteNewCertificatePreview(field.id)}
+                                                    className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                                                >
+                                                    <X size={16} />
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* File Input */}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleCertificateChange(e, field.id)}
+                                        disabled={!isEditable}
+                                        className="file-input file-input-bordered w-full border-2"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Add Button */}
+                        {isEditable && (certificateFields.length + (doctorInfo?.certificates?.length || 0) < 10) && (
+                            <button
+                                type="button"
+                                onClick={addCertificateField}
+                                className="mt-4 btn btn-outline btn-primary w-full"
+                            >
+                                + আরও সার্টিফিকেট যোগ করুন
+                            </button>
+                        )}
+
+                        {/* Certificate Counter */}
+                        <p className="text-xs text-gray-500 mt-3">
+                            মোট: ({certificateFields.filter(f => f.file).length + (doctorInfo?.certificates?.length || 0)}/10) আপলোড করা হয়েছে
+                        </p>
+                    </div>                    {/* Buttons */}
                     <div className="space-y-3">
+                        {/* Show verification status badge */}
+                        {verificationStatus && (
+                            <div className={`text-center py-2 px-4 rounded-lg font-semibold ${
+                                verificationStatus === 'verified' ? 'bg-green-100 text-green-700' :
+                                verificationStatus === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                verificationStatus === 'rejected' ? 'bg-red-100 text-red-700' :
+                                'bg-gray-100 text-gray-700'
+                            }`}>
+                                {verificationStatus === 'verified' ? '✓ আপনার প্রোফাইল ভেরিফাইড' :
+                                 verificationStatus === 'pending' ? '⏳ ভেরিফিকেশন অপেক্ষমাণ' :
+                                 verificationStatus === 'rejected' ? '✗ ভেরিফিকেশন প্রত্যাখ্যাত' :
+                                 '○ প্রোফাইল ভেরিফাইড নয়'}
+                            </div>
+                        )}
+                        
                         {!isEditable ? (
                             <>
                                 <button
@@ -466,13 +962,19 @@ const DoctorProfile = () => {
                                     প্রোফাইল এডিট করুন
                                 </button>
 
-                                <button
-                                    type="button"
-                                    onClick={handleVerify}
-                                    className="btn btn-outline w-full flex gap-2 bg-primary-color text-white py-4"
-                                >
-                                    প্রোফাইল ভেরিফাই করুন
-                                </button>
+                                {/* Show verify button only if not already verified or pending */}
+                                {verificationStatus !== 'verified' && verificationStatus !== 'pending' && (
+                                    <button
+                                        type="button"
+                                        onClick={handleVerify}
+                                        disabled={isVerifying}
+                                        className="btn btn-outline w-full flex gap-2 bg-primary-color text-white py-4 disabled:opacity-50"
+                                    >
+                                        {isVerifying ? 'পাঠানো হচ্ছে...' : 
+                                         verificationStatus === 'rejected' ? 'পুনরায় ভেরিফাই করুন' : 
+                                         'প্রোফাইল ভেরিফাই করুন'}
+                                    </button>
+                                )}
                             </>
                         ) : (
                             <>
