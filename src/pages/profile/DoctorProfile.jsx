@@ -19,6 +19,8 @@ const DoctorProfile = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [medium, setMedium] = useState("");
     const [division, setDivision] = useState("")
+    const [verificationStatus, setVerificationStatus] = useState("not-verified");
+    const [isVerifying, setIsVerifying] = useState(false);
 
     // Safely check if doctor data is available
     const doctor = users?.find(dbUser => dbUser.email === user?.email) || {};  // Default to empty object if undefined
@@ -45,6 +47,7 @@ const DoctorProfile = () => {
         if (doctorInfo ) {
             setMedium(doctorInfo.medium || "");
             setDivision(doctorInfo.division || "");
+            setVerificationStatus(doctorInfo.verificationStatus || "not-verified");
         }
     }, [doctorInfo]);
     const handleFileChange = (e) => {
@@ -370,7 +373,7 @@ const DoctorProfile = () => {
                 nidBack: nidBackUrl,
                 certificates: certificateUrls,
                 shortBio,
-                status: "",
+                // Don't send verificationStatus - preserve it in database
             };
 
             await axiosPublic.post("/api/doctor", doctorData);
@@ -421,6 +424,27 @@ const DoctorProfile = () => {
     };
 
     const handleVerify = async () => {
+        // Check if already pending or verified
+        if (verificationStatus === 'pending') {
+            return Swal.fire({
+                icon: 'info',
+                title: 'ইতিমধ্যে পাঠানো হয়েছে',
+                text: 'আপনার ভেরিফিকেশন রিকুয়েস্ট ইতিমধ্যে অপেক্ষমাণ রয়েছে।',
+                confirmButtonText: 'ঠিক আছে',
+                confirmButtonColor: '#2563eb',
+            });
+        }
+
+        if (verificationStatus === 'verified') {
+            return Swal.fire({
+                icon: 'success',
+                title: 'ইতিমধ্যে ভেরিফাইড',
+                text: 'আপনার প্রোফাইল ইতিমধ্যে ভেরিফাইড হয়ে গেছে।',
+                confirmButtonText: 'ঠিক আছে',
+                confirmButtonColor: '#16a34a',
+            });
+        }
+
         const confirmVerify = await Swal.fire({
             title: 'প্রোফাইল ভেরিফিকেশন',
             text: 'আপনি কি প্রোফাইল ভেরিফিকেশনের জন্য পাঠাতে চান?',
@@ -433,13 +457,47 @@ const DoctorProfile = () => {
         });
 
         if (confirmVerify.isConfirmed) {
-            Swal.fire({
-                icon: 'info',
-                title: 'ভেরিফিকেশন প্রক্রিয়া শুরু হয়েছে!',
-                text: 'আপনার প্রোফাইল ভেরিফিকেশনের জন্য পাঠানো হয়েছে।',
-                confirmButtonText: 'ঠিক আছে',
-                confirmButtonColor: '#2563eb',
-            });
+            try {
+                setIsVerifying(true);
+                
+                Swal.fire({
+                    title: 'পাঠানো হচ্ছে...',
+                    text: 'অনুগ্রহ করে অপেক্ষা করুন',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading(),
+                });
+
+                const response = await axiosPublic.post('/api/doctors/request-verification', {
+                    email: user?.email
+                });
+
+                if (response.data.success) {
+                    // Update local state
+                    setVerificationStatus('pending');
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'সফলভাবে পাঠানো হয়েছে!',
+                        text: 'আপনার প্রোফাইল ভেরিফিকেশনের জন্য পাঠানো হয়েছে। অ্যাডমিন অনুমোদনের জন্য অপেক্ষা করুন।',
+                        confirmButtonText: 'ঠিক আছে',
+                        confirmButtonColor: '#16a34a',
+                    });
+                } else {
+                    throw new Error(response.data.message || 'Failed to submit request');
+                }
+            } catch (error) {
+                console.error('Error submitting verification request:', error);
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ত্রুটি!',
+                    text: error.response?.data?.message || 'ভেরিফিকেশন রিকুয়েস্ট পাঠানো যায়নি। অনুগ্রহ করে আপনার প্রোফাইল সম্পূর্ণ করুন এবং পুনরায় চেষ্টা করুন।',
+                    confirmButtonText: 'ঠিক আছে',
+                    confirmButtonColor: '#ef4444',
+                });
+            } finally {
+                setIsVerifying(false);
+            }
         }
     };
 
@@ -879,6 +937,21 @@ const DoctorProfile = () => {
                         </p>
                     </div>                    {/* Buttons */}
                     <div className="space-y-3">
+                        {/* Show verification status badge */}
+                        {verificationStatus && (
+                            <div className={`text-center py-2 px-4 rounded-lg font-semibold ${
+                                verificationStatus === 'verified' ? 'bg-green-100 text-green-700' :
+                                verificationStatus === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                verificationStatus === 'rejected' ? 'bg-red-100 text-red-700' :
+                                'bg-gray-100 text-gray-700'
+                            }`}>
+                                {verificationStatus === 'verified' ? '✓ আপনার প্রোফাইল ভেরিফাইড' :
+                                 verificationStatus === 'pending' ? '⏳ ভেরিফিকেশন অপেক্ষমাণ' :
+                                 verificationStatus === 'rejected' ? '✗ ভেরিফিকেশন প্রত্যাখ্যাত' :
+                                 '○ প্রোফাইল ভেরিফাইড নয়'}
+                            </div>
+                        )}
+                        
                         {!isEditable ? (
                             <>
                                 <button
@@ -889,13 +962,19 @@ const DoctorProfile = () => {
                                     প্রোফাইল এডিট করুন
                                 </button>
 
-                                <button
-                                    type="button"
-                                    onClick={handleVerify}
-                                    className="btn btn-outline w-full flex gap-2 bg-primary-color text-white py-4"
-                                >
-                                    প্রোফাইল ভেরিফাই করুন
-                                </button>
+                                {/* Show verify button only if not already verified or pending */}
+                                {verificationStatus !== 'verified' && verificationStatus !== 'pending' && (
+                                    <button
+                                        type="button"
+                                        onClick={handleVerify}
+                                        disabled={isVerifying}
+                                        className="btn btn-outline w-full flex gap-2 bg-primary-color text-white py-4 disabled:opacity-50"
+                                    >
+                                        {isVerifying ? 'পাঠানো হচ্ছে...' : 
+                                         verificationStatus === 'rejected' ? 'পুনরায় ভেরিফাই করুন' : 
+                                         'প্রোফাইল ভেরিফাই করুন'}
+                                    </button>
+                                )}
                             </>
                         ) : (
                             <>

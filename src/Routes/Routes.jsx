@@ -52,6 +52,7 @@ import DoctorManagement from "../pages/admin/DoctorManagement";
 import AdminDoctorDetails from "../pages/admin/DoctorDetails";
 import AppointmentInfo from "../pages/admin/AppointmentInfo";
 import AppointmentDetails from "../pages/admin/AppointmentDetails";
+import VerificationRequests from "../pages/admin/VerificationRequests";
 import Games from "../pages/games/Games";
 import BreathingExercise from "../pages/games/BreathingExercise";
 import ColourTheBlock from "../pages/games/ColourTheBlock";
@@ -97,6 +98,10 @@ export const router = createBrowserRouter([
           {
             path: "appointmentInfo",
             element: <AppointmentInfo></AppointmentInfo>
+          },
+          {
+            path: "verification",
+            element: <VerificationRequests></VerificationRequests>
           },
           {
             path: "appointments/:id",

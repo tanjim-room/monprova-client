@@ -30,6 +30,9 @@ const DoctorList = () => {
     const handleSearch = () => {
         let results = doctors;
 
+        // ✅ Filter only verified doctors
+        results = results.filter(doctor => doctor.verificationStatus === 'verified');
+
         // If there is a search query, filter the doctors based on that
         if (searchQuery) {
             results = results.filter(doctor =>
@@ -60,6 +63,9 @@ const DoctorList = () => {
     // Handle division filter change (real-time)
     const handleDivisionFilter = () => {
         let results = doctors;
+
+        // ✅ Filter only verified doctors
+        results = results.filter(doctor => doctor.verificationStatus === 'verified');
 
         // Apply division filter if selected
         if (selectedDivision) {
