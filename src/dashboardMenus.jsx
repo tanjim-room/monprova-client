@@ -50,7 +50,7 @@ export const adminMenuItems = [
   { title: "অ্যাপয়েন্টমেন্ট তথ্য", link: "/dashboardAdmin/appointmentInfo", icon: <FaCalendarAlt /> },
   { title: "ভেরিফাই রিকুয়েস্ট", link: "/dashboardAdmin/verification", icon: <FaCheckCircle /> },
   { title: "রিসোর্স", link: "/dashboardAdmin/resources", icon: <FaBookOpen /> },
-  { title: "রিসোর্স আপলোড", link: "/dashboardAdmin/uploadResource", icon: <FaUpload /> },
+
   { title: "হেল্প সেকশন", link: "/dashboardAdmin/help", icon: <FaHandsHelping /> },
   { title: "পেআউট", link: "/dashboardAdmin/payout", icon: <FaMoneyCheckAlt /> },
   { title: "প্রোফাইল", link: "/dashboardAdmin/profile", icon: <FaUserShield /> },

@@ -17,6 +17,7 @@ import PatientHome from "../pages/patient/PatientHome";
 import DoctorDashboardLayout from "../layouts/DoctorDashboardLayout";
 import AdminDashboardLayout from "../layouts/AdminDashboardLayout";
 import AdminHome from "../pages/admin/AdminHome";
+import AdminResources from "../pages/admin/AdminResources";
 import DoctorHome from "../pages/doctor/DoctorHome";
 import Resources from "../pages/resources/Resources";
 import BlogList from "../pages/blogList/BlogList";
@@ -99,6 +100,8 @@ export const router = createBrowserRouter([
           {
             path: "appointments/:id",
             element: <AppointmentDetails></AppointmentDetails>
+            path: "resources",
+            element: <AdminResources></AdminResources>
           },
           {
             path: "payout",

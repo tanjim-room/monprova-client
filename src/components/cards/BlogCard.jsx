@@ -8,7 +8,7 @@ const BlogCard = ({blog}) => {
             <figure>
                 <img
                     className="object-cover w-full h-64"
-                    src={img}
+                    src={img || blog.thumbnail}
                     alt="Blogs" />
             </figure>
             <div className="card-body">
