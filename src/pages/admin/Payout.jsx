@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import useUser from "../../hooks/useUser";
 
 const Payout = () => {
+  const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
+  const [usersDb] =useUser();
+  const admin = usersDb.find(user => user.role === 'admin');
   const [payouts, setPayouts] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [users, setUsers] = useState([]); // For admin names
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredDoctors, setFilteredDoctors] = useState([]);
@@ -33,12 +39,24 @@ const Payout = () => {
   useEffect(() => {
     fetchPayouts();
     fetchDoctors();
+    fetchUsers();
   }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await axiosSecure.get("/api/users");
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
   const fetchDoctors = async () => {
     try {
       const response = await axiosSecure.get("/api/doctors");
       console.log("Fetched doctors:", response.data);
+      console.log("First doctor sample:", response.data[0]);
+      console.log("First doctor name:", response.data[0]?.name);
       setDoctors(response.data);
     } catch (error) {
       console.error("Error fetching doctors:", error);
@@ -54,6 +72,8 @@ const Payout = () => {
   const fetchPayouts = async () => {
     try {
       const response = await axiosSecure.get("/api/payouts");
+      console.log("Fetched payouts:", response.data);
+      console.log("First payout sample:", response.data[0]);
       setPayouts(response.data);
     } catch (error) {
       console.error("Error fetching payouts:", error);
@@ -154,6 +174,10 @@ const Payout = () => {
   };
 
   const handleDoctorSelect = async (doctor) => {
+    console.log("Selected doctor object:", doctor);
+    console.log("Doctor name field:", doctor.name);
+    console.log("Doctor fullName field:", doctor.fullName);
+    
     setSelectedDoctor(doctor);
     setSearchQuery("");
     setFilteredDoctors([]);
@@ -162,11 +186,11 @@ const Payout = () => {
     setForm({
       ...form,
       doctorId: doctor._id,
-      doctorName: doctor.fullName,
+      doctorName: doctor.name || doctor.fullName || "Unknown",
       accountNumber: doctor.phone || ""
     });
     
-    await calculateDoctorEarnings(doctor._id, doctor.fullName, doctor);
+    await calculateDoctorEarnings(doctor._id, doctor.name || doctor.fullName || "Unknown", doctor);
   };
 
   const handleResetDoctor = () => {
@@ -201,21 +225,44 @@ const Payout = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Validate amount doesn't exceed pending
+    const paymentAmount = Number(form.amount);
+    if (paymentAmount <= 0) {
+      return Swal.fire({
+        icon: "error",
+        title: "ত্রুটি!",
+        text: "পরিমাণ ০ এর চেয়ে বেশি হতে হবে",
+        confirmButtonColor: "#d33"
+      });
+    }
+    
+    if (paymentAmount > doctorEarnings.pending) {
+      return Swal.fire({
+        icon: "error",
+        title: "ত্রুটি!",
+        text: `পেমেন্ট পরিমাণ বাকি পরিমাণ (৳${doctorEarnings.pending.toFixed(2)}) এর চেয়ে বেশি হতে পারবে না`,
+        confirmButtonColor: "#d33"
+      });
+    }
+    
     try {
       const adminInfo = JSON.parse(localStorage.getItem("loggedInUser")) || {};
+      console.log("Admin info from localStorage:", adminInfo);
+      console.log("Admin email:", adminInfo.email);
       
       const payoutData = {
         doctorId: form.doctorId,
         doctorName: form.doctorName,
-        amount: Number(form.amount),
-        charge: Number(form.amount) / 0.8 * 0.2, // Calculate the 20% charge
+        amount: Number(form.amount), // Net amount paid to doctor (80% of total)
         method: form.method,
         accountNumber: form.accountNumber,
         transactionId: form.transactionId,
         note: form.note,
-        adminId: adminInfo._id || adminInfo.email,
+        adminEmail: admin.email, // Store admin email
         timestamp: new Date()
       };
+
+      console.log("Payout data being sent:", payoutData);
 
       const response = await axiosSecure.post("/api/payouts", payoutData);
       
@@ -287,7 +334,7 @@ const Payout = () => {
                     >
                       <div className="flex justify-between items-start">
                         <div>
-                          <p className="font-bold text-gray-800">{doctor.fullName}</p>
+                          <p className="font-bold text-gray-800">{doctor.name || doctor.fullName}</p>
                           <p className="text-sm text-gray-600">{doctor.specialization}</p>
                           <p className="text-xs text-gray-500 mt-1">আইডি: {doctor._id}</p>
                         </div>
@@ -331,7 +378,7 @@ const Payout = () => {
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-600">নাম</p>
-                  <p className="text-lg font-bold text-gray-800">{selectedDoctor.fullName}</p>
+                  <p className="text-lg font-bold text-gray-800">{selectedDoctor.name || selectedDoctor.fullName}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">বিশেষত্ব</p>
@@ -588,35 +635,54 @@ const Payout = () => {
             সকল পেআউট হিস্টোরি
           </h3>
           <div className="overflow-x-auto">
-            <table className="min-w-full text-sm text-left">
+            <table className="min-w-full text-sm text-left bg-white shadow-md rounded-lg">
               <thead className="bg-[#007AF5] text-white">
                 <tr>
-                  <th className="px-4 py-2">তারিখ</th>
-                  <th className="px-4 py-2">নাম</th>
-                  <th className="px-4 py-2">পরিমাণ</th>
-                  <th className="px-4 py-2">মাধ্যম</th>
-                  <th className="px-4 py-2">একাউন্ট / নাম্বার</th>
-                  <th className="px-4 py-2">ট্রানজেকশন আইডি</th>
-                  <th className="px-4 py-2">নোট</th>
+                  <th className="px-4 py-3">তারিখ</th>
+                  <th className="px-4 py-3">ডাক্তারের নাম</th>
+                  <th className="px-4 py-3">পরিমাণ</th>
+                  <th className="px-4 py-3">ট্রানজেকশন আইডি</th>
+                  <th className="px-4 py-3">অ্যাডমিন</th>
                 </tr>
               </thead>
               <tbody>
-                {payouts.map((p, i) => (
-                  <tr key={i} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-2">{new Date(p.timestamp).toLocaleDateString('bn-BD')}</td>
-                    <td className="px-4 py-2">{p.doctorName}</td>
-                    <td className="px-4 py-2">{p.amount}৳</td>
-                    <td className="px-4 py-2">{p.method}</td>
-                    <td className="px-4 py-2">{p.accountNumber}</td>
-                    <td className="px-4 py-2">{p.transactionId}</td>
-                    <td className="px-4 py-2">{p.note || "-"}</td>
-                  </tr>
-                ))}
+                {payouts.map((p, i) => {
+                  // Find doctor name from doctors list if not in payout
+                  const doctorName = p.doctorName || doctors.find(d => d._id === p.doctorId)?.name || "Unknown";
+                  // Use admin email directly from payout
+                  const adminEmail = admin?.email || "Unknown";
+                  
+                  return (
+                    <tr 
+                      key={p._id || i} 
+                      className="border-b hover:bg-blue-50 cursor-pointer transition-colors"
+                      onClick={() => {
+                        if (p._id) {
+                          navigate(`/dashboardAdmin/payout/${p._id}`);
+                        } else {
+                          console.error("Payout _id is missing:", p);
+                          Swal.fire({
+                            icon: "error",
+                            title: "ত্রুটি!",
+                            text: "পেআউট আইডি পাওয়া যায়নি",
+                            confirmButtonColor: "#d33"
+                          });
+                        }
+                      }}
+                    >
+                      <td className="px-4 py-3">{new Date(p.timestamp).toLocaleDateString('bn-BD')}</td>
+                      <td className="px-4 py-3">{doctorName}</td>
+                      <td className="px-4 py-3 font-semibold text-green-600">৳ {Number(p.amount).toFixed(2)}</td>
+                      <td className="px-4 py-3 font-mono text-sm">{p.transactionId}</td>
+                      <td className="px-4 py-3 text-sm">{adminEmail}</td>
+                    </tr>
+                  );
+                })}
                 {payouts.length === 0 && (
                   <tr>
                     <td
-                      colSpan="7"
-                      className="text-center text-gray-500 py-4"
+                      colSpan="5"
+                      className="text-center text-gray-500 py-6"
                     >
                       এখনও কোনো পেমেন্ট রেকর্ড নেই
                     </td>

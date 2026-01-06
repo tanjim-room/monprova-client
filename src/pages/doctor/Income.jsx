@@ -1,68 +1,88 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
+import useDoctor from "../../hooks/useDoctor";
+import useAuth from "../../hooks/useAuth";
 
 const Income = () => {
   const axiosSecure = useAxiosSecure();
+  const { user } = useAuth();
+  const [doctors] = useDoctor();
   const [doctor, setDoctor] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [totalIncome, setTotalIncome] = useState(0);
   const [netIncome, setNetIncome] = useState(0);
   const [payouts, setPayouts] = useState([]);
-  const [totalRecieved, setTotalReceived] = useState(0);
+  const [totalReceived, setTotalReceived] = useState(0);
+  const [pending, setPending] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // Load doctor info
-    const loggedInDoctor = JSON.parse(localStorage.getItem("loggedInUser")) || {};
-    setDoctor(loggedInDoctor);
+  const fetchDoctorData = useCallback(async (doctorId, doctorFee) => {
+    try {
+      console.log("Fetching data for doctorId:", doctorId);
+      console.log("Doctor consultation fee:", doctorFee);
+      
+      // Fetch ALL appointments first
+      const appointmentsResponse = await axiosSecure.get('/api/appointments');
+      const allAppointments = appointmentsResponse.data;
+      console.log("Total appointments fetched:", allAppointments.length);
+      
+      // Filter by doctorID and state = 'completed'
+      const completedAppointments = allAppointments.filter(app => 
+        app.doctorID === doctorId && 
+        (app.state === 'completed' || app.state === 'Completed')
+      );
+      console.log("Completed appointments for this doctor:", completedAppointments);
 
-    // Fetch appointments for this doctor
-    const fetchAppointments = async () => {
-      try {
-        const response = await axiosSecure.get(`/appointments?doctorName=${loggedInDoctor.fullName}&status=completed`);
-        const myAppointments = response.data;
+      setAppointments(completedAppointments);
 
-        // Calculate incomes
-        const income = myAppointments.reduce(
-          (sum, a) => sum + (Number(a.consultationFee) || 0),
-          0
-        );
-        const nIncome = myAppointments.reduce(
-          (sum, a) =>
-            sum + (Number(a.consultationFee) - Number(a.consultationFee) * 0.2 || 0),
-          0
-        );
+      // Calculate total income using doctor's consultation fee
+      const fee = Number(doctorFee) || 0;
+      const total = completedAppointments.length * fee;
+      const net = total * 0.8; // 80% to doctor
 
-        setAppointments(myAppointments);
-        setTotalIncome(income);
-        setNetIncome(nIncome);
-      } catch (error) {
-        console.error("Error fetching appointments:", error);
-      }
-    };
+      console.log("Total income:", total, "Net income:", net);
+      
+      setTotalIncome(total);
+      setNetIncome(net);
 
-    // Fetch payouts for this doctor
-    const fetchPayouts = async () => {
-      try {
-        const response = await axiosSecure.get(`/payouts?doctorId=${loggedInDoctor._id}`);
-        const doctorPayouts = response.data;
-        
-        const tReceived = doctorPayouts.reduce(
-          (sum, a) => sum + (Number(a.amount) || 0),
-          0
-        );
-        
-        setTotalReceived(tReceived);
-        setPayouts(doctorPayouts);
-      } catch (error) {
-        console.error("Error fetching payouts:", error);
-      }
-    };
+      // Fetch payouts for this doctor
+      const payoutsResponse = await axiosSecure.get(`/api/payouts?doctorId=${doctorId}`);
+      const doctorPayouts = payoutsResponse.data;
+      console.log("Payouts fetched:", doctorPayouts);
+      
+      const received = doctorPayouts.reduce(
+        (sum, p) => sum + (Number(p.amount) || 0),
+        0
+      );
+      console.log("Total received:", received);
+      
+      setTotalReceived(received);
+      setPayouts(doctorPayouts);
+      setPending(net - received);
+      setIsLoading(false);
 
-    if (loggedInDoctor?.fullName) {
-      fetchAppointments();
-      fetchPayouts();
+    } catch (error) {
+      console.error("Error fetching doctor data:", error);
+      console.error("Error details:", error.response?.data);
+      setIsLoading(false);
     }
   }, [axiosSecure]);
+
+  useEffect(() => {
+    // Find doctor profile using logged-in user's email
+    if (user?.email && doctors.length > 0) {
+      const doctorProfile = doctors.find(d => d.email === user.email);
+      console.log("Found doctor profile:", doctorProfile);
+      setDoctor(doctorProfile);
+      
+      if (doctorProfile?._id && doctorProfile?.consultationFee) {
+        fetchDoctorData(doctorProfile._id, doctorProfile.consultationFee);
+      } else {
+        console.log("Missing doctorId or consultationFee", doctorProfile);
+        setIsLoading(false);
+      }
+    }
+  }, [user, doctors, fetchDoctorData]);
 
   return (
     <div className="bg-[#EFF7FE] p-4 min-h-screen">
@@ -89,28 +109,28 @@ const Income = () => {
           <div className="card bg-white shadow-md p-6 rounded-md text-center border border-gray-200">
             <h3 className="text-xl font-semibold text-gray-700">মোট আয়</h3>
             <p className="text-3xl font-bold text-purple-600 mt-2">
-              ৳ {totalIncome}
+              ৳ {totalIncome.toFixed(2)}
             </p>
           </div>
 
           <div className="card bg-white shadow-md p-6 rounded-md text-center border border-gray-200">
-            <h3 className="text-xl font-semibold text-gray-700">নিট আয়</h3>
+            <h3 className="text-xl font-semibold text-gray-700">নিট আয় (৮০%)</h3>
             <p className="text-3xl font-bold text-blue-600 mt-2">
-              ৳ {netIncome}
+              ৳ {netIncome.toFixed(2)}
             </p>
           </div>
 
           <div className="card bg-white shadow-md p-6 rounded-md text-center border border-gray-200">
             <h3 className="text-xl font-semibold text-gray-700">মোট গ্রহণ</h3>
             <p className="text-3xl font-bold text-green-600 mt-2">
-              ৳ {totalRecieved}
+              ৳ {totalReceived.toFixed(2)}
             </p>
           </div>
 
           <div className="card bg-white shadow-md p-6 rounded-md text-center border border-gray-200">
             <h3 className="text-xl font-semibold text-gray-700">মোট বাকি</h3>
             <p className="text-3xl font-bold text-red-600 mt-2">
-              ৳ {netIncome - totalRecieved}
+              ৳ {pending.toFixed(2)}
             </p>
           </div>
         </div>
@@ -141,16 +161,22 @@ const Income = () => {
                   </tr>
                 ) : (
                   appointments.map((app, index) => {
-                    const fee = Number(app.consultationFee) || 0;
+                    const fee = Number(doctor?.consultationFee) || 0;
                     const deduction = fee * 0.2;
-                    const net = fee - deduction;
+                    const net = fee * 0.8;
+                    const appointmentDate = app.createdAt || app.date || new Date().toISOString();
+                    const displayDate = new Date(appointmentDate).toLocaleDateString('bn-BD', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    });
                     return (
-                      <tr key={index} className="hover:bg-blue-50">
-                        <td>{app.date}</td>
-                        <td>{app.name}</td>
-                        <td>৳ {fee}</td>
-                        <td className="text-red-500">-৳ {deduction}</td>
-                        <td className="text-green-600 font-semibold">৳ {net}</td>
+                      <tr key={app._id || index} className="hover:bg-blue-50">
+                        <td>{displayDate}</td>
+                        <td>{app.patientName || app.name || 'N/A'}</td>
+                        <td>৳ {fee.toFixed(2)}</td>
+                        <td className="text-red-500">-৳ {deduction.toFixed(2)}</td>
+                        <td className="text-green-600 font-semibold">৳ {net.toFixed(2)}</td>
                       </tr>
                     );
                   })
@@ -186,12 +212,12 @@ const Income = () => {
                   </tr>
                 ) : (
                   payouts.map((p, i) => (
-                    <tr key={i} className="hover:bg-blue-50 text-center">
+                    <tr key={p._id || i} className="hover:bg-blue-50">
                       <td className="text-left">{new Date(p.timestamp).toLocaleDateString('bn-BD')}</td>
                       <td className="text-left">{p.method}</td>
                       <td className="text-left">{p.transactionId}</td>
-                      <td className="text-left">৳ {p.amount}</td>
-                      <td className="text-left">{p.note}</td>
+                      <td className="text-left">৳ {Number(p.amount).toFixed(2)}</td>
+                      <td className="text-left">{p.note || '-'}</td>
                     </tr>
                   ))
                 )}
