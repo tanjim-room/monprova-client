@@ -5,6 +5,8 @@ import useDoctor from '../../hooks/useDoctor';
 import usePatient from '../../hooks/usePatient';
 import useAuth from '../../hooks/useAuth';
 import useAxiosPublic from "../../hooks/useAxiosPublic";
+import { app } from "../../firebase/firebase.config";
+import useAppointment from "../../hooks/useAppointment";
 
 
 const AppointmentForm = () => {
@@ -33,89 +35,105 @@ const AppointmentForm = () => {
     }
 
   }, [patient, doctor]);
+
+  const handlePayment = async (appointmentId) => {
+    // Simulate payment processing
+    const payment = {
+      appointmentID: appointmentId,
+      email: user?.email,
+      doctorID: doctor?._id,
+      patientID: patient?._id,
+      amount: doctor?.consultationFee || 0,
+      transactionId: "",
+      date: new Date(),
+      status: "pending",
+    }
+
+    const response =  await axiosPublic.post('/api/sslpayment', payment);
+    console.log(response)
+  };
+
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    const form = event.target;
-    const patientName = form.patientName.value;
-    const phone = form.phone.value;
-    const patientEmail = form.patientEmail.value;
-    const age = form.age.value;
-    const gender = form.gender.value;
-    const bloodGroup = form.bloodGroup.value;
-    const profession = form.profession.value;
-    const emergencyContact = form.emergencyContact.value;
-    const problem = form.problem.value;
-    const mode = form.mode.value;
+  event.preventDefault();
+  const form = event.target;
 
+  // Get form field values
+  const patientName = form.patientName.value;
+  const phone = form.phone.value;
+  const patientEmail = form.patientEmail.value;
+  const age = form.age.value;
+  const gender = form.gender.value;
+  const bloodGroup = form.bloodGroup.value;
+  const profession = form.profession.value;
+  const emergencyContact = form.emergencyContact.value;
+  const problem = form.problem.value;
+  const mode = form.mode.value;
 
+  // Validation
+  const newErrors = {};
+  if (!patientName) newErrors.patientName = "নাম আবশ্যক";
+  if (!phone) newErrors.phone = "মোবাইল আবশ্যক";
+  if (!patientEmail) newErrors.patientEmail = "ইমেইল আবশ্যক";
+  if (!age) newErrors.age = "বয়স আবশ্যক";
+  if (!gender) newErrors.gender = "জেন্ডার আবশ্যক";
+  if (!bloodGroup) newErrors.bloodGroup = "রক্তের গ্রুপ আবশ্যক";
+  if (!profession) newErrors.profession = "পেশা আবশ্যক";
+  if (!emergencyContact) newErrors.emergencyContact = "জরুরি যোগাযোগ আবশ্যক";
+  if (!problem) newErrors.problem = "সমস্যা/রোগের বিবরণ আবশ্যক";
+  if (!mode) newErrors.mode = "মাধ্যম আবশ্যক";
 
-    // Validate the form data
-    const newErrors = {};
-    if (!patientName) newErrors.patientName = "নাম আবশ্যক";
-    if (!phone) newErrors.phone = "মোবাইল আবশ্যক";
-    if (!patientEmail) newErrors.patientEmail = "ইমেইল আবশ্যক";
-    if (!age) newErrors.age = "বয়স আবশ্যক";
-    if (!gender) newErrors.gender = "জেন্ডার আবশ্যক";
-    // if (!gender) newErrors.gender = "লিঙ্গ আবশ্যক";
-    if (!bloodGroup) newErrors.bloodGroup = "রক্তের গ্রুপ আবশ্যক";
-    if (!profession) newErrors.profession = "পেশা আবশ্যক";
-    if (!emergencyContact) newErrors.emergencyContact = "জরুরি যোগাযোগ আবশ্যক";
-    if (!problem) newErrors.problem = "সমস্যা/রোগের বিবরণ আবশ্যক";
-    if (!mode) newErrors.mode = "মাধ্যম আবশ্যক";
-    setErrors(newErrors);
+  setErrors(newErrors);
 
-    // If there are errors, stop form submission
-    if (Object.keys(newErrors).length > 0) return;
-    console.log(doctor)
-    const appointmentInfo = {
-      doctorID,
-      patientID,
-      patientName,
-      age,
-      gender,
-      phone,
-      patientEmail,
-      bloodGroup,
-      emergencyContact,
-      profession,
-      problem,
-      mode,
-      state: "upcoming",
-      sessionLink: ""
-    };
+  if (Object.keys(newErrors).length > 0) return;
 
-    console.log(appointmentInfo)
-    // Payment Popup
-    const result = await Swal.fire({
-      title: "পেমেন্ট",
-      text: `কনসালটেশন ফি প্রদান করুন`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "পেমেন্ট সম্পন্ন",
-      cancelButtonText: "বাতিল করুন",
+  // Appointment data
+  const appointmentInfo = {
+    doctorID,
+    patientID,
+    patientName,
+    age,
+    gender,
+    phone,
+    patientEmail,
+    bloodGroup,
+    emergencyContact,
+    profession,
+    problem,
+    mode,
+    state: "upcoming",
+    paymentStatus: "unpaid", // future payment purpose
+    sessionLink: ""
+  };
+
+  try {
+    const response = await axiosPublic.post(
+      "/api/appointment",
+      appointmentInfo
+    );
+
+    console.log("Appointment booked:", response.data);
+
+    Swal.fire({
+      title: "অ্যাপয়েন্টমেন্ট সফল!",
+      text: "আপনার অ্যাপয়েন্টমেন্ট সফলভাবে বুক করা হয়েছে।",
+      icon: "success",
+      confirmButtonText: "ঠিক আছে",
     });
 
-    if (result.isConfirmed) {
-      try {
-        // Save appointment (local)
-        const response = await axiosPublic.post('/api/appointment', appointmentInfo);
+    form.reset();
 
-        Swal.fire({
-          title: "অ্যাপয়েন্টমেন্ট সফল!",
-          text: "আপনার অ্যাপয়েন্টমেন্ট বুক করা হয়েছে।",
-          icon: "success",
-          confirmButtonText: "ঠিক আছে"
-        });
-      } catch (error) {
-        Swal.fire({
-          title: "ত্রুটি!",
-          text: "কিছু সমস্যা হয়েছে, দয়া করে আবার চেষ্টা করুন।",
-          icon: "error",
-          confirmButtonText: "ঠিক আছে"
-        });
-      }
-    }
-  };
+  } catch (error) {
+    console.error(error);
+    Swal.fire({
+      title: "ত্রুটি!",
+      text: "অ্যাপয়েন্টমেন্ট বুক করা যায়নি। আবার চেষ্টা করুন।",
+      icon: "error",
+      confirmButtonText: "ঠিক আছে",
+    });
+  }
+};
+
+
 
   return (
     <div className="min-h-[850px] p-16 bg-[#E1ECFF] rounded-lg mt-16">

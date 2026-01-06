@@ -36,7 +36,7 @@ const AppointmentCard = ({ appointment }) => {
                 <div className="card-body">
                     <div className="flex gap-8 items-center">
                         <div>
-                            <img src={"https://i.ibb.co.com/zVcdq9PG/1704193051.jpg"} alt="" className="w-24 h-24 object-cover rounded-full" />
+                            <img src={doctor?.image || ""} alt="" className="w-24 h-24 object-cover rounded-full" />
                         </div>
                         <div>
                             <h2 className="card-title text-xl">ডাক্তারঃ {doctor?.name}</h2>
