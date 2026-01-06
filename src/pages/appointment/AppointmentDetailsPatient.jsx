@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import useAppointment from "../../hooks/useAppointment";
 import useDoctor from "../../hooks/useDoctor";
 import { IoMdDownload } from "react-icons/io";
+import { FaSpinner } from "react-icons/fa"; // for loading spinner
 
 const AppointmentDetailsPatient = () => {
     const [appointments] = useAppointment();
@@ -10,100 +11,121 @@ const AppointmentDetailsPatient = () => {
 
     // Check if the data is loading
     if (!appointments || !doctors) {
-        return <div>Loading...</div>;
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <FaSpinner className="animate-spin text-3xl text-blue-600" />
+            </div>
+        );
     }
 
     // Find the relevant appointment and doctor based on the appointmentId
-    const appointment = appointments.find(appointment => appointment._id === appointmentId);
-    const doctor = doctors.find(doctor => doctor._id === appointment?.doctorID);
+    const appointment = appointments.find((appointment) => appointment._id === appointmentId);
+    const doctor = doctors.find((doctor) => doctor._id === appointment?.doctorID);
 
     // If no appointment or doctor is found, handle it
     if (!appointment || !doctor) {
-        return <div>Appointment or doctor not found</div>;
+        return (
+            <div className="text-center text-xl text-red-500 mt-20">
+                <p>Appointment or doctor not found</p>
+            </div>
+        );
     }
+
     const handleDownload = () => {
-    const fileContent = `
-      ডাক্তারঃ ${pres.doctorName || 'N/A'}
-      রোগীঃ ${pres.patientName || 'N/A'}
-      তারিখঃ ${pres.date}
-      প্রেসক্রিপশনঃ
-      ${pres.prescription || 'No prescription available'}
-    `;
+        const fileContent = `
+            ডাক্তারঃ ${appointment.doctorName || 'N/A'}
+            রোগীঃ ${appointment.patientName || 'N/A'}
+            তারিখঃ ${appointment.date}
+            প্রেসক্রিপশনঃ
+            ${appointment.prescription || 'No prescription available'}
+        `;
 
-    const blob = new Blob([fileContent], { type: 'text/plain' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `Prescription_${pres.patientName || 'Unknown'}_${pres.date}.txt`;
-    link.click();
-  };
+        const blob = new Blob([fileContent], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `Prescription_${appointment.patientName || 'Unknown'}_${appointment.date}.txt`;
+        link.click();
+    };
+
     return (
-        <div>
-            <div className="min-h-[850px] p-16 bg-[#E1ECFF] rounded-lg mt-16">
-                <div className="flex justify-between">
-                    <div className="text-left w-full">
-                        <h2 className="text-2xl text-gray-800 font-bold">অ্যাপয়েন্টমেন্ট সম্পর্কিত তথ্যসমূহঃ</h2>
-                        <div className="mt-4">
-                            <p>মাধ্যমঃ {appointment.mode}</p>
-                            <p>তারিখঃ {appointment.date || "Not available"}</p>
-                            <p>সময়ঃ {appointment.slot || "Not available"}</p>
-                            <p>ফিঃ {doctor.consultationFee} টাকা</p>
-                        </div>
-
-                        <div className="mt-4 text-left">
-                            <h2 className="text-2xl text-gray-800 mb-4 font-bold">রোগীর তথ্যসমূহঃ</h2>
-                            <p>রোগীর নামঃ {appointment.patientName}</p>
-                            <p>মোবাইলঃ {appointment.phone}</p>
-                            <p>ইমেইলঃ {appointment.patientEmail}</p>
-                            <p>বয়সঃ {appointment.age} বছর</p>
-                            <p>জেন্ডারঃ {appointment.gender}</p>
-                            <p>ব্লাড গ্রুপঃ {appointment.bloodGroup}</p>
-                            <p>পেশাঃ {appointment.profession}</p>
-                            <p>সমস্যা/রোগের বিবরণঃ {appointment.problem}</p>
-                        </div>
+        <div className="bg-[#E1ECFF] min-h-screen py-16 px-8">
+            <div className="max-w-screen-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
+                {/* Section 1: Appointment Information */}
+                <div className="bg-blue-100 p-6 rounded-lg shadow-md mb-8">
+                    <h2 className="text-3xl font-semibold text-gray-800 mb-4">অ্যাপয়েন্টমেন্ট সম্পর্কিত তথ্যসমূহঃ</h2>
+                    <div className="space-y-4 text-gray-700">
+                        <p><strong>মাধ্যমঃ</strong> {appointment.mode}</p>
+                        <p><strong>তারিখঃ</strong> {appointment.date || "Not available"}</p>
+                        <p><strong>সময়ঃ</strong> {appointment.slot || "Not available"}</p>
+                        <p><strong>ফিঃ</strong> {doctor.consultationFee} টাকা</p>
                     </div>
-                    <div className="w-full text-left">
-                        <h2 className="text-2xl text-gray-800 mb-4 font-bold">ডাক্তার এর তথ্যসমূহঃ</h2>
-                        <div>
-                            <div className="flex gap-4 items-center">
-                                <div>
-                                    <img src={doctor?.imageUrl || "https://i.ibb.co.com/zVcdq9PG/1704193051.jpg"} alt="" className="w-36 h-36 object-cover rounded-full" />
-                                </div>
-                                <div>
-                                    <h2 className="card-title text-2xl">{doctor.name}</h2>
-                                    <p className="text-xl mt-0 mb-0 font-bold text-start text-gray-700">{doctor.designation}</p>
-                                    <p className="text-start text-sm mt-0 text-gray-700">BMDC Registration No: {doctor.regNo}</p>
-                                    <p>{doctor.degrees}</p>
-                                </div>
-                            </div>
-                            <div className="card-body ml-0 pl-0">
-                                <p className="text-start text-xl mt-4 text-gray-700 font-bold">কর্মক্ষেত্র</p>
-                                <span>{doctor.designation}</span>
-                                <p className="font-semibold">{doctor.institute}</p>
-                                <p className="text-start text-xl mt-4 text-gray-700 font-bold">অভিজ্ঞতা</p>
-                                <span>{doctor.yearsOfExperience} বছর</span>
-                                <p className="text-start text-xl mt-4 text-gray-700 font-bold">দক্ষতাসমূহ</p>
-                                <p>{doctor.expertise}</p>
-                                <p className="text-start text-xl mt-4 text-gray-700 font-bold">সংক্ষিপ্ত পরিচয়</p>
-                                <span className="text-sm">{doctor.shortBio}</span>
-                                <p className="text-start text-xl mt-4 text-gray-700 font-bold">রোগী দেখার মাধ্যম</p>
-                                <span className="text-sm">{doctor.medium}</span>
-                                <p className="text-start text-xl mt-4 text-gray-700 font-bold">পরামর্শ ফি</p>
-                                <span>{doctor.consultationFee} টাকা</span>
-                            </div>
-                        </div>
-                    </div>
-                    
                 </div>
-                <div className="mt-4">
-                        <button onClick={handleDownload} className="w-full border-2 rounded-md flex justify-center items-center bg-primary-color text-white">
-                            <div className="flex items-center gap-6 px-4 py-2 font-semibold text-xl rounded-md">
-                                <div className="flex gap-4 items-center bg-primary-color">
-                                    <span className="text-xl"><IoMdDownload /></span>
-                                    <span className="text-center text-lg">প্রেসক্রিপশন ডাউনলোড করুন</span>
-                                </div>
-                            </div>
+
+                {/* Section 2: Patient Information */}
+                <div className="bg-green-100 p-6 rounded-lg shadow-md mb-8">
+                    <h2 className="text-3xl font-semibold text-gray-800 mb-4">রোগীর তথ্যসমূহঃ</h2>
+                    <div className="space-y-4 text-gray-700">
+                        <p><strong>রোগীর নামঃ</strong> {appointment.patientName}</p>
+                        <p><strong>মোবাইলঃ</strong> {appointment.phone}</p>
+                        <p><strong>ইমেইলঃ</strong> {appointment.patientEmail}</p>
+                        <p><strong>বয়সঃ</strong> {appointment.age} বছর</p>
+                        <p><strong>জেন্ডারঃ</strong> {appointment.gender}</p>
+                        <p><strong>ব্লাড গ্রুপঃ</strong> {appointment.bloodGroup}</p>
+                        <p><strong>পেশাঃ</strong> {appointment.profession}</p>
+                        <p><strong>সমস্যা/রোগের বিবরণঃ</strong> {appointment.problem}</p>
+                    </div>
+                </div>
+
+                {/* Section 3: Doctor Information */}
+                <div className="bg-purple-100 p-6 rounded-lg shadow-md">
+                    <h2 className="text-3xl font-semibold text-gray-800 mb-4">ডাক্তার এর তথ্যসমূহঃ</h2>
+                    <div className="flex items-center gap-6 mb-8">
+                        <img
+                            src={doctor?.imageUrl || "https://i.ibb.co.com/zVcdq9PG/1704193051.jpg"}
+                            alt="Doctor"
+                            className="w-36 h-36 object-cover rounded-full shadow-md"
+                        />
+                        <div>
+                            <h3 className="text-xl font-bold text-gray-800">{doctor.name}</h3>
+                            <p className="text-md text-gray-600">{doctor.designation}</p>
+                            <p className="text-sm text-gray-500">BMDC Reg No: {doctor.regNo}</p>
+                            <p className="mt-2">{doctor.degrees}</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 className="text-xl font-semibold text-gray-700">কর্মক্ষেত্র</h3>
+                        <p>{doctor.institute}</p>
+
+                        <h3 className="text-xl font-semibold text-gray-700 mt-4">অভিজ্ঞতা</h3>
+                        <p>{doctor.yearsOfExperience} বছর</p>
+
+                        <h3 className="text-xl font-semibold text-gray-700 mt-4">দক্ষতাসমূহ</h3>
+                        <p>{doctor.expertise}</p>
+
+                        <h3 className="text-xl font-semibold text-gray-700 mt-4">সংক্ষিপ্ত পরিচয়</h3>
+                        <p>{doctor.shortBio}</p>
+
+                        <h3 className="text-xl font-semibold text-gray-700 mt-4">রোগী দেখার মাধ্যম</h3>
+                        <p>{doctor.medium}</p>
+
+                        <h3 className="text-xl font-semibold text-gray-700 mt-4">পরামর্শ ফি</h3>
+                        <p>{doctor.consultationFee} টাকা</p>
+                    </div>
+                </div>
+
+                {/* Download Button */}
+                {appointment.sessionLink && (
+                    <div className="mt-8">
+                        <button
+                            onClick={handleDownload}
+                            className="w-full flex justify-center items-center bg-blue-600 text-white py-3 rounded-md shadow-md hover:bg-blue-700 transition-all duration-200"
+                        >
+                            <IoMdDownload className="text-xl mr-3" />
+                            <span className="text-lg font-semibold">প্রেসক্রিপশন ডাউনলোড করুন</span>
                         </button>
                     </div>
+                )}
             </div>
         </div>
     );

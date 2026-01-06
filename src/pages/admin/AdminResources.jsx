@@ -494,13 +494,13 @@ const AdminResources = () => {
 
                                     {/* Author Name */}
                                     <div>
-                                        <label className="block text-gray-700 font-semibold mb-2">লেখক নাম *</label>
+                                        <label className="block text-gray-700 font-semibold mb-2">লেখকের নাম *</label>
                                         <input
                                             type="text"
                                             name="author"
                                             value={formData.author}
                                             onChange={handleInputChange}
-                                            placeholder="লেখক নাম লিখুন"
+                                            placeholder="লেখকের নাম লিখুন"
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
                                             required
                                         />
