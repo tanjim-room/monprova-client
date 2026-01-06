@@ -101,6 +101,8 @@ export const router = createBrowserRouter([
           {
             path: "appointments/:id",
             element: <AppointmentDetails></AppointmentDetails>
+          },
+          {
             path: "resources",
             element: <AdminResources></AdminResources>
           },
