@@ -5,13 +5,14 @@ import useUser from '../../hooks/useUser';
 import useAuth from '../../hooks/useAuth';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
 import useDoctor from '../../hooks/useDoctor';
+import SectionHeader from '../shared/SectionHeader';
 
 const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_API_KEY;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
 
 const DoctorProfile = () => {
     const axiosPublic = useAxiosPublic();
-    // const initialized = useRef(false); // Ref to track initialization
+    const initialized = useRef(false); // Ref to track initialization
     const [users] = useUser();
     const [doctors] = useDoctor();
     const { user } = useAuth(); // Get the current logged-in user from useAuth
@@ -28,6 +29,21 @@ const DoctorProfile = () => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [imagePreview, setImagePreview] = useState("");
 
+    useEffect(() => {
+        // run only once when doctorInfo arrives
+        if (doctorInfo && !initialized.current) {
+            setMedium(doctorInfo.medium || "");
+            setDivision(doctorInfo.division || "");
+            initialized.current = true;
+        }
+    }, [doctorInfo]);
+
+    useEffect(() => {
+        if(doctorInfo){
+             setVerificationStatus(doctorInfo.verificationStatus || "not-verified");
+        }
+    }, [doctorInfo]);
+    
     // NID Image States
     const [nidFrontImage, setNidFrontImage] = useState(null);
     const [nidFrontPreview, setNidFrontPreview] = useState("");
@@ -40,16 +56,9 @@ const DoctorProfile = () => {
     const [certificateFields, setCertificateFields] = useState([{ id: 1, file: null, preview: "" }]);
     const [nextCertId, setNextCertId] = useState(2);
     const [deletedCertificates, setDeletedCertificates] = useState([]);
-    
+
     // Update medium from doctorInfo when available
-    useEffect(() => {
-        // run only once when doctorInfo arrives
-        if (doctorInfo ) {
-            setMedium(doctorInfo.medium || "");
-            setDivision(doctorInfo.division || "");
-            setVerificationStatus(doctorInfo.verificationStatus || "not-verified");
-        }
-    }, [doctorInfo]);
+    
     const handleFileChange = (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -226,8 +235,8 @@ const DoctorProfile = () => {
         ));
     };
 
-     // State for medium
-    
+    // State for medium
+
     // ✅ Save profile with double confirmation
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -242,9 +251,9 @@ const DoctorProfile = () => {
         const regNo = form.regNo.value.trim();
         const institute = form.institute.value.trim();
         const chamber = form.chamber.value.trim();
-        const division = form.division.value;
+        const divisionValue = division; // Use state value
         const yearsOfExperience = form.yearsOfExperience.value;
-        const mediumValue = form.medium.value;
+        const mediumValue = medium; // Use state value
         const mobileNo = form.mobileNo.value.trim();
         const nidNo = form.nidNo.value.trim();
         const bkashAccount = form.bkashAccount.value.trim();
@@ -363,7 +372,7 @@ const DoctorProfile = () => {
                 regNo,
                 institute,
                 chamber,
-                division,
+                division: divisionValue,
                 yearsOfExperience,
                 medium: mediumValue,
                 mobileNo,
@@ -373,6 +382,7 @@ const DoctorProfile = () => {
                 nidBack: nidBackUrl,
                 certificates: certificateUrls,
                 shortBio,
+                verificationStatus: verificationStatus === 'verified' ? 'pending' : 'not-verified',
                 // Don't send verificationStatus - preserve it in database
             };
 
@@ -459,7 +469,7 @@ const DoctorProfile = () => {
         if (confirmVerify.isConfirmed) {
             try {
                 setIsVerifying(true);
-                
+
                 Swal.fire({
                     title: 'পাঠানো হচ্ছে...',
                     text: 'অনুগ্রহ করে অপেক্ষা করুন',
@@ -474,7 +484,7 @@ const DoctorProfile = () => {
                 if (response.data.success) {
                     // Update local state
                     setVerificationStatus('pending');
-                    
+
                     Swal.fire({
                         icon: 'success',
                         title: 'সফলভাবে পাঠানো হয়েছে!',
@@ -487,7 +497,7 @@ const DoctorProfile = () => {
                 }
             } catch (error) {
                 console.error('Error submitting verification request:', error);
-                
+
                 Swal.fire({
                     icon: 'error',
                     title: 'ত্রুটি!',
@@ -502,11 +512,11 @@ const DoctorProfile = () => {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-[#E6F0FF]">
-            <div className="mx-auto p-6 bg-white shadow-lg rounded-xl">
-                <h2 className="text-3xl font-bold text-center text-gray-800 my-4 mb-4">
-                    ডাক্তারের প্রোফাইল
-                </h2>
+        <div className="min-h-screen bg-[#E6F0FF]">
+            <div className="p-6 bg-white shadow-lg rounded-xl">
+                <div className='pb-4'>
+                    <SectionHeader heading={"ডাক্তারের প্রোফাইল"} subHeading={"আপনার প্রোফাইল দেখুন ও এডিট করুন"}></SectionHeader>
+                </div>
 
                 {/* Profile Picture */}
                 <div className="flex flex-col items-center">
@@ -529,9 +539,20 @@ const DoctorProfile = () => {
                 </div>
                 <form
                     onSubmit={handleSubmit}
-                    className="bg-white shadow-lg rounded-xl p-8 w-full max-w-7xl pb-8 mb-8"
+                    className="bg-white  rounded-xl p-8 w-full max-w-7xl pb-8 mb-8"
                 >
-
+                    {verificationStatus && (
+                        <div className={`text-center py-2 px-4 rounded-lg font-semibold ${verificationStatus === 'verified' ? 'bg-green-100 text-green-700' :
+                                verificationStatus === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                    verificationStatus === 'rejected' ? 'bg-red-100 text-red-700' :
+                                        'bg-gray-100 text-gray-700'
+                            }`}>
+                            {verificationStatus === 'verified' ? '✓ আপনার প্রোফাইল ভেরিফাইড' :
+                                verificationStatus === 'pending' ? '⏳ ভেরিফিকেশন অপেক্ষমাণ' :
+                                    verificationStatus === 'rejected' ? '✗ ভেরিফিকেশন প্রত্যাখ্যাত' :
+                                        '○ প্রোফাইল ভেরিফাইড নয়। নিচে ভেরিফাই বাটন এ ক্লিক করুন।'}
+                        </div>
+                    )}
 
                     {/* Fields with Labels */}
                     <div className="mt-2 mb-4 flex justify-center">
@@ -653,9 +674,10 @@ const DoctorProfile = () => {
                                 name="division"
                                 value={division} // Controlled value
                                 onChange={(e) => setDivision(e.target.value)} // Handle value change
+                                disabled={!isEditable}
                                 className="select select-bordered w-full border-2 p-2"
-                                
-                                disabled={!isEditable} // Control editability
+
+                                 // Control editability
                             >
                                 <option value="">নির্বাচন করুন</option>
                                 <option value="Dhaka">ঢাকা</option>
@@ -669,7 +691,7 @@ const DoctorProfile = () => {
                             </select>
                         </div>
                     </div>
-                
+
 
                     {/* Medium Selection */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -691,8 +713,8 @@ const DoctorProfile = () => {
                                 onChange={(e) => setMedium(e.target.value)} // Handle value change
                                 disabled={!isEditable}
                                 className="select select-bordered w-full border-2 p-2"
-                                
-                                 // Control editability
+
+                            // Control editability
                             >
                                 <option value="">নির্বাচন করুন</option>
                                 <option value="online">অনলাইন</option>
@@ -760,7 +782,7 @@ const DoctorProfile = () => {
                     {/* NID Upload Section */}
                     <div className="mb-6 border-t-2 pt-6">
                         <h3 className="text-xl font-bold text-gray-800 mb-4">এনআইডি আপলোড করুন</h3>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             {/* NID Front */}
                             <div>
@@ -938,20 +960,8 @@ const DoctorProfile = () => {
                     </div>                    {/* Buttons */}
                     <div className="space-y-3">
                         {/* Show verification status badge */}
-                        {verificationStatus && (
-                            <div className={`text-center py-2 px-4 rounded-lg font-semibold ${
-                                verificationStatus === 'verified' ? 'bg-green-100 text-green-700' :
-                                verificationStatus === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                                verificationStatus === 'rejected' ? 'bg-red-100 text-red-700' :
-                                'bg-gray-100 text-gray-700'
-                            }`}>
-                                {verificationStatus === 'verified' ? '✓ আপনার প্রোফাইল ভেরিফাইড' :
-                                 verificationStatus === 'pending' ? '⏳ ভেরিফিকেশন অপেক্ষমাণ' :
-                                 verificationStatus === 'rejected' ? '✗ ভেরিফিকেশন প্রত্যাখ্যাত' :
-                                 '○ প্রোফাইল ভেরিফাইড নয়'}
-                            </div>
-                        )}
-                        
+
+
                         {!isEditable ? (
                             <>
                                 <button
@@ -970,9 +980,9 @@ const DoctorProfile = () => {
                                         disabled={isVerifying}
                                         className="btn btn-outline w-full flex gap-2 bg-primary-color text-white py-4 disabled:opacity-50"
                                     >
-                                        {isVerifying ? 'পাঠানো হচ্ছে...' : 
-                                         verificationStatus === 'rejected' ? 'পুনরায় ভেরিফাই করুন' : 
-                                         'প্রোফাইল ভেরিফাই করুন'}
+                                        {isVerifying ? 'পাঠানো হচ্ছে...' :
+                                            verificationStatus === 'rejected' ? 'পুনরায় ভেরিফাই করুন' :
+                                                'প্রোফাইল ভেরিফাই করুন'}
                                     </button>
                                 )}
                             </>

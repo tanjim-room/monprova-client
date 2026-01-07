@@ -54,6 +54,6 @@ export const adminMenuItems = [
 
   { title: "হেল্প সেকশন", link: "/dashboardAdmin/help", icon: <FaHandsHelping /> },
   { title: "পেআউট", link: "/dashboardAdmin/payout", icon: <FaMoneyCheckAlt /> },
-  { title: "প্রোফাইল", link: "/dashboardAdmin/profile", icon: <FaUserShield /> },
+  // { title: "প্রোফাইল", link: "/dashboardAdmin/profile", icon: <FaUserShield /> },
   { title: "লগ আউট", link: "/", icon: <FaSignOutAlt /> ,isLogout: true},
 ];

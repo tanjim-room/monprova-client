@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import useAppointment from '../../hooks/useAppointment';
 import PaymentCard from '../../components/cards/PaymentCard';
+import SectionHeader from '../shared/SectionHeader';
 
 const AppointmentBookings = () => {
     const [appointments] = useAppointment();
@@ -18,11 +19,11 @@ const AppointmentBookings = () => {
     });
 
     return (
-        <div className="p-6">
-            <h1 className="text-3xl font-bold text-center mb-8">
-                আপনার বুকিংসগুলো
-            </h1>
+        <div className="px-6">
 
+            <div className='pb-8'>
+                <SectionHeader heading={"আপনার বুকিংসমুহ"} subHeading={"আপনার অ্যাপয়েন্টমেন্ট বুকিংস গুলো এখানে দেখুন"}></SectionHeader>
+            </div>
             {/* Filter buttons */}
             <div className=" mb-6 gap-4">
                 <button
@@ -50,7 +51,7 @@ const AppointmentBookings = () => {
                         } mx-4`} // Added mx-4 for a larger gap
                     onClick={() => setFilter('unpaid')}
                 >
-                    আন্ডারপেইড
+                    আনপেইড
                 </button>
 
             </div>
