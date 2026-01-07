@@ -6,17 +6,24 @@ const DoctorCard = ({ doctor }) => {
 
     return (
         <div className="card bg-base-100 shadow-md border rounded-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
-            <figure>
-                <img
-                    className="object-cover w-32 h-32 rounded-full mx-auto mt-4"
-                    src={image || "https://i.ibb.co.com/zVcdq9PG/1704193051.jpg"} 
-                    alt={name} />
-            </figure>
-            <div className="card-body p-4">
-                <h3 className="card-title font-bold text-lg text-primary-color">{name}</h3>
+            <div className='flex items-center gap-4 px-4'>
+                <figure>
+                    <img
+                        className="object-cover w-24 h-24 rounded-full mx-auto mt-4"
+                        src={image || "https://i.ibb.co.com/zVcdq9PG/1704193051.jpg"}
+                        alt={name} />
+                </figure>
+                <div>
+                    <h3 className="card-title font-bold text-lg text-primary-color">{name}</h3>
                 <p className='font-semibold text-tertiary-color text-sm'>{designation}</p>
                 <p className='text-xs text-gray-600'>{institute}</p>
+                </div>
+            </div>
+            <div className="card-body p-4">
+                
+                
                 <p className='text-xs text-gray-600'>{degrees}</p>
+                <p className='text-xs text-gray-600'>{expertise}</p>
                 <div className="badge badge-error text-white bg-secondary-color text-sm mt-2">পরামর্শ ফি: {consultationFee} টাকা</div>
             </div>
             <div className="mb-4 mx-4">

@@ -23,7 +23,7 @@ const VideoCard = ({ video }) => {
                 </figure>
                 <div className="card-body">
                     <h2 className="card-title text-lg">{title}</h2>
-                    {category && <p className="text-sm text-gray-500">ক্যাটাগরি: {category}</p>}
+                    {category && <p className="text-sm text-gray-500">ক্যাটাগরি: <span className='ml-4 bg-primary-color px-2 py-1 rounded-md text-white'>{category}</span></p>}
                     {description && <p className="text-sm">{description}</p>}
                 </div>
             </div>

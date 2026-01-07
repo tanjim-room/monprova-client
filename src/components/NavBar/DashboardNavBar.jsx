@@ -13,11 +13,11 @@ const DashboardNavBar = ({ fullName, role }) => {
         logOut();
 
         if (role === "doctor") {
-            navigate("/doctorLogin", { replace: true });
+            navigate("/login", { replace: true });
         } else if (role === "admin") {
             navigate("/admin", { replace: true });
         } else {
-            navigate("/patientLogin", { replace: true });
+            navigate("/login", { replace: true });
         }
     };
 

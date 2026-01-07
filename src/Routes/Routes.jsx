@@ -42,6 +42,7 @@ import AssessmentList from "../pages/assessment/AssessmentList";
 import AssessmentForm from "../pages/assessment/AssessmentForm";
 import AssessmentResults from "../pages/assessment/AssessmentResults";
 import AssessmentHistory from "../pages/assessment/AssessmentHistory";
+import AssessmentQuestionPage from "../pages/assessment/AssessmentQuestionPage";
 import DoctorHelp from "../pages/help/DoctorHelp";
 import Income from "../pages/doctor/Income";
 import Payout from "../pages/admin/Payout";
@@ -58,6 +59,8 @@ import BreathingExercise from "../pages/games/BreathingExercise";
 import ColourTheBlock from "../pages/games/ColourTheBlock";
 import PopTheBalloon from "../pages/games/PopTheBalloon";
 import AppointmentBookings from "../pages/appointment/AppointmentBookings";
+import Register from "../pages/signup/Register";
+import Login from "../pages/login/Login";
 
 export const router = createBrowserRouter([
   {
@@ -120,6 +123,14 @@ export const router = createBrowserRouter([
             element: <PayoutDetails></PayoutDetails>
           }
         ]
+      },
+      {
+        path: "signup",
+        element: <Register></Register>
+      },
+      {
+        path: "login",
+        element: <Login></Login>
       },
       {
         path: "patientLogin",
@@ -238,6 +249,10 @@ export const router = createBrowserRouter([
       {
         path: "assessment/:assessmentId/form",
         element: <AssessmentForm></AssessmentForm>
+      },
+      {
+        path: "assessment/:assessmentId/q/:qIndex",
+        element: <AssessmentQuestionPage></AssessmentQuestionPage>
       },
       {
         path: "assessment/:assessmentId/results",

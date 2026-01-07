@@ -36,6 +36,11 @@ const AssessmentForm = () => {
         );
     }
 
+    // Redirect legacy form route to the new per-question pages (start at question 1)
+    // Keeps backward compatibility with existing links
+    navigate(`/dashboardPatient/assessment/${assessment.id}/q/1`, { replace: true });
+    return null;
+
     const currentQuestion = assessment.questions[currentQuestionIndex];
     const currentAnswer = answers[currentQuestion.id];
 

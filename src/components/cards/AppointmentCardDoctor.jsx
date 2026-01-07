@@ -12,9 +12,8 @@ const AppointmentCardDoctor = ({ appointment }) => {
     const link = appointment?.sessionLink;
     const [sessionLink, setSessionLink] = useState(link);
     
-    
     // 🧾 Save session link
-    const axiosPublic = useAxiosPublic()
+    const axiosPublic = useAxiosPublic();
 
     const handleStartSession = async () => {
         // Check if session link is provided
@@ -36,7 +35,6 @@ const AppointmentCardDoctor = ({ appointment }) => {
 
     const handleSetSessionLink = async () => {
         // If sessionLink is not provided, show SweetAlert to ask for a link
-
         const { value: link } = await MySwal.fire({
             title: '🔗 সেশন লিঙ্ক দিন',
             subTitle: "Google Meet Link দিন",
@@ -55,12 +53,18 @@ const AppointmentCardDoctor = ({ appointment }) => {
             },
         });
 
+        // Log the link received from SweetAlert
+        console.log("Received session link from SweetAlert:", link);
+
         if (link) {
             setSessionLink(link);  // Save link to state
 
             try {
                 // Send PATCH request to update the session link in the backend
                 const response = await axiosPublic.patch(`/api/sessionlink/${appointment._id}`, { sessionLink: link });
+
+                // Log API response
+                console.log("API response:", response);
 
                 await MySwal.fire({
                     icon: 'success',
@@ -80,30 +84,31 @@ const AppointmentCardDoctor = ({ appointment }) => {
         }
     };
 
+    // Log appointment details for debugging
+    console.log("Appointment details:", appointment);
 
     return (
-        <div className="card card-side bg-base-100 shadow-sm gap-12">
+        <div className="card bg-base-100 shadow-md border rounded-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
             <div className="card-body">
                 <div className="flex gap-8 items-center">
                     <div>
-                        <h2 className="card-title text-xl">রোগীঃ {appointment?.patientName}</h2>
+                        <h2 className="card-title text-xl">রোগীর নামঃ {appointment?.patientName}</h2>
                     </div>
                 </div>
                 <div className="text-start text-lg mt-4">
-                    <p>মাধ্যমঃ {appointment?.mode}</p>
-                    <p>তারিখঃ {'date'}</p>
-                    <p>সময়ঃ {'slot'}</p>
+                    <p>মাধ্যমঃ<span className='bg-secondary-color text-white px-2 py-1 rounded-md text-sm ml-2'>{appointment.mode === 'online' ? "অনলাইন" : appointment.mode === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</span></p>
+                    <p>তারিখঃ {appointment.date}</p>
+                    <p>সময়ঃ {appointment.slot}</p>
 
                     <div className="mt-4 flex justify-between gap-8 items-center">
                         {/* ✅ Start Session Button */}
                         <div className="w-full">
-                            
+                            {appointment?.mode === 'online' && (
                                 <div onClick={handleStartSession}>
                                     <Button btnName={"সেশন শুরু করুন"} bgColor={"bg-secondary-color"} />
                                 </div>
-                           
+                            )}
                         </div>
-
 
                         {/* ✅ Set Session Link */}
                         <div className="w-full">

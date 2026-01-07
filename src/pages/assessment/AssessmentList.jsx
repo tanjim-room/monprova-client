@@ -34,11 +34,11 @@ const AssessmentList = () => {
             setShowAlreadyTakenModal(true);
             return;
         }
-        navigate(`/dashboardPatient/assessment/${assessment.id}/form`);
+        navigate(`/dashboardPatient/assessment/${assessment.id}/q/1`);
     };
 
     return (
-        <div className="min-h-[850px] bg-[#E1ECFF] rounded-lg mt-16 p-10">
+        <div className="h-[calc(100vh-80px)] bg-[#E1ECFF] rounded-lg mt-4 p-6 overflow-hidden">
             {/* Already Taken Today Modal */}
             {showAlreadyTakenModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -67,15 +67,14 @@ const AssessmentList = () => {
                 </div>
             )}
 
-            <div className="max-w-4xl mx-auto">
-                <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">
+            <div className="max-w-6xl mx-auto h-full flex flex-col">
+                <h2 className="text-3xl font-bold text-gray-800 mb-2 text-center">
                     মানসিক স্বাস্থ্য মূল্যায়ন
                 </h2>
-                <p className="text-center text-gray-600 mb-10">
+                <p className="text-center text-gray-600 mb-6">
                     আপনার মানসিক স্বাস্থ্য পরীক্ষা করতে একটি মূল্যায়ন নির্বাচন করুন
                 </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     {assessmentOptions.map((assessment) => (
                         <AssessmentCard
                             key={assessment.id}
@@ -85,10 +84,10 @@ const AssessmentList = () => {
                     ))}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-                    <div className="bg-white rounded-lg shadow-md p-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-4">ℹ️ মূল্যায়ন সম্পর্কে</h3>
-                        <ul className="space-y-3 text-gray-700">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1 overflow-hidden">
+                    <div className="bg-white rounded-lg shadow-md p-5 overflow-auto">
+                        <h3 className="text-xl font-bold text-gray-800 mb-3">ℹ️ মূল্যায়ন সম্পর্কে</h3>
+                        <ul className="space-y-3 text-gray-700 text-sm">
                             <li className="flex items-start gap-3">
                                 <span className="text-primary-color font-bold">✓</span>
                                 <span>প্রতিটি মূল্যায়ন 5-10 মিনিট সময় নেয়</span>
@@ -112,13 +111,13 @@ const AssessmentList = () => {
                         </ul>
                     </div>
 
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow-md p-6 border border-blue-200 flex flex-col justify-center">
-                        <div className="text-center">
-                            <h3 className="text-2xl font-bold text-gray-800 mb-3">📊 আপনার অগ্রগতি ট্র্যাক করুন</h3>
-                            <p className="text-gray-700 mb-6 text-sm leading-relaxed">গত ৩০ দিনের মূল্যায়নের সম্পূর্ণ ইতিহাস এবং তিনটি পরীক্ষার ধারাবাহিক স্কোর গ্রাফ দেখুন।</p>
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow-md p-5 border border-blue-200 flex flex-col justify-center overflow-auto">
+                        <div className="text-center space-y-4">
+                            <h3 className="text-2xl font-bold text-gray-800">📊 আপনার অগ্রগতি ট্র্যাক করুন</h3>
+                            <p className="text-gray-700 text-sm leading-relaxed">গত ৩০ দিনের মূল্যায়নের সম্পূর্ণ ইতিহাস এবং তিনটি পরীক্ষার ধারাবাহিক স্কোর গ্রাফ দেখুন।</p>
                             <button
                                 onClick={() => navigate('/dashboardPatient/assessment/history')}
-                                className="px-8 py-3 bg-primary-color text-white rounded-lg font-semibold hover:bg-blue-700 transition flex items-center gap-2 mx-auto shadow-lg hover:shadow-xl"
+                                className="px-6 py-3 bg-primary-color text-white rounded-lg font-semibold hover:bg-blue-700 transition flex items-center gap-2 mx-auto shadow-lg hover:shadow-xl"
                             >
                                 <span>📈</span>
                                 <span>পূর্বের ফলাফল দেখুন</span>

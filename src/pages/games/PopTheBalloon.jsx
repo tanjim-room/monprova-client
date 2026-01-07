@@ -5,7 +5,7 @@ const PopTheBalloon = () => {
     const navigate = useNavigate();
     const [balloons, setBalloons] = useState([]);
     const [score, setScore] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(30);
+    const [timeLeft, setTimeLeft] = useState(15);
     const [isPlaying, setIsPlaying] = useState(false);
     const [gameOver, setGameOver] = useState(false);
     const [highScore, setHighScore] = useState(0);
@@ -71,7 +71,7 @@ const PopTheBalloon = () => {
         setIsPlaying(true);
         setGameOver(false);
         setScore(0);
-        setTimeLeft(30);
+        setTimeLeft(15);
         setBalloons([]);
     };
 
@@ -80,10 +80,10 @@ const PopTheBalloon = () => {
     };
 
     return (
-        <div className="min-h-[850px] bg-gradient-to-br from-orange-100 via-red-50 to-orange-100 rounded-lg mt-16 p-10">
-            <div className="max-w-6xl mx-auto">
+        <div className="h-[calc(100vh-80px)] bg-gradient-to-br from-orange-100 via-red-50 to-orange-100 rounded-lg mt-4 p-6 overflow-hidden">
+            <div className="max-w-6xl mx-auto h-full flex flex-col">
                 {/* Header */}
-                <div className="flex justify-between items-center mb-8">
+                <div className="flex justify-between items-center mb-4">
                     <button
                         onClick={() => navigate('/dashboardPatient/games')}
                         className="px-6 py-3 bg-white text-gray-700 rounded-lg font-semibold hover:bg-gray-100 transition shadow-md flex items-center gap-2"
@@ -96,29 +96,30 @@ const PopTheBalloon = () => {
                 </div>
 
                 {/* Stats Bar */}
-                <div className="flex gap-4 mb-6">
-                    <div className="flex-1 bg-white rounded-xl shadow-lg p-6">
-                        <p className="text-sm text-gray-600 mb-1">স্কোর</p>
-                        <p className="text-4xl font-bold text-orange-600">{score}</p>
+                <div className="flex gap-3 mb-4">
+                    <div className="flex-1 bg-white rounded-lg shadow-lg p-3">
+                        <p className="text-xs text-gray-600 mb-1">স্কোর</p>
+                        <p className="text-2xl font-bold text-orange-600">{score}</p>
                     </div>
-                    <div className="flex-1 bg-white rounded-xl shadow-lg p-6">
-                        <p className="text-sm text-gray-600 mb-1">সময়</p>
-                        <p className="text-4xl font-bold text-red-600">{timeLeft}s</p>
+                    <div className="flex-1 bg-white rounded-lg shadow-lg p-3">
+                        <p className="text-xs text-gray-600 mb-1">সময়</p>
+                        <p className="text-2xl font-bold text-red-600">{timeLeft}s</p>
                     </div>
-                    <div className="flex-1 bg-white rounded-xl shadow-lg p-6">
-                        <p className="text-sm text-gray-600 mb-1">সর্বোচ্চ স্কোর</p>
-                        <p className="text-4xl font-bold text-purple-600">{highScore}</p>
+                    <div className="flex-1 bg-white rounded-lg shadow-lg p-3">
+                        <p className="text-xs text-gray-600 mb-1">সর্বোচ্চ স্কোর</p>
+                        <p className="text-2xl font-bold text-purple-600">{highScore}</p>
                     </div>
                 </div>
 
                 {/* Game Area */}
-                <div className="relative bg-gradient-to-b from-sky-300 to-sky-100 rounded-2xl shadow-2xl overflow-hidden" style={{ height: '500px' }}>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1 overflow-hidden">
+                    <div className="lg:col-span-2 relative bg-gradient-to-b from-sky-300 to-sky-100 rounded-xl shadow-2xl overflow-hidden" style={{ minHeight: '350px' }}>
                     {!isPlaying && !gameOver && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-90 z-10">
                             <div className="text-8xl mb-6">🎈</div>
                             <h2 className="text-3xl font-bold text-gray-800 mb-4">বেলুন ফাটানো শুরু করুন!</h2>
                             <p className="text-gray-600 mb-8 text-center max-w-md">
-                                ৩০ সেকেন্ডের মধ্যে যত বেশি বেলুন ফাটাতে পারেন, তত বেশি স্কোর পাবেন!
+                                ১৫ সেকেন্ডের মধ্যে যত বেশি বেলুন ফাটাতে পারেন, তত বেশি স্কোর পাবেন!
                             </p>
                             <button
                                 onClick={startGame}
@@ -166,42 +167,42 @@ const PopTheBalloon = () => {
                             }}
                         >
                             <div
-                                className="relative w-full h-full rounded-full"
+                                className="relative w-full h-full rounded-full pointer-events-none"
                                 style={{
                                     background: `radial-gradient(circle at 30% 30%, #FFFFFFAA, ${balloon.color})`,
                                     borderRadius: '45% 45% 40% 40% / 55% 55% 45% 45%',
                                 }}
                             >
                                 <div
-                                    className="absolute left-1/2 -translate-x-1/2 bottom-[-18px] w-[6px] h-[20px] bg-gradient-to-b from-gray-300 to-gray-400"
+                                    className="absolute left-1/2 -translate-x-1/2 bottom-[-18px] w-[6px] h-[20px] bg-gradient-to-b from-gray-300 to-gray-400 pointer-events-none"
                                     style={{ borderRadius: '0 0 8px 8px' }}
                                 ></div>
-                                <div className="absolute inset-0 flex items-center justify-center text-2xl">
+                                <div className="absolute inset-0 flex items-center justify-center text-2xl pointer-events-none">
                                     {balloon.face}
                                 </div>
                             </div>
                         </div>
                     ))}
-                </div>
+                    </div>
 
-                {/* Instructions */}
-                <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
-                    <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">📋 কিভাবে খেলবেন</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="text-center">
-                            <div className="text-4xl mb-2">👆</div>
-                            <h4 className="font-semibold text-gray-800 mb-2">১. ক্লিক করুন</h4>
-                            <p className="text-sm text-gray-600">উড়ন্ত বেলুনে ক্লিক করুন</p>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-4xl mb-2">⚡</div>
-                            <h4 className="font-semibold text-gray-800 mb-2">২. দ্রুত হন</h4>
-                            <p className="text-sm text-gray-600">বেলুন উপরে যাওয়ার আগে ফাটান</p>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-4xl mb-2">🎯</div>
-                            <h4 className="font-semibold text-gray-800 mb-2">৩. স্কোর করুন</h4>
-                            <p className="text-sm text-gray-600">প্রতিটি বেলুনে ১ পয়েন্ট</p>
+                    <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">📋 কিভাবে খেলবেন</h3>
+                        <div className="space-y-4">
+                            <div className="text-center">
+                                <div className="text-4xl mb-2">👆</div>
+                                <h4 className="font-semibold text-gray-800 mb-2">১. ক্লিক করুন</h4>
+                                <p className="text-sm text-gray-600">উড়ন্ত বেলুনে ক্লিক করুন</p>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-4xl mb-2">⚡</div>
+                                <h4 className="font-semibold text-gray-800 mb-2">২. দ্রুত হন</h4>
+                                <p className="text-sm text-gray-600">বেলুন উপরে যাওয়ার আগে ফাটান</p>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-4xl mb-2">🎯</div>
+                                <h4 className="font-semibold text-gray-800 mb-2">৩. স্কোর করুন</h4>
+                                <p className="text-sm text-gray-600">প্রতিটি বেলুনে ১ পয়েন্ট</p>
+                            </div>
                         </div>
                     </div>
                 </div>

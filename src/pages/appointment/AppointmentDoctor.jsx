@@ -3,6 +3,7 @@ import useAppointment from '../../hooks/useAppointment';
 import useAuth from '../../hooks/useAuth';
 import AppointmentCardDoctor from '../../components/cards/AppointmentCardDoctor';
 import useDoctor from '../../hooks/useDoctor';
+import SectionHeader from '../shared/SectionHeader';
 
 const AppointmentDoctor = () => {
     const [activeTab, setActiveTab] = useState("upcoming"); // "upcoming", "completed", "upcomingOnline", "upcomingOffline", "completedOnline", "completedOffline"
@@ -10,7 +11,7 @@ const AppointmentDoctor = () => {
     const { user } = useAuth();
     const [doctors] = useDoctor();
     const doctor = doctors?.find(doctor => doctor.email === user?.email)
-    const appointment = appointments?.filter(appointment => appointment.doctorID === doctor?._id);
+    const appointment = appointments?.filter(appointment => appointment.doctorID === doctor?._id && appointment.paymentStatus === "paid");
     console.log(appointment)
     // Filter based on status and mode
     const upcomingAppointment = appointment?.filter(appointment => appointment.state === "upcoming");
@@ -48,7 +49,10 @@ const AppointmentDoctor = () => {
 
     return (
         <div>
-            <div className="min-h-[850px] p-16 bg-[#E1ECFF] rounded-lg mt-16">
+            <div className="min-h-[850px] p-0  rounded-lg mt-0">
+                <div className='pb-8'>
+                <SectionHeader heading={"আপনার অ্যাপয়েন্টমেন্টসমুহ"} subHeading={"আপনার অ্যাপয়েন্টমেন্ট গুলো এখানে দেখুন"}></SectionHeader>
+            </div>
                 {/* Tabs */}
                 <div className="flex gap-4 mb-8">
                     {/* Upcoming Button */}

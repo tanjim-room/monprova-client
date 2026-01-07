@@ -5,6 +5,7 @@ import useUser from "../../hooks/useUser";
 import useAuth from "../../hooks/useAuth";
 import Swal from "sweetalert2";
 import usePatient from "../../hooks/usePatient";
+import SectionHeader from '../shared/SectionHeader';
 
 const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_API_KEY;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
@@ -165,9 +166,14 @@ const PatientProfile = () => {
   };
 
   return (
-    <div className="min-h-screen p-16 bg-[#E1ECFF] mt-16">
-      <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-xl">
-        <h1 className="text-3xl font-semibold text-center mb-8">রোগীর প্রোফাইল</h1>
+    <div className="min-h-screen p-0  mt-0">
+      <div className="mx-auto p-6 bg-white rounded-xl">
+        <div className="pb-4">
+          <SectionHeader
+            heading={"রোগীর প্রোফাইল"}
+            subHeading={"আপনার প্রোফাইল দেখুন ও এডিট করুন"}
+          ></SectionHeader>
+        </div>
 
         {/* ✅ Profile Picture */}
         <div className="flex justify-center mb-6">

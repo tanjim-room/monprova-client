@@ -6,7 +6,7 @@ const PatientDashboardLayout = () => {
     return (
         <div>
             <DashboardNavBar role="patient"></DashboardNavBar>
-            <main className="ml-[20%] flex-1 p-8 bg-[#EFF7FE] overflow-y-auto h-screen">
+            <main className="ml-[20%] flex-1 p-8 overflow-y-auto h-screen">
                <Outlet></Outlet>
             </main>
         </div>
