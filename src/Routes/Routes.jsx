@@ -42,6 +42,7 @@ import AssessmentList from "../pages/assessment/AssessmentList";
 import AssessmentForm from "../pages/assessment/AssessmentForm";
 import AssessmentResults from "../pages/assessment/AssessmentResults";
 import AssessmentHistory from "../pages/assessment/AssessmentHistory";
+import AssessmentQuestionPage from "../pages/assessment/AssessmentQuestionPage";
 import DoctorHelp from "../pages/help/DoctorHelp";
 import Income from "../pages/doctor/Income";
 import Payout from "../pages/admin/Payout";
@@ -238,6 +239,10 @@ export const router = createBrowserRouter([
       {
         path: "assessment/:assessmentId/form",
         element: <AssessmentForm></AssessmentForm>
+      },
+      {
+        path: "assessment/:assessmentId/q/:qIndex",
+        element: <AssessmentQuestionPage></AssessmentQuestionPage>
       },
       {
         path: "assessment/:assessmentId/results",
