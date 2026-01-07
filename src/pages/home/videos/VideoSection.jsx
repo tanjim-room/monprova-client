@@ -8,7 +8,7 @@ import Button from '../../../components/Button';
 const VideoSection = () => {
     const [videos] = useVideos();
     return (
-        <div>
+        <div className='mt-6' id="videos">
             <div className='grid grid-cols-3 gap-8 mx-auto px-0'>
                 {
                     videos.slice(0, 6).map(video => (

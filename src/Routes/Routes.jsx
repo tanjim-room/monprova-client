@@ -59,6 +59,8 @@ import BreathingExercise from "../pages/games/BreathingExercise";
 import ColourTheBlock from "../pages/games/ColourTheBlock";
 import PopTheBalloon from "../pages/games/PopTheBalloon";
 import AppointmentBookings from "../pages/appointment/AppointmentBookings";
+import Register from "../pages/signup/Register";
+import Login from "../pages/login/Login";
 
 export const router = createBrowserRouter([
   {
@@ -121,6 +123,14 @@ export const router = createBrowserRouter([
             element: <PayoutDetails></PayoutDetails>
           }
         ]
+      },
+      {
+        path: "signup",
+        element: <Register></Register>
+      },
+      {
+        path: "login",
+        element: <Login></Login>
       },
       {
         path: "patientLogin",

@@ -10,40 +10,40 @@ import { Link } from 'react-router-dom';
 
 const PaymentCard = ({ appointment }) => {
     const axiosPublic = useAxiosPublic();
-    const {user} = useAuth();
+    const { user } = useAuth();
     const [patients] = usePatient();
     const patient = patients.find(pat => pat.email === user?.email);
-    const [doctors] =useDoctor();
+    const [doctors] = useDoctor();
     const doctor = doctors.find(doc => doc._id === appointment.doctorID);
 
     const handlePayment = async () => {
-    // Simulate payment processing
-    const payment = {
-        appointmentID: appointment?._id || "",
-        email: user?.email,
-        doctorID: doctor?._id,
-        patientID: appointment?.patientID,
-        amount: doctor?.consultationFee || 0,
-        transactionId: "",
-        date: new Date(),
-        status: "pending",
-    };
+        // Simulate payment processing
+        const payment = {
+            appointmentID: appointment?._id || "",
+            email: user?.email,
+            doctorID: doctor?._id,
+            patientID: appointment?.patientID,
+            amount: doctor?.consultationFee || 0,
+            transactionId: "",
+            date: new Date(),
+            status: "pending",
+        };
 
-    try {
-        // Send payment data to backend for initiating payment
-        const response = await axiosPublic.post('/api/sslpayment', payment);
+        try {
+            // Send payment data to backend for initiating payment
+            const response = await axiosPublic.post('/api/sslpayment', payment);
 
-        if (response.data?.gatewayUrl) {
-            console.log('Redirecting to payment gateway...');
-            // Open the payment gateway URL in a new tab/window
-            window.open(response.data.gatewayUrl, '_blank');
-        } else {
-            console.error('Payment initiation failed: ', response);
+            if (response.data?.gatewayUrl) {
+                console.log('Redirecting to payment gateway...');
+                // Open the payment gateway URL in a new tab/window
+                window.open(response.data.gatewayUrl, '_blank');
+            } else {
+                console.error('Payment initiation failed: ', response);
+            }
+        } catch (error) {
+            console.error('Error during payment initiation:', error);
         }
-    } catch (error) {
-        console.error('Error during payment initiation:', error);
-    }
-};
+    };
 
 
     return (
@@ -51,9 +51,16 @@ const PaymentCard = ({ appointment }) => {
             key={appointment._id}
             className="bg-white shadow-md rounded-xl p-5 border"
         >
-            <h2 className="text-xl font-semibold mb-2">
-                {doctor?.name}
-            </h2>
+            <div className='flex  items-center gap-4 mb-4'>
+                <img src={doctor?.image} alt="" className='w-12 h-12 object-cover rounded-full' />
+                <div>
+                    <h2 className="text-lg font-semibold">
+                        {doctor?.name}
+                    </h2>
+                    <p className='text-black'>{doctor?.designation}</p>
+                </div>
+
+            </div>
 
             <p className="text-gray-600">
                 {/* বিভাগ: {appointment.department} */}
@@ -67,10 +74,9 @@ const PaymentCard = ({ appointment }) => {
 
             <span
                 className={`inline-block px-3 py-1 rounded-full text-sm mb-4
-                    ${
-                        appointment.paymentStatus === "paid"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-700"
+                    ${appointment.paymentStatus === "paid"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-yellow-100 text-yellow-700"
                     }`}
             >
                 {appointment.paymentStatus === "paid" ? "Paid" : "Pending Payment"}
@@ -79,17 +85,16 @@ const PaymentCard = ({ appointment }) => {
             <div className="flex gap-3 mt-4">
                 <button
                     onClick={handlePayment}
-                    className={`flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition ${
-                        appointment.paymentStatus === "paid" ? "opacity-50 cursor-not-allowed bg-gray-500" : ""
-                    }`}
+                    className={`flex-1 bg-secondary-color text-white py-2 rounded-lg transition ${appointment.paymentStatus === "paid" ? "opacity-25 text-black cursor-not-allowed bg-gray-500 " : ""
+                        }`}
                     disabled={appointment.paymentStatus === "paid"}
                 >
                     {appointment.paymentStatus === "paid" ? "পেমেন্ট সম্পন্ন" : "পেমেন্ট করুন"}
                 </button>
 
                 <Link to={`/dashboardPatient/appointmentDetailsPatient/${appointment?._id}`}>
-                                    <Button btnName={"বিস্তারিত দেখুন"} bgColor={"bg-primary-color"} />
-                                </Link>
+                    <Button btnName={"বিস্তারিত দেখুন"} bgColor={"bg-primary-color"} />
+                </Link>
             </div>
         </div>
     );

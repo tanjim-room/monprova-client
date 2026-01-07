@@ -40,47 +40,40 @@ const DoctorDetails = () => {
   }
 
   // Destructure safely with defaults
-  const { _id, name, designation, expertise, consultationFee, img, yearsOfExperience, degrees, regNo, institute, medium, shortBio } = doctor;
- 
+  const { _id, name, designation, expertise, consultationFee, image, yearsOfExperience, degrees, regNo, institute, medium, shortBio } = doctor;
 
   return (
-    <div className="bg-[#EFF7FE] p-4">
-      <div className="min-h-[850px] p-8 bg-white rounded-md">
-        <div className="w-full text-left border p-8 rounded-md">
+    <div className="p-0">
+      <div className="min-h-[850px] p-0 bg-white rounded-md">
+        <div className="w-full text-left border p-4 rounded-md">
 
           {/* Back Button */}
-          <BackButton destination="/dashboardPatient/doctors"></BackButton>
+          <div className='px-6'>
+            <BackButton destination="/dashboardPatient/doctors"></BackButton>
+          </div>
 
           {/* Doctor Name */}
-          <h2 className="text-xl px-4 py-2 text-gray-800 mb-6 font-bold text-center rounded-md bg-[#EFF7FE] border">
-            {name} এর তথ্যসমূহ
-          </h2>
 
           {/* Doctor Info Card */}
-          <div className="flex flex-col items-center justify-center border rounded-md p-4 mx-6 gap-6">
+          <div className="flex flex-col md:flex-row items-center justify-center border rounded-md p-4 mx-6 gap-6">
             <div className=''>
-              <img src={img || "https://i.ibb.co.com/zVcdq9PG/1704193051.jpg"} alt={name} className="w-72 h-72 object-cover rounded-full border" />
+              <img src={image || "https://i.ibb.co.com/ym2wsZXY/avater-Grey-User-Circles-Set.png"} alt={name} className="w-48 h-48 object-cover rounded-full border mb-6 md:mb-0" />
             </div>
-            <div className="space-y-1">
-              <h2 className="font-semibold text-xl text-center">{name}</h2>
-              <p className="text-lg font-semibold text-gray-700 text-center">{designation}</p>
+            <div className="space-y-1 md:text-left text-center">
+              <h2 className="font-semibold text-xl">{name}</h2>
+              <p className="text-lg font-semibold text-gray-700">{designation}</p>
 
-              <div className="mt-0 text-start text-center">
-                {/* {degrees.map((degree, idx) => (
-                  <span key={idx} className="primary-color text-center">{degree}, </span>
-                ))} */}
-                <p className="primary-color text-center">{degrees}</p>
+              <div className="mt-0 text-center md:text-left">
+                <p className="primary-color">{degrees}</p>
               </div>
 
               <div className="mt-2">
-                <p className="text-base text-gray-700 font-semibold text-center">
+                <p className="text-base text-gray-700 font-semibold">
                   BMDC Reg. No: <span className="bg-secondary-color px-2 py-1 text-white rounded-md text-sm font-semibold">{regNo}</span>
                 </p>
               </div>
             </div>
-
           </div>
-
 
           {/* Doctor Details */}
           <div className="flex gap-6 mt-6 mx-6 space-y- mb-8">
@@ -99,12 +92,7 @@ const DoctorDetails = () => {
               <div className="text-start mb-4">
                 <p className="text-xl font-bold primary-color py-1">দক্ষতাসমূহ</p>
                 <div className="rounded-md px-0 py-2">
-                 <p className='py-2 className="text-sm'>
-                   {/* {specialities.map((sp, idx) => (
-                    <span key={idx} className="text-sm font-semibold">{sp}, </span>
-                  ))} */}
-                  {expertise}
-                 </p>
+                  <p className="py-2">{expertise}</p>
                 </div>
               </div>
 
@@ -125,33 +113,28 @@ const DoctorDetails = () => {
                   <p className="font-normal text-justify leading-loose py-2">{shortBio}</p>
                 </div>
               </div>
-
-
             </div>
-
-
-
           </div>
 
-          <div className='flex justify-center gap-4'>
+          <div className='flex flex-row-reverse justify-center gap-4 p-4 border rounded-md mx-6'>
             {/* Consultation Type */}
             <div className="text-start flex gap-4">
               <p className="text-xl font-bold primary-color py-1">রোগী দেখার মাধ্যম:</p>
               <div className="bg-secondary-color inline-block rounded-md px-2 py-2 border">
-                <p className="text-sm text-white font-semibold">{medium == 'online'? "অনলাইন": medium == 'offline'? "অফলাইন" : "অনলাইন/অফলাইন"}</p>
+                <p className="text-md text-white font-semibold">{medium === 'online' ? "অনলাইন" : medium === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</p>
               </div>
             </div>
 
             {/* Fee */}
-            <div className="text-start flex gap-4">
+            <div className="text-start flex  gap-4">
               <p className="text-xl font-bold primary-color py-1">পরামর্শ ফি:</p>
               <div className="bg-secondary-color inline-block rounded-md px-2 py-2 border">
-                <p className="text-sm text-white font-semibold">{consultationFee} টাকা</p>
+                <p className="text-md text-white font-semibold">{consultationFee} টাকা</p>
               </div>
             </div>
           </div>
           {/* Appointment Button */}
-          <div className="mt-8">
+          <div className="mt-8 mx-6">
             <Link to={`/dashboardPatient/appointmentForm/${doctorId}`}>
               <Button btnName="অ্যাপয়েন্টমেন্ট নিন" bgColor="bg-primary-color w-full" />
             </Link>
