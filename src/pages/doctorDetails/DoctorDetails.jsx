@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useEffect, useState, useContext } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button';
 import BackButton from '../../components/BackButton';
 import useDoctor from '../../hooks/useDoctor';
+import { AuthContext } from '../../providers/AuthProvider';
+import Swal from 'sweetalert2';
 
 const DoctorDetails = () => {
   const { doctorId } = useParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [doctors] = useDoctor();
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   // Loading state
   if (loading) {
@@ -42,6 +46,20 @@ const DoctorDetails = () => {
   // Destructure safely with defaults
   const { _id, name, designation, expertise, consultationFee, image, yearsOfExperience, degrees, regNo, institute, medium, shortBio } = doctor;
 
+  const handleAppointmentClick = (e) => {
+    if (!user) {
+      e.preventDefault();
+      Swal.fire({
+        title: "লগইন প্রয়োজন",
+        text: "অ্যাপয়েন্টমেন্ট বুক করতে আপনাকে লগইন বা সাইন আপ করতে হবে।",
+        icon: "info",
+        confirmButtonText: "ঠিক আছে",
+      }).then(() => {
+        navigate("/");
+      });
+    }
+  };
+
   return (
     <div className="p-0">
       <div className="min-h-[850px] p-0 bg-white rounded-md">
@@ -49,7 +67,7 @@ const DoctorDetails = () => {
 
           {/* Back Button */}
           <div className='px-6'>
-            <BackButton destination="/dashboardPatient/doctors"></BackButton>
+            <BackButton destination={user ? "/dashboardPatient/doctorList" : "/doctorList"}></BackButton>
           </div>
 
           {/* Doctor Name */}
@@ -135,7 +153,7 @@ const DoctorDetails = () => {
           </div>
           {/* Appointment Button */}
           <div className="mt-8 mx-6">
-            <Link to={`/dashboardPatient/appointmentForm/${doctorId}`}>
+            <Link to={user ? `/dashboardPatient/appointmentForm/${doctorId}` : "#"} onClick={handleAppointmentClick}>
               <Button btnName="অ্যাপয়েন্টমেন্ট নিন" bgColor="bg-primary-color w-full" />
             </Link>
           </div>
