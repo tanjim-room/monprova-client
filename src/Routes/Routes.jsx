@@ -63,6 +63,8 @@ import Register from "../pages/signup/Register";
 import Login from "../pages/login/Login";
 import ResetPassword from "../pages/login/ResetPassword";
 import AdminHelp from "../pages/help/AdminHelp";
+import Contact from "../pages/contact/Contact";
+import Complaints from "../pages/admin/Complaints";
 
 export const router = createBrowserRouter([
   {
@@ -128,6 +130,10 @@ export const router = createBrowserRouter([
           {
             path: "payout/:id",
             element: <PayoutDetails></PayoutDetails>
+          },
+          {
+            path: "complaints",
+            element: <Complaints></Complaints>
           }
         ]
       },
@@ -163,6 +169,10 @@ export const router = createBrowserRouter([
         path: "doctorList",
         element: <DoctorList></DoctorList>
       },
+      {
+        path: "doctorDetails/:doctorId",
+        element: <DoctorDetails></DoctorDetails>
+      },
 
 
       {
@@ -170,8 +180,16 @@ export const router = createBrowserRouter([
         element: <BlogList></BlogList>,
       },
       {
+        path: "blogDetails/:blogId",
+        element: <BlogDetails></BlogDetails>,
+      },
+      {
         path: "videoList",
         element: <VideoList></VideoList>,
+      },
+      {
+        path: "contact",
+        element: <Contact></Contact>,
       },
 
     ]
@@ -195,17 +213,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "doctorList",
-        element: <Doctors></Doctors>,
-        children: [
-          {
-            index: true,
-            element: <DoctorList></DoctorList>
-          },
-          {
-            path: "doctorDetails/:doctorId",
-            element: <DoctorDetails></DoctorDetails>,
-          }
-        ]
+        element: <DoctorList></DoctorList>
+      },
+      {
+        path: "doctorList/doctorDetails/:doctorId",
+        element: <DoctorDetails></DoctorDetails>
       },
       {
         path: "appointmentForm/:doctorId",

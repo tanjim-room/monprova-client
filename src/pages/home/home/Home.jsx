@@ -19,7 +19,7 @@ const Home = () => {
                 </div>
                 <DoctorSection />
             </div>
-            <ActionButton link="/dashboardPatient/doctorList" btnName={"সব ডাক্তার দেখুন"} bgColor={"bg-secondary-color"}></ActionButton>
+            <ActionButton link="/doctorList" btnName={"সব ডাক্তার দেখুন"} bgColor={"bg-secondary-color"}></ActionButton>
             
             
 
@@ -32,7 +32,7 @@ const Home = () => {
                 </div>
                 <BlogSection />
             </div>
-            <ActionButton link="/dashboardPatient/resources/blogs" btnName={"সব ব্লগ দেখুন"} bgColor={"bg-secondary-color"}></ActionButton>
+            <ActionButton link="/blogList" btnName={"সব ব্লগ দেখুন"} bgColor={"bg-secondary-color"}></ActionButton>
             <div id="videos" className='px-24'>
                 <div className='my-16'>
                     <SectionHeading
@@ -43,7 +43,7 @@ const Home = () => {
                 <VideoSection />
             </div>
 
-            <ActionButton link="/dashboardPatient/resources/videos" btnName={"সব ভিডিও দেখুন"} bgColor={"bg-secondary-color"}></ActionButton>
+            <ActionButton link="/videoList" btnName={"সব ভিডিও দেখুন"} bgColor={"bg-secondary-color"}></ActionButton>
         </div>
     );
 };
