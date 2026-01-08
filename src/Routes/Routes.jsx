@@ -61,6 +61,7 @@ import PopTheBalloon from "../pages/games/PopTheBalloon";
 import AppointmentBookings from "../pages/appointment/AppointmentBookings";
 import Register from "../pages/signup/Register";
 import Login from "../pages/login/Login";
+import AdminHelp from "../pages/help/AdminHelp";
 
 export const router = createBrowserRouter([
   {
@@ -85,6 +86,10 @@ export const router = createBrowserRouter([
           {
             path: "users",
             element: <UserManagement></UserManagement>
+          },
+          {
+             path: "help",
+             element: <AdminHelp></AdminHelp>
           },
           {
             path: "users/:id",
