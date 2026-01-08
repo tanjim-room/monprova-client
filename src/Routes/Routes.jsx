@@ -61,6 +61,7 @@ import PopTheBalloon from "../pages/games/PopTheBalloon";
 import AppointmentBookings from "../pages/appointment/AppointmentBookings";
 import Register from "../pages/signup/Register";
 import Login from "../pages/login/Login";
+import ResetPassword from "../pages/login/ResetPassword";
 import AdminHelp from "../pages/help/AdminHelp";
 
 export const router = createBrowserRouter([
@@ -81,8 +82,9 @@ export const router = createBrowserRouter([
         element: <AdminDashboardLayout></AdminDashboardLayout>,
         children: [
           {
-            path:"/dashboardAdmin",
-            element: <AdminHome></AdminHome>          },
+            path: "/dashboardAdmin",
+            element: <AdminHome></AdminHome>
+          },
           {
             path: "users",
             element: <UserManagement></UserManagement>
@@ -136,6 +138,10 @@ export const router = createBrowserRouter([
       {
         path: "login",
         element: <Login></Login>
+      },
+      {
+        path: "resetpassword",
+        element: <ResetPassword></ResetPassword>
       },
       {
         path: "patientLogin",
@@ -219,7 +225,7 @@ export const router = createBrowserRouter([
 
       },
 
-      
+
       {
         path: "resources",
         element: <Resources></Resources>,
@@ -331,5 +337,5 @@ export const router = createBrowserRouter([
       }
     ]
   },
-  
+
 ]);

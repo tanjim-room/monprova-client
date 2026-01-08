@@ -213,7 +213,12 @@ const Login = () => {
                                 placeholder="আপনার পাসওয়ার্ড লিখুন"
                                 className="input input-bordered w-full px-4 bg-gray-200"
                             />
+
+                            <p className='mt-2'><Link to={"/resetpassword"} className="text-blue-600 hover:underline ">পাসওয়ার্ড ভুলে গেছেন?</Link></p>
                         </div>
+                        
+                            
+                        
 
                         <input type="submit" value="লগইন করুন" className="btn bg-secondary-color text-white w-full px-8" />
                     </form>
