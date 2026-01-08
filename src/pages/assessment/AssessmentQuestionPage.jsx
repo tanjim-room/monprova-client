@@ -48,7 +48,7 @@ const AssessmentQuestionPage = () => {
 
   if (!assessment) {
     return (
-      <div className="min-h-[850px] bg-[#E1ECFF] rounded-lg mt-16 p-10">
+      <div className="min-h-[850px] bg-[#E1ECFF] rounded-lg mt-0 p-10">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-600">মূল্যায়ন পাওয়া যায়নি</h2>
           <p className="text-gray-600 mt-2">Assessment ID: {assessmentId}</p>
