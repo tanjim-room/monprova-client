@@ -148,7 +148,7 @@ const Register = () => {
                                 name="name"
                                 type="text"
                                 placeholder="আপনার নাম লিখুন"
-                                className="input input-bordered w-full px-4 bg-gray-200"
+                                className="input input-bordered border w-full px-4 bg-white"
                             />
                         </div>
 
@@ -160,7 +160,7 @@ const Register = () => {
                                 type="email"
                                 name="email"
                                 placeholder="আপনার ইমেইল লিখুন"
-                                className="input input-bordered w-full px-4 bg-gray-200"
+                                className="input input-bordered border w-full px-4 bg-white"
                             />
                         </div>
 
@@ -199,7 +199,7 @@ const Register = () => {
                                 type="password"
                                 name="password"
                                 placeholder="আপনার পাসওয়ার্ড লিখুন"
-                                className="input input-bordered w-full px-4 bg-gray-200"
+                                className="input input-bordered border w-full px-4 bg-white"
                             />
                         </div>
 

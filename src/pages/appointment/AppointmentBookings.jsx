@@ -2,13 +2,21 @@ import React, { useState } from 'react';
 import useAppointment from '../../hooks/useAppointment';
 import PaymentCard from '../../components/cards/PaymentCard';
 import SectionHeader from '../shared/SectionHeader';
+import usePatient from '../../hooks/usePatient';
+import useAuth from '../../hooks/useAuth';
 
 const AppointmentBookings = () => {
     const [appointments] = useAppointment();
+    const {user} = useAuth(); 
+    const [patients] = usePatient();
+    const patient = patients.find(p => p.email === user.email);
+
+    // Filter appointments for the logged-in patient
+    const patientAppointments = appointments.filter(appointment => appointment.patientID === patient?._id);
     const [filter, setFilter] = useState('all'); // Track the filter state
 
     // Filter appointments based on the selected filter using the paymentStatus field
-    const filteredAppointments = appointments.filter(appointment => {
+    const filteredAppointments = patientAppointments.filter(appointment => {
         if (filter === 'paid') {
             return appointment.paymentStatus === 'paid';
         }
