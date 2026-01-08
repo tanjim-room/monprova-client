@@ -5,10 +5,10 @@ import Button from '../Button';
 import Swal from 'sweetalert2'; // Ensure you import Swal properly
 
 const AppointmentCard = ({ appointment }) => {
-    
+
     const [doctors] = useDoctor();
     const doctor = doctors?.find(doctor => doctor?._id === appointment?.doctorID);
-   
+
     // Handle joining the session
     const handleJoinSession = async () => {
         console.log("Appointment data:", appointment);
@@ -46,13 +46,22 @@ const AppointmentCard = ({ appointment }) => {
                 </div>
                 <div className="text-start text-lg mt-4">
                     <p className="mb-2">মাধ্যমঃ <span className='bg-secondary-color text-white px-2 py-1 rounded-md text-sm'>{appointment?.mode === 'online' ? "অনলাইন" : appointment?.mode === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</span></p>
-                    <p className="mb-2">তারিখঃ {appointment?.date || "অনুপস্থিত"}</p>
+                    <p>
+                        <strong>তারিখঃ</strong>{" "}
+                        {appointment.appointmentDate
+                            ? new Date(appointment.appointmentDate).toLocaleDateString("en-BD", {
+                                day: "2-digit",
+                                month: "long",
+                                year: "numeric",
+                            })
+                            : "Not available"}
+                    </p>
                     <p className="mb-4">সময়ঃ {appointment?.slot || "অনুপস্থিত"}</p>
                     <div className="mt-4 flex justify-between gap-8">
                         {/* Join Session Button (Visible only for online appointments) */}
                         {appointment?.mode === 'online' && (
                             <div className="w-full" onClick={handleJoinSession}>
-                                <Button  btnName="ভিডিও সেশন এ জয়েন করুন" bgColor="bg-primary-color hover:bg-primary-400" />
+                                <Button btnName="ভিডিও সেশন এ জয়েন করুন" bgColor="bg-primary-color hover:bg-primary-400" />
                             </div>
                         )}
                         {/* View Appointment Details Button */}

@@ -1,211 +1,212 @@
-import React, { useState, useEffect } from "react";
-import { format, setHours, setMinutes } from "date-fns";
-import axios from "axios";
-import Button from "../../components/Button";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import useAxiosPublic from '../../hooks/useAxiosPublic';
+import useDoctor from '../../hooks/useDoctor';
+import useAuth from '../../hooks/useAuth';
+import useSchedule from '../../hooks/useSchedule';
+import SectionHeader from '../shared/SectionHeader';
 
 const DoctorSchedule = () => {
-  const weekDays = [
-    { name: "রবিবার", value: "sunday" },
-    { name: "সোমবার", value: "monday" },
-    { name: "মঙ্গলবার", value: "tuesday" },
-    { name: "বুধবার", value: "wednesday" },
-    { name: "বৃহস্পতিবার", value: "thursday" },
-    { name: "শুক্রবার", value: "friday" },
-    { name: "শনিবার", value: "saturday" },
+  const axiosPublic = useAxiosPublic();
+  const [doctors] = useDoctor();
+  const { user } = useAuth();
+  const doctor = doctors.find(doc => doc.email === user?.email);
+  const doctorID = doctor?._id;
+  const [schedules] = useSchedule();
+  const schedule = schedules.find(sch => sch.doctorID === doctorID);
+
+  const [availability, setAvailability] = useState({
+    sunday: [],
+    monday: [],
+    tuesday: [],
+    wednesday: [],
+    thursday: [],
+    friday: [],
+    saturday: [],
+  });
+
+  useEffect(() => {
+    if (schedule) {
+      setAvailability(schedule.availability);
+    }
+  }, [schedule]);
+
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [onlineOffline, setOnlineOffline] = useState('online');
+
+  // --- অটো-সিলেক্ট কারেন্ট ডে (Auto-select current day) ---
+  useEffect(() => {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const today = new Date().getDay();
+    setSelectedDay(days[today]);
+  }, []);
+  // ------------------------------------------------------
+
+  // বাংলায় দিনের নামের ম্যাপিং (Bangla Day Names)
+  const dayNamesInBangla = {
+    sunday: 'রবিবার',
+    monday: 'সোমবার',
+    tuesday: 'মঙ্গলবার',
+    wednesday: 'বুধবার',
+    thursday: 'বৃহস্পতিবার',
+    friday: 'শুক্রবার',
+    saturday: 'শনিবার',
+  };
+
+  const timeSlots = [
+    '09:00 AM - 09:30 AM', '09:30 AM - 10:00 AM', '10:00 AM - 10:30 AM', '10:30 AM - 11:00 AM',
+    '11:00 AM - 11:30 AM', '11:30 AM - 12:00 PM', '12:00 PM - 12:30 PM', '12:30 PM - 01:00 PM',
+    '01:00 PM - 01:30 PM', '01:30 PM - 02:00 PM', '02:00 PM - 02:30 PM', '02:30 PM - 03:00 PM',
+    '03:00 PM - 03:30 PM', '03:30 PM - 04:00 PM', '04:00 PM - 04:30 PM', '04:30 PM - 05:00 PM',
+    '05:00 PM - 05:30 PM', '05:30 PM - 06:00 PM', '06:00 PM - 06:30 PM', '06:30 PM - 07:00 PM',
+    '07:00 PM - 07:30 PM', '07:30 PM - 08:00 PM', '08:00 PM - 08:30 PM', '08:30 PM - 09:00 PM'
   ];
 
-  // 🔸 Generate slots for Online (9AM–9PM)
-  const generateOnlineSlots = () => {
-    const slots = [];
-    let start = setHours(setMinutes(new Date(), 0), 9);
-    const end = setHours(setMinutes(new Date(), 0), 21);
-    while (start < end) {
-      const next = new Date(start.getTime() + 30 * 60000);
-      const timeStr = `${format(start, "hh:mm a")} - ${format(next, "hh:mm a")}`;
-      slots.push(timeStr);
-      start = next;
-    }
-    return slots;
+  const handleDaySelection = (day) => {
+    setSelectedDay(day);
   };
 
-  // 🔸 Generate slots for Offline (9AM–5PM)
-  const generateOfflineSlots = () => {
-    const slots = [];
-    let start = setHours(setMinutes(new Date(), 0), 9); // 9 AM start time for offline mode
-    const end = setHours(setMinutes(new Date(), 0), 17); // 5 PM end time for offline mode
-    while (start < end) {
-      const next = new Date(start.getTime() + 30 * 60000);
-      const timeStr = `${format(start, "hh:mm a")} - ${format(next, "hh:mm a")}`;
-      slots.push(timeStr);
-      start = next;
-    }
-    return slots;
-  };
+  const handleSlotClick = (slot) => {
+    if (!selectedDay) return;
 
-  // Track selected mode (Online/Physical)
-  const [mode, setMode] = useState("অনলাইন");
+    setAvailability((prev) => {
+      const updatedDayAvailability = [...prev[selectedDay]];
+      const existingSlotIndex = updatedDayAvailability.findIndex(item => item.time === slot);
 
-  // Selected slots for the entire week
-  const [selectedSlots, setSelectedSlots] = useState({});
+      if (existingSlotIndex > -1) {
+        const existingSlot = updatedDayAvailability[existingSlotIndex];
 
-  // Booked slots (from backend or demo)
-  const [bookedSlots, setBookedSlots] = useState({});
+        // বুক করা স্লট এডিট করা যাবে না
+        if (existingSlot.status === 'booked') {
+          return prev;
+        }
 
-  // Load data from backend
-  useEffect(() => {
-    const fetchSchedule = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/schedule");
-        const scheduleData = response.data;
-        const schedule = {};
-        scheduleData.forEach((s) => {
-          schedule[`${s.mode}-${s.date}`] = s.slots;
-        });
-        setSelectedSlots(schedule);
-      } catch (err) {
-        console.error("Error fetching schedule:", err);
-        alert("❌ কিছু সমস্যা হয়েছে, আবার চেষ্টা করুন।");
-      }
-    };
-
-    // Fetch booked slots
-    const fetchBookedSlots = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/booked-slots");
-        setBookedSlots(response.data);
-      } catch (err) {
-        console.error("Error fetching booked slots:", err);
-        alert("❌ কিছু সমস্যা হয়েছে, আবার চেষ্টা করুন।");
-      }
-    };
-
-    fetchSchedule();
-    fetchBookedSlots();
-  }, []);
-
-  // Get time slots based on mode
-  const getTimeSlots = () => {
-    return mode === "অনলাইন" ? generateOnlineSlots() : generateOfflineSlots();
-  };
-
-  // Toggle slot for the week
-  const toggleSlot = (day, slot) => {
-    const dateStr = format(new Date(), "yyyy-MM-dd");
-
-    // Prevent if booked
-    if (bookedSlots[dateStr]?.includes(slot)) {
-      alert("❌ এই সময়টি ইতিমধ্যে বুক করা হয়েছে!");
-      return;
-    }
-
-    setSelectedSlots((prev) => {
-      const daySlots = prev[`${mode}-${day}`] || [];
-      if (daySlots.includes(slot)) {
-        // remove
-        return {
-          ...prev,
-          [`${mode}-${day}`]: daySlots.filter((s) => s !== slot),
-        };
+        if (existingSlot.type === onlineOffline) {
+          updatedDayAvailability.splice(existingSlotIndex, 1);
+        } else {
+          updatedDayAvailability[existingSlotIndex] = { ...existingSlot, type: onlineOffline, status: "available" };
+        }
       } else {
-        // add
-        return {
-          ...prev,
-          [`${mode}-${day}`]: [...daySlots, slot],
-        };
+        updatedDayAvailability.push({ time: slot, type: onlineOffline, status: "available" });
       }
+
+      return { ...prev, [selectedDay]: updatedDayAvailability };
     });
   };
 
-  // Save schedule for the entire week
   const handleSave = async () => {
-    try {
-      const data = Object.keys(selectedSlots).map((key) => {
-        const [mode, day] = key.split("-");
-        return { day, mode, slots: selectedSlots[key] };
-      });
+    const scheduleData = {
+      doctorID,
+      availability,
+    };
 
-      // Send data to backend
-      await axios.post("http://localhost:8000/schedule", data);
-      alert("✅ সময়সূচি সফলভাবে সংরক্ষণ ও আপডেট করা হয়েছে!");
-    } catch (err) {
-      console.error("Error saving schedule:", err);
-      alert("❌ কিছু সমস্যা হয়েছে, আবার চেষ্টা করুন।");
+    try {
+      const response = await axiosPublic.post('/api/saveSchedule', scheduleData);
+      alert('সফলভাবে রুটিন সেভ করা হয়েছে!'); // 'Schedule saved successfully!' in Bangla
+    } catch (error) {
+      console.error('Error saving schedule:', error);
+      alert('রুটিন সেভ করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।'); // Error message in Bangla
     }
   };
 
   return (
-    <div className="bg-[#E1ECFF] min-h-screen">
-      <div className="max-w-6xl mx-auto p-6 mt-16 bg-base-100 shadow-lg rounded-lg">
-        <h2 className="text-2xl font-bold mb-6 text-center">আপনার সাপ্তাহিক সময়সূচি</h2>
+    <div className="container mx-auto p-6">
 
-        {/* Mode Selector */}
-        <div className="flex justify-center mb-6">
-          <div className="form-control w-52">
-            <div className="flex gap-4 justify-center items-center">
-              <div>
-                <label className="label">
-                  <span className="font-semibold text-black">রোগী দেখার মাধ্যমঃ</span>
-                </label>
-              </div>
-              <div>
-                <select
-                  className="select select-bordered p-2 mx-8 border-2 bd-primary-color"
-                  value={mode}
-                  onChange={(e) => setMode(e.target.value)}
-                >
-                  <option>অনলাইন</option>
-                  <option>অফলাইন</option>
-                </select>
-              </div>
+      <div className='mb-8'>
+        <SectionHeader heading="ডাক্তারের সাপ্তাহিক শিডিউল" subHeading={"আপনার শিডিউল সেট করুন"}></SectionHeader> {/* Set Your Schedule */}
+      </div>
+
+      {/* Day Selection */}
+      <div className="flex gap-4 mb-6">
+        {['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].map((day) => (
+          <button
+            key={day}
+            className={`px-4 py-2 rounded ${selectedDay === day ? 'bg-red-400 text-white' : 'bg-gray-200'}`}
+            onClick={() => handleDaySelection(day)}
+          >
+            {dayNamesInBangla[day]} {/* Display Day Name in Bangla */}
+          </button>
+        ))}
+      </div>
+
+      {/* Slots and Mode Selection */}
+      {selectedDay && (
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold mb-2">
+            {dayNamesInBangla[selectedDay]} এর স্লটসমূহ {/* Available Slots for [Day] */}
+          </h3>
+
+          {/* Online / Offline Toggles */}
+          <div className="flex gap-4 mb-6">
+            <button
+              className={`px-4 py-2 rounded ${onlineOffline === 'online' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+              onClick={() => setOnlineOffline('online')}
+            >
+              অনলাইন {/* Online */}
+            </button>
+            <button
+              className={`px-4 py-2 rounded ${onlineOffline === 'offline' ? 'bg-green-500 text-white' : 'bg-gray-200'}`}
+              onClick={() => setOnlineOffline('offline')}
+            >
+              অফলাইন {/* Offline */}
+            </button>
+
+            <div className={`flex items-center`}>
+              <div className={`w-4 h-4 rounded-full bg-blue-500`}></div>
+              <span className="ml-2">অনলাইন</span> 
+            </div>
+             <div className={`flex items-center`}>
+              <div className={`w-4 h-4 rounded-full bg-green-500`}></div>
+              <span className="ml-2">অফলাইন</span> 
+            </div>
+             <div className={`flex items-center`}>
+              <div className={`w-4 h-4 rounded-full bg-red-400`}></div>
+              <span className="ml-2">বুকড</span> 
             </div>
           </div>
+
+          {/* Time Slots Grid */}
+          <div className="grid grid-cols-4 gap-4">
+            {timeSlots.map((slot, index) => {
+              const slotData = availability[selectedDay].find(item => item.time === slot);
+              let buttonClass = 'bg-white border-gray-300 text-gray-700 hover:bg-gray-100';
+
+              if (slotData) {
+                // প্রাধান্য (Priority): বুকড (লাল) - Booked (Red)
+                if (slotData.status === 'booked') {
+                  buttonClass = 'bg-red-500 text-white border-red-500 cursor-not-allowed opacity-75';
+                }
+                // অনলাইন (নীল) - Online (Blue)
+                else if (slotData.type === 'online') {
+                  buttonClass = 'bg-blue-500 text-white border-blue-500 hover:bg-blue-600';
+                }
+                // অফলাইন (সবুজ) - Offline (Green)
+                else if (slotData.type === 'offline') {
+                  buttonClass = 'bg-green-500 text-white border-green-500 hover:bg-green-600';
+                }
+              }
+
+              return (
+                <button
+                  key={index}
+                  className={`px-4 py-2 border rounded ${buttonClass}`}
+                  onClick={() => handleSlotClick(slot)}
+                  disabled={slotData?.status === "booked"}
+                >
+                  {slot}
+                </button>
+              );
+            })}
+          </div>
         </div>
+      )}
 
-        {/* 7 Days Static Schedule */}
-        <div className="space-y-8">
-          {weekDays.map((day) => {
-            const timeSlots = getTimeSlots();
-            const key = `${mode}-${day.value}`;
-
-            return (
-              <div key={day.value} className="border-2 p-4 rounded-lg">
-                <h3 className="text-lg font-semibold mb-3">{day.name}</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                  {timeSlots.map((slot) => {
-                    const isSelected = selectedSlots[key]?.includes(slot);
-                    const isBooked = bookedSlots[day.value]?.includes(slot);
-
-                    let btnClass = "btn text-xs ";
-                    if (isBooked) {
-                      btnClass += "btn-error text-white"; // Red color for booked slots
-                    } else if (isSelected) {
-                      btnClass += "btn-success text-white"; // Green color for selected slots
-                    } else {
-                      btnClass += "btn-outline text-gray-500"; // Gray for not selected slots
-                    }
-
-                    return (
-                      <button
-                        key={slot}
-                        className={btnClass}
-                        onClick={() => toggleSlot(day.value, slot)}
-                        disabled={isBooked}
-                      >
-                        {slot}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Save Button */}
-        <div className="mt-10 text-center">
-          <Button onClick={handleSave} btnName={"সময়সূচি সংরক্ষণ করুন"} bgColor={"bg-primary-color"} />
-        </div>
-      </div>
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded mt-4 hover:bg-blue-600"
+        onClick={handleSave}
+      >
+        শিডিউল সেভ করুন {/* Save Schedule */}
+      </button>
     </div>
   );
 };

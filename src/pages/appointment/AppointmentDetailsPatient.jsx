@@ -51,7 +51,16 @@ const AppointmentDetailsPatient = () => {
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">অ্যাপয়েন্টমেন্ট সম্পর্কিত তথ্যসমূহঃ</h2>
                     <div className="space-y-4 text-gray-700">
                         <p><strong>মাধ্যমঃ</strong> <span className='bg-secondary-color text-white px-2 py-1 rounded-md text-sm'>{appointment.mode === 'online' ? "অনলাইন" : appointment.mode === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</span></p>
-                        <p><strong>তারিখঃ</strong> {appointment.date || "Not available"}</p>
+                        <p>
+                            <strong>তারিখঃ</strong>{" "}
+                            {appointment.appointmentDate
+                                ? new Date(appointment.appointmentDate).toLocaleDateString("en-BD", {
+                                    day: "2-digit",
+                                    month: "long",
+                                    year: "numeric",
+                                })
+                                : "Not available"}
+                        </p>
                         <p><strong>সময়ঃ</strong> {appointment.slot || "Not available"}</p>
                         <p><strong>ফিঃ</strong> {doctor.consultationFee} টাকা</p>
                         <p><strong>স্ট্যাটাসঃ</strong> <span className={`font-semibold ${appointment.state === "completed" ? "text-green-600" : "text-yellow-600"}`}>{appointment.state || "upcoming"}</span></p>
@@ -95,8 +104,8 @@ const AppointmentDetailsPatient = () => {
                         </div>
 
                         <div>
-                            
-                            
+
+
 
                             <h3 className="text-md font-semibold text-gray-700 mt-2">অভিজ্ঞতা</h3>
                             <p>{doctor.yearsOfExperience} বছর</p>

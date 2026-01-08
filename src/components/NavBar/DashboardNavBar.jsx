@@ -3,8 +3,19 @@ import { patientMenuItems, doctorMenuItems, adminMenuItems } from "../../dashboa
 import { useContext } from "react";
 import { AuthContext } from "../../providers/AuthProvider.jsx";
 import Logo from "../Logo.jsx";
+import useAuth from "../../hooks/useAuth.jsx";
+import usePatient from "../../hooks/usePatient.jsx";
+import useDoctor from "../../hooks/useDoctor.jsx";
 
 const DashboardNavBar = ({ fullName, role }) => {
+    const { user } = useAuth();
+    const [patients] = usePatient();
+    const [doctors] = useDoctor();
+    const patient = patients.find(p => p.email === user?.email);
+    const doctor = doctors.find(d => d.email === user?.email);
+    const displayNames = role === "patient" ? patient?.name : role === "doctor" ? doctor?.name : "Admin";
+    const displayImg = role === "patient" ? patient?.image : role === "doctor" ? doctor?.image : "";
+
     const { logOut } = useContext(AuthContext)
     const location = useLocation();
     const navigate = useNavigate();
@@ -30,19 +41,17 @@ const DashboardNavBar = ({ fullName, role }) => {
 
     return (
         <aside className="w-1/5 bg-white shadow-lg p-6 fixed h-full overflow-y-auto">
-            <div className="mb-4">
-                <Logo></Logo>
-            </div>
-            <div className="mb-12 bg-secondary-color rounded-md py-4 px-4">
-                
-                {/* <h2 className="text-xl font-bold text-[#E8594A]">{fullName}</h2> */}
-                <p className="text-white">
-                    {role === "admin" ? "অ্যাডমিন ড্যাশবোর্ড"
+            <div className="flex flex-col items-center mb-4 ">
+                <img src={displayImg} alt="" className="w-20 h-20 rounded-full object-cover border-2 p-1" />
+                <div className="mt-2">
+                    <p className="font-semibold ">{displayNames}</p>
+                    <p className="text-center text-red-500"> {role === "admin" ? "অ্যাডমিন ড্যাশবোর্ড"
                         : role === "doctor" ? "ডাক্তারের ড্যাশবোর্ড"
-                            : "রোগীর ড্যাশবোর্ড"}
-                </p>
+                            : "রোগীর ড্যাশবোর্ড"}</p>
+                </div>
             </div>
-                        
+            
+
             <ul className="space-y-4">
                 {menuItems.map((item, index) => {
                     const isActive = location.pathname === item.link;
@@ -82,7 +91,7 @@ const DashboardNavBar = ({ fullName, role }) => {
                 })}
             </ul>
 
-            
+
 
         </aside>
     );

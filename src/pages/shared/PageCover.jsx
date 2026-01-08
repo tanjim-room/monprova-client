@@ -2,7 +2,7 @@ import React from "react";
 
 const PageCover = ({coverTitle, coverSubtitle, coverImg}) => {
   return (
-    <div className="relative h-[480px] w-full">
+    <div className="relative h-[280px] w-full">
       {/* Background Image */}
       <img
         className="absolute inset-0 h-full w-full object-cover"

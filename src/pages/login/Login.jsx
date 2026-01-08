@@ -172,7 +172,7 @@ const Login = () => {
                                 type="email"
                                 name="email"
                                 placeholder="আপনার ইমেইল লিখুন"
-                                className="input input-bordered w-full px-4 bg-gray-200"
+                                className="input input-bordered w-full px-4 border bg-white"
                             />
                         </div>
 
@@ -211,7 +211,7 @@ const Login = () => {
                                 type="password"
                                 name="password"
                                 placeholder="আপনার পাসওয়ার্ড লিখুন"
-                                className="input input-bordered w-full px-4 bg-gray-200"
+                                className="input input-bordered w-full px-4 border bg-white"
                             />
 
                             <p className='mt-2'><Link to={"/resetpassword"} className="text-blue-600 hover:underline ">পাসওয়ার্ড ভুলে গেছেন?</Link></p>
