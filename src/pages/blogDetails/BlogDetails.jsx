@@ -35,17 +35,12 @@ const BlogDetails = () => {
 
             <div className="min-h-[850px] p-8 bg-white rounded-md mx-auto">
                 <div className="my-4">
-                    <button className="border-2 rounded-md flex justify-center items-center hover:bg-[#E8594A] hover:text-white transition">
-                        <Link
-                            to="/patientDashboard/resources"
-                            className="flex items-center gap-6 px-4 py-2 font-semibold text-xl rounded-md "
-                        >
-                            <div className='flex gap-4 items-center'>
-                                {/* <span className="text-xl"><IoArrowBackSharp></IoArrowBackSharp></span> */}
-                                <span className='text-center text-lg'>ফিরে যান</span>
-                            </div>
-                        </Link>
-                    </button>
+                    <Link
+                        to="/dashboardPatient/resources/blogs"
+                        className="border-2 rounded-md inline-flex items-center hover:bg-[#E8594A] hover:text-white transition px-4 py-2 font-semibold text-lg"
+                    >
+                        <span className='text-center'>ফিরে যান</span>
+                    </Link>
                 </div>
                 <div className="mb-8 ">
                     <img src={blog.thumbnail || ""} alt="" className="h-[480px] w-full object-cover rounded-md" />
