@@ -27,7 +27,7 @@ const DoctorCard = ({ doctor }) => {
                 <div className="badge badge-error text-white bg-secondary-color text-sm mt-2">পরামর্শ ফি: {consultationFee} টাকা</div>
             </div>
             <div className="mb-4 mx-4">
-                <Link to={`doctorDetails/${_id}`}>
+                <Link to={`/doctorDetails/${_id}`}>
                     <Button btnName={"বিস্তারিত দেখুন"} bgColor="bg-primary-color w-full py-2"></Button>
                 </Link>
             </div>

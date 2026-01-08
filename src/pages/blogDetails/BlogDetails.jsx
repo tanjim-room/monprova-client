@@ -1,6 +1,7 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
-
+import { useContext } from 'react';
+import { AuthContext } from '../../providers/AuthProvider';
 import useBlogs from "../../hooks/useBlogs";
 
 // blog data
@@ -9,6 +10,7 @@ import useBlogs from "../../hooks/useBlogs";
 const BlogDetails = () => {
     const [blogs] = useBlogs();
     const { blogId } = useParams();
+    const { user } = useContext(AuthContext);
 
     // if (loading) {
     //     return (
@@ -36,7 +38,7 @@ const BlogDetails = () => {
             <div className="min-h-[850px] p-8 bg-white rounded-md mx-auto">
                 <div className="my-4">
                     <Link
-                        to="/dashboardPatient/resources/blogs"
+                        to={user ? "/dashboardPatient/resources" : "/"}
                         className="border-2 rounded-md inline-flex items-center hover:bg-[#E8594A] hover:text-white transition px-4 py-2 font-semibold text-lg"
                     >
                         <span className='text-center'>ফিরে যান</span>
