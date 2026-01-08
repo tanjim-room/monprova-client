@@ -38,6 +38,7 @@ import PrescriptionDetails from "../pages/prescription/PrescriptionDetails";
 import Prescription from "../pages/prescription/Prescription";
 import AdminLogin from "../pages/admin/AdminLogin";
 import PatientHelp from "../pages/help/PatientHelp";
+import PatientFAQ from "../pages/patient/PatientFAQ";
 import AssessmentList from "../pages/assessment/AssessmentList";
 import AssessmentForm from "../pages/assessment/AssessmentForm";
 import AssessmentResults from "../pages/assessment/AssessmentResults";
@@ -210,6 +211,10 @@ export const router = createBrowserRouter([
       {
         path: "patientHelp",
         element: <PatientHelp></PatientHelp>
+      },
+      {
+        path: "faq",
+        element: <PatientFAQ></PatientFAQ>
       },
       {
         path: "doctorList",

@@ -382,7 +382,6 @@ const DoctorProfile = () => {
                 nidBack: nidBackUrl,
                 certificates: certificateUrls,
                 shortBio,
-                verificationStatus: verificationStatus === 'verified' ? 'pending' : 'not-verified',
                 // Don't send verificationStatus - preserve it in database
             };
 
