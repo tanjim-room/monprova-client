@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
-import { FaEye, FaTrash, FaSearch } from "react-icons/fa";
+import { FaEye, FaTrash, FaSearch, FaSortAmountDown, FaSortAmountUp } from "react-icons/fa";
 
 const UserManagement = () => {
   const navigate = useNavigate();
@@ -13,6 +13,9 @@ const UserManagement = () => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [profileFilter, setProfileFilter] = useState("all");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,8 +23,8 @@ const UserManagement = () => {
   }, []);
 
   useEffect(() => {
-    filterUsers();
-  }, [searchQuery, roleFilter, users]);
+    filterAndSortUsers();
+  }, [searchQuery, roleFilter, users, sortBy, sortOrder, profileFilter]);
 
   const fetchAllData = async () => {
     try {
@@ -54,7 +57,7 @@ const UserManagement = () => {
     }
   };
 
-  const filterUsers = () => {
+  const filterAndSortUsers = () => {
     let filtered = users;
 
     // Filter to show only patient users (exclude doctors and admins based on role field)
@@ -70,6 +73,39 @@ const UserManagement = () => {
         user.email?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
+
+    // Filter by profile completion status
+    if (profileFilter !== "all") {
+      if (profileFilter === "completed") {
+        filtered = filtered.filter(user => user.updatedAt != null);
+      } else if (profileFilter === "incomplete") {
+        filtered = filtered.filter(user => user.updatedAt == null);
+      }
+    }
+
+    // Sort users
+    filtered.sort((a, b) => {
+      let compareValue = 0;
+
+      switch(sortBy) {
+        case "name":
+          compareValue = (a.name || "").localeCompare(b.name || "");
+          break;
+        case "email":
+          compareValue = (a.email || "").localeCompare(b.email || "");
+          break;
+        case "createdAt":
+          compareValue = new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+          break;
+        case "updatedAt":
+          compareValue = new Date(a.updatedAt || 0) - new Date(b.updatedAt || 0);
+          break;
+        default:
+          compareValue = 0;
+      }
+
+      return sortOrder === "asc" ? compareValue : -compareValue;
+    });
 
     setFilteredUsers(filtered);
   };
@@ -173,6 +209,63 @@ const UserManagement = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+            </div>
+
+            {/* Filters and Sort */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Profile Status Filter */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  প্রোফাইল স্ট্যাটাস
+                </label>
+                <select
+                  value={profileFilter}
+                  onChange={(e) => setProfileFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">সব</option>
+                  <option value="completed">সম্পূর্ণ প্রোফাইল</option>
+                  <option value="incomplete">অসম্পূর্ণ প্রোফাইল</option>
+                </select>
+              </div>
+
+              {/* Sort By */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  সাজান
+                </label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="name">নাম অনুসারে</option>
+                  <option value="email">ইমেইল অনুসারে</option>
+                  <option value="createdAt">নিবন্ধনের তারিখ অনুসারে</option>
+                  <option value="updatedAt">আপডেট তারিখ অনুসারে</option>
+                </select>
+              </div>
+
+              {/* Sort Order */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ক্রম
+                </label>
+                <button
+                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center gap-2"
+                >
+                  {sortOrder === "asc" ? (
+                    <>
+                      <FaSortAmountUp /> ঊর্ধ্বক্রম
+                    </>
+                  ) : (
+                    <>
+                      <FaSortAmountDown /> নিম্নক্রম
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 

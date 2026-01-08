@@ -18,6 +18,7 @@ const Income = () => {
 
   const fetchDoctorData = useCallback(async (doctorId, doctorFee) => {
     try {
+      console.log("=== INCOME PAGE DEBUG START ===");
       console.log("Fetching data for doctorId:", doctorId);
       console.log("Doctor consultation fee:", doctorFee);
       
@@ -26,21 +27,36 @@ const Income = () => {
       const allAppointments = appointmentsResponse.data;
       console.log("Total appointments fetched:", allAppointments.length);
       
-      // Filter by doctorID and state = 'completed'
-      const completedAppointments = allAppointments.filter(app => 
-        app.doctorID === doctorId && 
-        (app.state === 'completed' || app.state === 'Completed')
+      // Filter by doctorID
+      const doctorAppointments = allAppointments.filter(app => app.doctorID === doctorId);
+      console.log(`Appointments for doctor ${doctorId}:`, doctorAppointments.length);
+      console.log("Sample appointment:", doctorAppointments[0]);
+      
+      // Filter by state = 'completed'
+      const completedAppointments = doctorAppointments.filter(app => 
+        app.state === 'completed' || app.state === 'Completed'
       );
-      console.log("Completed appointments for this doctor:", completedAppointments);
+      console.log("Completed appointments for this doctor:", completedAppointments.length);
+      console.log("Completed appointments data:", completedAppointments);
+      console.log("Fees from completed:", completedAppointments.map(app => ({ 
+        id: app._id, 
+        fee: app.fee, 
+        feeType: typeof app.fee,
+        patientName: app.patientName 
+      })));
 
       setAppointments(completedAppointments);
 
-      // Calculate total income using doctor's consultation fee
-      const fee = Number(doctorFee) || 0;
-      const total = completedAppointments.length * fee;
+      // Calculate total income using actual fee from each appointment
+      const total = completedAppointments.reduce((sum, app) => {
+        const appointmentFee = Number(app.fee) || Number(doctorFee) || 0;
+        console.log(`Processing appointment ${app._id}: fee=${app.fee}, doctorFee=${doctorFee}, using=${appointmentFee}`);
+        return sum + appointmentFee;
+      }, 0);
       const net = total * 0.8; // 80% to doctor
 
-      console.log("Total income:", total, "Net income:", net);
+      console.log("TOTAL INCOME:", total);
+      console.log("NET INCOME (80%):", net);
       
       setTotalIncome(total);
       setNetIncome(net);
@@ -59,6 +75,7 @@ const Income = () => {
       setTotalReceived(received);
       setPayouts(doctorPayouts);
       setPending(net - received);
+      console.log("=== INCOME PAGE DEBUG END ===");
       setIsLoading(false);
 
     } catch (error) {
@@ -161,7 +178,7 @@ const Income = () => {
                   </tr>
                 ) : (
                   appointments.map((app, index) => {
-                    const fee = Number(doctor?.consultationFee) || 0;
+                    const fee = Number(app.fee) || Number(doctor?.consultationFee) || 0;
                     const deduction = fee * 0.2;
                     const net = fee * 0.8;
                     const appointmentDate = app.createdAt || app.date || new Date().toISOString();

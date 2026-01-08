@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
-import { FaEye, FaSearch, FaSort } from "react-icons/fa";
+import { FaEye, FaSearch } from "react-icons/fa";
 
 const AppointmentInfo = () => {
   const navigate = useNavigate();
@@ -12,8 +12,10 @@ const AppointmentInfo = () => {
   const [patients, setPatients] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterBy, setFilterBy] = useState("all");
-  const [sortBy, setSortBy] = useState("date-desc");
+  const [stateFilter, setStateFilter] = useState("all");
+  const [modeFilter, setModeFilter] = useState("all");
+  const [paymentFilter, setPaymentFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("appointmentDate");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +24,7 @@ const AppointmentInfo = () => {
 
   useEffect(() => {
     filterAndSortAppointments();
-  }, [searchQuery, filterBy, sortBy, appointments]);
+  }, [searchQuery, stateFilter, modeFilter, paymentFilter, sortBy, appointments]);
 
   const fetchAllData = async () => {
     try {
@@ -63,17 +65,26 @@ const AppointmentInfo = () => {
 
   const filterAndSortAppointments = () => {
     let filtered = [...appointments];
-    const currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
 
-    // Filter by completed/upcoming
-    if (filterBy === "completed") {
-      filtered = filtered.filter(apt => apt.state === "completed");
-    } else if (filterBy === "upcoming") {
-      filtered = filtered.filter(apt => {
-        const aptDate = new Date(apt.appointmentDate);
-        return aptDate >= currentDate && apt.state !== "completed" && apt.state !== "cancelled";
-      });
+    // Filter by state (upcoming/completed/etc)
+    if (stateFilter !== "all") {
+      if (stateFilter === "upcoming") {
+        filtered = filtered.filter(apt => apt.state === "upcoming");
+      } else if (stateFilter === "completed") {
+        filtered = filtered.filter(apt => apt.state === "completed");
+      } else if (stateFilter === "cancelled") {
+        filtered = filtered.filter(apt => apt.state === "cancelled");
+      }
+    }
+
+    // Filter by mode (online/offline)
+    if (modeFilter !== "all") {
+      filtered = filtered.filter(apt => apt.mode === modeFilter);
+    }
+
+    // Filter by payment status
+    if (paymentFilter !== "all") {
+      filtered = filtered.filter(apt => apt.paymentStatus === paymentFilter);
     }
 
     // Filter by search query (doctor name, patient name, or email)
@@ -91,17 +102,33 @@ const AppointmentInfo = () => {
     }
 
     // Sort appointments
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "date-desc":
-          return new Date(b.appointmentDate) - new Date(a.appointmentDate);
-        case "date-asc":
-          return new Date(a.appointmentDate) - new Date(b.appointmentDate);
-        case "status":
-          return (a.state || "").localeCompare(b.state || "");
+    filtered = [...filtered].sort((a, b) => {
+      let compareValue = 0;
+
+      switch(sortBy) {
+        case "appointmentDate":
+          compareValue = new Date(a.appointmentDate || 0) - new Date(b.appointmentDate || 0);
+          break;
+        case "createdAt":
+          compareValue = new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+          break;
+        case "state":
+          compareValue = (a.state || "").localeCompare(b.state || "");
+          break;
+        case "doctorName":
+          compareValue = getDoctorName(a.doctorID).localeCompare(getDoctorName(b.doctorID));
+          break;
+        case "patientName":
+          compareValue = getPatientName(a.patientID).localeCompare(getPatientName(b.patientID));
+          break;
+        case "consultationFee":
+          compareValue = (a.consultationFee || 0) - (b.consultationFee || 0);
+          break;
         default:
-          return 0;
+          compareValue = 0;
       }
+
+      return compareValue;
     });
 
     setFilteredAppointments(filtered);
@@ -172,8 +199,8 @@ const AppointmentInfo = () => {
 
         {/* Search and Filter Section */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Search */}
+          {/* Search Bar */}
+          <div className="mb-4">
             <div className="relative">
               <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input
@@ -184,31 +211,76 @@ const AppointmentInfo = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+          </div>
 
-            {/* Filter */}
+          {/* Filters Row */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* State Filter */}
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                অবস্থা
+              </label>
               <select
-                value={filterBy}
-                onChange={(e) => setFilterBy(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={stateFilter}
+                onChange={(e) => setStateFilter(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="all">সকল অ্যাপয়েন্টমেন্ট</option>
+                <option value="all">সব</option>
                 <option value="upcoming">আসন্ন</option>
                 <option value="completed">সম্পন্ন</option>
+                <option value="cancelled">বাতিল</option>
               </select>
             </div>
 
-            {/* Sort */}
-            <div className="relative">
-              <FaSort className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            {/* Mode Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                মাধ্যম
+              </label>
+              <select
+                value={modeFilter}
+                onChange={(e) => setModeFilter(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">সব</option>
+                <option value="online">অনলাইন</option>
+                <option value="offline">অফলাইন</option>
+              </select>
+            </div>
+
+            {/* Payment Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                পেমেন্ট
+              </label>
+              <select
+                value={paymentFilter}
+                onChange={(e) => setPaymentFilter(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="all">সব</option>
+                <option value="paid">পরিশোধিত</option>
+                <option value="pending">অপেক্ষমাণ</option>
+                <option value="failed">ব্যর্থ</option>
+              </select>
+            </div>
+
+            {/* Sort By */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                সাজান
+              </label>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="date-desc">তারিখ (নতুন প্রথম)</option>
-                <option value="date-asc">তারিখ (পুরাতন প্রথম)</option>
-                <option value="status">অবস্থা অনুসারে</option>
+                <option value="appointmentDate">অ্যাপয়েন্টমেন্ট তারিখ</option>
+                <option value="createdAt">তৈরির তারিখ</option>
+                <option value="state">অবস্থা</option>
+                <option value="doctorName">ডাক্তারের নাম</option>
+                <option value="patientName">রোগীর নাম</option>
+                <option value="consultationFee">ফি</option>
               </select>
             </div>
           </div>

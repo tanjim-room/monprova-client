@@ -422,6 +422,58 @@ const VerificationRequests = () => {
                                         <p className="text-lg text-gray-800 mb-3">{selectedDoctor.shortBio || 'N/A'}</p>
                                     </div>
 
+                                    {/* NID Images */}
+                                    <div className="col-span-2">
+                                        <p className="text-sm text-gray-600 font-semibold mb-3">জাতীয় পরিচয়পত্র (NID):</p>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {selectedDoctor.nidFront && (
+                                                <div className="border rounded-lg overflow-hidden">
+                                                    <p className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-2">NID সামনের অংশ</p>
+                                                    <img 
+                                                        src={selectedDoctor.nidFront} 
+                                                        alt="NID Front"
+                                                        className="w-full h-64 object-contain bg-gray-50 cursor-pointer hover:opacity-90 transition"
+                                                        onClick={() => window.open(selectedDoctor.nidFront, '_blank')}
+                                                    />
+                                                </div>
+                                            )}
+                                            {selectedDoctor.nidBack && (
+                                                <div className="border rounded-lg overflow-hidden">
+                                                    <p className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-2">NID পিছনের অংশ</p>
+                                                    <img 
+                                                        src={selectedDoctor.nidBack} 
+                                                        alt="NID Back"
+                                                        className="w-full h-64 object-contain bg-gray-50 cursor-pointer hover:opacity-90 transition"
+                                                        onClick={() => window.open(selectedDoctor.nidBack, '_blank')}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                        {!selectedDoctor.nidFront && !selectedDoctor.nidBack && (
+                                            <p className="text-gray-500 italic">কোনো NID ছবি আপলোড করা হয়নি</p>
+                                        )}
+                                    </div>
+
+                                    {/* Certificates */}
+                                    {selectedDoctor.certificates && selectedDoctor.certificates.length > 0 && (
+                                        <div className="col-span-2">
+                                            <p className="text-sm text-gray-600 font-semibold mb-3">সার্টিফিকেট ও ডিগ্রি:</p>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                {selectedDoctor.certificates.map((cert, index) => (
+                                                    <div key={index} className="border rounded-lg overflow-hidden">
+                                                        <p className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-2">সার্টিফিকেট {index + 1}</p>
+                                                        <img 
+                                                            src={cert} 
+                                                            alt={`Certificate ${index + 1}`}
+                                                            className="w-full h-64 object-contain bg-gray-50 cursor-pointer hover:opacity-90 transition"
+                                                            onClick={() => window.open(cert, '_blank')}
+                                                        />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
                                     {/* Rejection Reason if rejected */}
                                     {selectedDoctor.verificationStatus === 'rejected' && selectedDoctor.rejectionReason && (
                                         <div className="col-span-2 bg-red-50 border border-red-200 rounded-lg p-4">
@@ -433,21 +485,21 @@ const VerificationRequests = () => {
 
                                 {/* Action Buttons */}
                                 <div className="flex gap-4 mt-6">
-                                    {selectedDoctor.verificationStatus !== 'verified' && (
-                                        <button
-                                            onClick={() => handleVerifyDoctor(selectedDoctor._id)}
-                                            className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition flex items-center justify-center gap-2"
-                                        >
-                                            <FaCheck /> ভেরিফাই করুন
-                                        </button>
-                                    )}
-                                    {selectedDoctor.verificationStatus !== 'rejected' && (
-                                        <button
-                                            onClick={() => handleRejectDoctor(selectedDoctor._id)}
-                                            className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition flex items-center justify-center gap-2"
-                                        >
-                                            <FaTimes /> প্রত্যাখ্যান করুন
-                                        </button>
+                                    {selectedDoctor.verificationStatus === 'pending' && (
+                                        <>
+                                            <button
+                                                onClick={() => handleVerifyDoctor(selectedDoctor._id)}
+                                                className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition flex items-center justify-center gap-2"
+                                            >
+                                                <FaCheck /> ভেরিফাই করুন
+                                            </button>
+                                            <button
+                                                onClick={() => handleRejectDoctor(selectedDoctor._id)}
+                                                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition flex items-center justify-center gap-2"
+                                            >
+                                                <FaTimes /> প্রত্যাখ্যান করুন
+                                            </button>
+                                        </>
                                     )}
                                     <button
                                         onClick={() => setShowModal(false)}

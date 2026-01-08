@@ -10,9 +10,16 @@ const DoctorDetails = () => {
   const axiosSecure = useAxiosSecure();
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [appointments, setAppointments] = useState([]);
+  const [appointmentStats, setAppointmentStats] = useState({
+    total: 0,
+    upcoming: 0,
+    completed: 0
+  });
 
   useEffect(() => {
     fetchDoctorDetails();
+    fetchAppointments();
   }, [id]);
 
   const fetchDoctorDetails = async () => {
@@ -29,6 +36,28 @@ const DoctorDetails = () => {
         confirmButtonColor: "#d33"
       });
       setLoading(false);
+    }
+  };
+
+  const fetchAppointments = async () => {
+    try {
+      const response = await axiosSecure.get("/api/appointments");
+      const doctorAppointments = response.data.filter(
+        apt => apt.doctorID === id && apt.paymentStatus === "paid"
+      );
+      setAppointments(doctorAppointments);
+      
+      // Calculate statistics
+      const upcoming = doctorAppointments.filter(apt => apt.state === "upcoming").length;
+      const completed = doctorAppointments.filter(apt => apt.state === "completed").length;
+      
+      setAppointmentStats({
+        total: doctorAppointments.length,
+        upcoming: upcoming,
+        completed: completed
+      });
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
     }
   };
 
@@ -102,6 +131,43 @@ const DoctorDetails = () => {
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
             ডাক্তারের বিস্তারিত তথ্য
           </h2>
+
+          {/* Verification Status Badge */}
+          <div className="mb-6 flex justify-center">
+            {doctor.verificationStatus === 'verified' ? (
+              <span className="px-6 py-3 rounded-full bg-green-100 text-green-700 text-lg font-semibold border-2 border-green-300">
+                ✓ ভেরিফাইড
+              </span>
+            ) : doctor.verificationStatus === 'pending' ? (
+              <span className="px-6 py-3 rounded-full bg-yellow-100 text-yellow-700 text-lg font-semibold border-2 border-yellow-300">
+                ⏳ অপেক্ষমাণ
+              </span>
+            ) : doctor.verificationStatus === 'rejected' ? (
+              <span className="px-6 py-3 rounded-full bg-red-100 text-red-700 text-lg font-semibold border-2 border-red-300">
+                ✗ প্রত্যাখ্যাত
+              </span>
+            ) : (
+              <span className="px-6 py-3 rounded-full bg-gray-100 text-gray-700 text-lg font-semibold border-2 border-gray-300">
+                ○ ভেরিফাইড নয়
+              </span>
+            )}
+          </div>
+
+          {/* Appointment Statistics */}
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 text-center">
+              <p className="text-sm text-gray-600 font-semibold mb-1">মোট অ্যাপয়েন্টমেন্ট</p>
+              <p className="text-3xl font-bold text-blue-600">{appointmentStats.total}</p>
+            </div>
+            <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 text-center">
+              <p className="text-sm text-gray-600 font-semibold mb-1">আসন্ন অ্যাপয়েন্টমেন্ট</p>
+              <p className="text-3xl font-bold text-yellow-600">{appointmentStats.upcoming}</p>
+            </div>
+            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 text-center">
+              <p className="text-sm text-gray-600 font-semibold mb-1">সম্পন্ন অ্যাপয়েন্টমেন্ট</p>
+              <p className="text-3xl font-bold text-green-600">{appointmentStats.completed}</p>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Doctor ID */}
@@ -249,13 +315,111 @@ const DoctorDetails = () => {
                 <p className="text-lg text-gray-800">{formatDate(doctor.updatedAt)}</p>
               </div>
             )}
+
+            {/* Verification Request Date */}
+            {doctor.verificationRequestedAt && (
+              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                <p className="text-sm text-gray-600 mb-1 font-semibold">ভেরিফিকেশন অনুরোধের তারিখ</p>
+                <p className="text-lg text-gray-800">{formatDate(doctor.verificationRequestedAt)}</p>
+              </div>
+            )}
+
+            {/* Verified At */}
+            {doctor.verifiedAt && doctor.verificationStatus === 'verified' && (
+              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                <p className="text-sm text-gray-600 mb-1 font-semibold">ভেরিফাই করার তারিখ</p>
+                <p className="text-lg text-gray-800">{formatDate(doctor.verifiedAt)}</p>
+              </div>
+            )}
+
+            {/* Verification Updated At (for rejected status) */}
+            {doctor.verificationUpdatedAt && doctor.verificationStatus === 'rejected' && (
+              <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                <p className="text-sm text-gray-600 mb-1 font-semibold">প্রত্যাখ্যানের তারিখ</p>
+                <p className="text-lg text-gray-800">{formatDate(doctor.verificationUpdatedAt)}</p>
+              </div>
+            )}
           </div>
+
+          {/* Rejection Reason */}
+          {doctor.verificationStatus === 'rejected' && doctor.rejectionReason && (
+            <div className="mt-6 bg-red-50 border-2 border-red-200 p-4 rounded-lg">
+              <p className="text-sm text-red-600 font-semibold mb-2">প্রত্যাখ্যানের কারণ:</p>
+              <p className="text-gray-800">{doctor.rejectionReason}</p>
+            </div>
+          )}
 
           {/* Bio/Description */}
           {doctor.shortBio && (
             <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
               <p className="text-sm text-gray-600 mb-1 font-semibold">সম্পর্কে</p>
               <p className="text-gray-800">{doctor.shortBio}</p>
+            </div>
+          )}
+
+          {/* Profile Image */}
+          {doctor.image && (
+            <div className="mt-6">
+              <p className="text-sm text-gray-600 font-semibold mb-3">প্রোফাইল ছবি:</p>
+              <div className="flex justify-center">
+                <img 
+                  src={doctor.image} 
+                  alt="Doctor Profile"
+                  className="w-48 h-48 object-cover rounded-full border-4 border-gray-200 cursor-pointer hover:opacity-90 transition"
+                  onClick={() => window.open(doctor.image, '_blank')}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* NID Images */}
+          {(doctor.nidFront || doctor.nidBack) && (
+            <div className="mt-6">
+              <p className="text-sm text-gray-600 font-semibold mb-3">জাতীয় পরিচয়পত্র (NID):</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {doctor.nidFront && (
+                  <div className="border rounded-lg overflow-hidden">
+                    <p className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-2">NID সামনের অংশ</p>
+                    <img 
+                      src={doctor.nidFront} 
+                      alt="NID Front"
+                      className="w-full h-64 object-contain bg-gray-50 cursor-pointer hover:opacity-90 transition"
+                      onClick={() => window.open(doctor.nidFront, '_blank')}
+                    />
+                  </div>
+                )}
+                {doctor.nidBack && (
+                  <div className="border rounded-lg overflow-hidden">
+                    <p className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-2">NID পিছনের অংশ</p>
+                    <img 
+                      src={doctor.nidBack} 
+                      alt="NID Back"
+                      className="w-full h-64 object-contain bg-gray-50 cursor-pointer hover:opacity-90 transition"
+                      onClick={() => window.open(doctor.nidBack, '_blank')}
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Certificates */}
+          {doctor.certificates && doctor.certificates.length > 0 && (
+            <div className="mt-6">
+              <p className="text-sm text-gray-600 font-semibold mb-3">সার্টিফিকেট ও ডিগ্রি:</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {doctor.certificates.map((cert, index) => (
+                  <div key={index} className="border rounded-lg overflow-hidden">
+                    <p className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-2">সার্টিফিকেট {index + 1}</p>
+                    <img 
+                      src={cert} 
+                      alt={`Certificate ${index + 1}`}
+                      className="w-full h-64 object-contain bg-gray-50 cursor-pointer hover:opacity-90 transition"
+                      onClick={() => window.open(cert, '_blank')}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
