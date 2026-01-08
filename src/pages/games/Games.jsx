@@ -42,38 +42,38 @@ const Games = () => {
     };
 
     return (
-        <div className="min-h-[850px] bg-[#E1ECFF] rounded-lg mt-16 p-10">
-            <div className="max-w-6xl mx-auto">
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-gray-800 mb-4">
+        <div className="h-[calc(100vh-80px)] bg-[#E1ECFF] rounded-lg mt-0 p-4 overflow-auto">
+            <div className="">
+                <div className="text-center mb-6 p-4">
+                    <h1 className="text-3xl font-bold text-gray-800 mb-2">
                         🎮 মানসিক স্বাস্থ্য গেমস
                     </h1>
-                    <p className="text-lg text-gray-600">
+                    <p className="text-base text-gray-600">
                         খেলার মাধ্যমে আপনার মানসিক স্বাস্থ্য উন্নত করুন
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 p-4">
                     {games.map((game) => (
                         <div
                             key={game.id}
                             onClick={() => handleGameClick(game.route)}
-                            className={`bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:scale-105 border-4 ${game.borderColor} overflow-hidden`}
+                            className={`bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:scale-105 border-3 ${game.borderColor} overflow-hidden`}
                         >
-                            <div className={`bg-gradient-to-br ${game.color} p-8 text-center`}>
-                                <div className="text-7xl mb-4">{game.icon}</div>
-                                <h2 className="text-2xl font-bold text-white mb-2">
+                            <div className={`bg-gradient-to-br ${game.color} p-6 text-center`}>
+                                <div className="text-5xl mb-3">{game.icon}</div>
+                                <h2 className="text-xl font-bold text-white mb-1">
                                     {game.title}
                                 </h2>
-                                <p className="text-white text-opacity-90">
+                                <p className="text-sm text-white text-opacity-90">
                                     {game.subtitle}
                                 </p>
                             </div>
-                            <div className="p-6">
-                                <p className="text-gray-700 text-center leading-relaxed">
+                            <div className="p-4">
+                                <p className="text-sm text-gray-700 text-center leading-relaxed mb-3">
                                     {game.description}
                                 </p>
-                                <button className="w-full mt-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 transition shadow-md">
+                                <button className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-indigo-700 transition shadow-md block mx-auto">
                                     খেলা শুরু করুন
                                 </button>
                             </div>
@@ -81,27 +81,25 @@ const Games = () => {
                     ))}
                 </div>
 
-                <div className="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 border border-blue-200">
-                    <div className="text-center">
-                        <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                            💡 কেন খেলা গুরুত্বপূর্ণ?
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-                            <div className="bg-white rounded-lg p-6 shadow-md">
-                                <div className="text-4xl mb-3">😌</div>
-                                <h4 className="font-semibold text-gray-800 mb-2">মানসিক চাপ কমায়</h4>
-                                <p className="text-sm text-gray-600">খেলা আপনার মনকে বিশ্রাম দেয় এবং চাপ কমায়</p>
-                            </div>
-                            <div className="bg-white rounded-lg p-6 shadow-md">
-                                <div className="text-4xl mb-3">🧠</div>
-                                <h4 className="font-semibold text-gray-800 mb-2">মনোযোগ বাড়ায়</h4>
-                                <p className="text-sm text-gray-600">নিয়মিত খেলা মনোযোগ এবং একাগ্রতা উন্নত করে</p>
-                            </div>
-                            <div className="bg-white rounded-lg p-6 shadow-md">
-                                <div className="text-4xl mb-3">😊</div>
-                                <h4 className="font-semibold text-gray-800 mb-2">মেজাজ ভালো করে</h4>
-                                <p className="text-sm text-gray-600">খেলা আনন্দদায়ক হরমোন নিঃসরণ করে</p>
-                            </div>
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl mx-4 p-4 py-8 border border-blue-200">
+                    <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
+                        💡 কেন খেলা গুরুত্বপূর্ণ?
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="bg-white rounded-lg p-4 shadow-md">
+                            <div className="text-3xl mb-2 text-center">😌</div>
+                            <h4 className="font-semibold text-gray-800 mb-1 text-center">মানসিক চাপ কমায়</h4>
+                            <p className="text-sm text-gray-600 text-center">খেলা আপনার মনকে বিশ্রাম দেয় এবং চাপ কমায়</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 shadow-md">
+                            <div className="text-3xl mb-2 text-center">🧠</div>
+                            <h4 className="font-semibold text-gray-800 mb-1 text-center">মনোযোগ বাড়ায়</h4>
+                            <p className="text-sm text-gray-600 text-center">নিয়মিত খেলা মনোযোগ এবং একাগ্রতা উন্নত করে</p>
+                        </div>
+                        <div className="bg-white rounded-lg p-4 shadow-md">
+                            <div className="text-3xl mb-2 text-center">😊</div>
+                            <h4 className="font-semibold text-gray-800 mb-1 text-center">মেজাজ ভালো করে</h4>
+                            <p className="text-sm text-gray-600 text-center">খেলা আনন্দদায়ক হরমোন নিঃসরণ করে</p>
                         </div>
                     </div>
                 </div>

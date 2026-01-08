@@ -1,7 +1,8 @@
 import heroImg from '../../../assets/heroBanner.jpg';
 import Button from '../../../components/Button';
 import { Link } from 'react-router-dom';
-import Logo from '../../../components/Logo';
+
+import HomeNavbar from '../../../components/NavBar/HomeNavBar';
 
 const Hero = () => {
   return (
@@ -13,9 +14,7 @@ const Hero = () => {
       }}
     >
       {/* Logo top-left */}
-      <div className="absolute top-12 left-24 z-50">
-        <Logo />
-      </div>
+     <HomeNavbar></HomeNavbar>
 
       {/* Hero content */}
       <div className="max-w-lg ml-24">
@@ -30,11 +29,11 @@ const Hero = () => {
         </p>
 
         <section className="flex gap-4">
-          <Link to="/patientLogin">
-            <Button btnName="রোগী হিসেবে শুরু করুন" bgColor="bg-secondary-color" />
+          <Link to="/login">
+            <Button btnName="লগইন করুন" bgColor="bg-secondary-color" />
           </Link>
-          <Link to="/doctorLogin">
-            <Button btnName="ডাক্তার হিসেবে শুরু করুন" bgColor="bg-primary-color" />
+          <Link to="/signup">
+            <Button btnName="সাইন আপ করুন" bgColor="bg-primary-color" />
           </Link>
         </section>
       </div>

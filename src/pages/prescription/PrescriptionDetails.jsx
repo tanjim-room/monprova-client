@@ -56,15 +56,18 @@ const PrescriptionDetails = () => {
           <div
             className="w-full p-4 border-2 border-gray-300 rounded-md pb-8 bg-white"
           >
+            <p className='font-bold'>সমস্যাঃ</p>
             <p className='mb-8'>{prescription?.diagnosis}</p>
 
-            {
-              prescription?.medicines?.map((medicine, idx) => <div className='flex justify-evenly items-center'>
+           <div className='px-16'>
+             {
+              prescription?.medicines?.map((medicine, idx) => <div className='flex justify-between items-center'>
                 <p>{idx + 1}. {medicine.name}</p>
                 <p>{medicine.dose}</p>
                 <p>{medicine.duration} days</p>
               </div>)
             }
+           </div>
           </div>
         </div>
       </div>
