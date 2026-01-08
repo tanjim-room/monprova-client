@@ -369,6 +369,7 @@ const DoctorProfile = () => {
                 mobileNo,
                 bkashAccount,
                 nidNo,
+                verificationStatus:"pending",
                 nidFront: nidFrontUrl,
                 nidBack: nidBackUrl,
                 certificates: certificateUrls,
