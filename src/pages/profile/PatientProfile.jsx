@@ -349,7 +349,7 @@ const PatientProfile = () => {
                   }}
                   className="btn btn-outline w-1/2 flex gap-2 bg-secondary-color text-white py-4"
                 >
-                  ক্যানসেল
+                  বাতিল করুন
                 </button>
               </>
             )}

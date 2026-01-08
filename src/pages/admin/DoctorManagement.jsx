@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
-import { FaEye, FaTrash, FaSearch } from "react-icons/fa";
+import { FaEye, FaTrash, FaSearch, FaSortAmountDown, FaSortAmountUp } from "react-icons/fa";
 
 const DoctorManagement = () => {
   const navigate = useNavigate();
@@ -11,14 +11,17 @@ const DoctorManagement = () => {
   const [filteredDoctors, setFilteredDoctors] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [verificationFilter, setVerificationFilter] = useState("all");
 
   useEffect(() => {
     fetchDoctors();
   }, []);
 
   useEffect(() => {
-    filterDoctors();
-  }, [searchQuery, doctors]);
+    filterAndSortDoctors();
+  }, [searchQuery, doctors, sortBy, sortOrder, verificationFilter]);
 
   const fetchDoctors = async () => {
     try {
@@ -38,7 +41,7 @@ const DoctorManagement = () => {
     }
   };
 
-  const filterDoctors = () => {
+  const filterAndSortDoctors = () => {
     let filtered = doctors;
 
     // Filter by search query (name or email)
@@ -49,6 +52,40 @@ const DoctorManagement = () => {
         doctor.expertise?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
+
+    // Filter by verification status
+    if (verificationFilter !== "all") {
+      filtered = filtered.filter(doctor => 
+        doctor.verificationStatus === verificationFilter
+      );
+    }
+
+    // Sort doctors
+    filtered = [...filtered].sort((a, b) => {
+      let compareValue = 0;
+      
+      switch(sortBy) {
+        case "name":
+          compareValue = (a.name || "").localeCompare(b.name || "");
+          break;
+        case "email":
+          compareValue = (a.email || "").localeCompare(b.email || "");
+          break;
+        case "fee":
+          compareValue = (a.consultationFee || 0) - (b.consultationFee || 0);
+          break;
+        case "experience":
+          compareValue = (a.yearsOfExperience || 0) - (b.yearsOfExperience || 0);
+          break;
+        case "createdAt":
+          compareValue = new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+          break;
+        default:
+          compareValue = 0;
+      }
+
+      return sortOrder === "asc" ? compareValue : -compareValue;
+    });
 
     setFilteredDoctors(filtered);
   };
@@ -122,6 +159,66 @@ const DoctorManagement = () => {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+
+            {/* Filters and Sort */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Verification Status Filter */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ভেরিফিকেশন স্ট্যাটাস
+                </label>
+                <select
+                  value={verificationFilter}
+                  onChange={(e) => setVerificationFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">সব</option>
+                  <option value="verified">ভেরিফাইড</option>
+                  <option value="pending">অপেক্ষমাণ</option>
+                  <option value="rejected">প্রত্যাখ্যাত</option>
+                  <option value="not-verified">ভেরিফাইড নয়</option>
+                </select>
+              </div>
+
+              {/* Sort By */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  সাজান
+                </label>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="name">নাম</option>
+                  <option value="email">ইমেইল</option>
+                  <option value="fee">পরামর্শ ফি</option>
+                  <option value="experience">অভিজ্ঞতা</option>
+                  <option value="createdAt">নিবন্ধনের তারিখ</option>
+                </select>
+              </div>
+
+              {/* Sort Order */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ক্রম
+                </label>
+                <button
+                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center justify-center gap-2"
+                >
+                  {sortOrder === "asc" ? (
+                    <>
+                      <FaSortAmountUp /> ঊর্ধ্বক্রম
+                    </>
+                  ) : (
+                    <>
+                      <FaSortAmountDown /> নিম্নক্রম
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Statistics */}
@@ -142,22 +239,22 @@ const DoctorManagement = () => {
         {/* Doctors Table */}
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     নাম
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     ইমেইল
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     বিশেষত্ব
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     ফি
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     কার্যক্রম
                   </th>
                 </tr>
@@ -165,32 +262,32 @@ const DoctorManagement = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredDoctors.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan="5" className="px-4 py-8 text-center text-gray-500">
                       কোনো ডাক্তার পাওয়া যায়নি
                     </td>
                   </tr>
                 ) : (
                   filteredDoctors.map((doctor) => (
                     <tr key={doctor._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                      <td className="px-4 py-4">
+                        <div className="text-sm font-medium text-gray-900 break-words max-w-[200px]">
                           {doctor.name || "N/A"}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">{doctor.email}</div>
+                      <td className="px-4 py-4">
+                        <div className="text-sm text-gray-500 break-words max-w-[200px]">{doctor.email}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">
+                      <td className="px-4 py-4">
+                        <div className="text-sm text-gray-500 break-words max-w-[150px]">
                           {doctor.expertise || "N/A"}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 py-4 whitespace-nowrap">
                         <div className="text-sm font-semibold text-green-600">
                           ৳ {doctor.consultationFee || 0}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <td className="px-4 py-4 whitespace-nowrap text-center">
                         <div className="flex justify-center gap-2">
                           <button
                             onClick={() => handleViewDetails(doctor._id)}

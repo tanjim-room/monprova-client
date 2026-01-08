@@ -15,10 +15,10 @@ const PrivateRoute = ({ children, role }) => {
   }
 
   if (!user) {
-    let redirectPath = "/patientLogin";
+    let redirectPath = "/login";
 
-    if (role === "doctor") redirectPath = "/doctorLogin";
-    else if (role === "admin") redirectPath = "/adminLogin";
+    if (role === "doctor") redirectPath = "/login";
+    else if (role === "admin") redirectPath = "/admin";
 
     return (
       <Navigate

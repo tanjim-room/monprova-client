@@ -9,6 +9,13 @@ const UserDetails = () => {
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
   const [user, setUser] = useState(null);
+  const [patientProfile, setPatientProfile] = useState(null);
+  const [appointments, setAppointments] = useState([]);
+  const [appointmentStats, setAppointmentStats] = useState({
+    total: 0,
+    upcoming: 0,
+    completed: 0
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,7 +25,11 @@ const UserDetails = () => {
   const fetchUserDetails = async () => {
     try {
       const response = await axiosSecure.get(`/api/users/${id}`);
-      setUser(response.data);
+      const userData = response.data;
+      setUser(userData);
+      // Fetch patient profile after we have the email
+      await fetchPatientProfileByEmail(userData.email);
+      await fetchAppointmentsByEmail(userData.email);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching user details:", error);
@@ -29,6 +40,37 @@ const UserDetails = () => {
         confirmButtonColor: "#d33"
       });
       setLoading(false);
+    }
+  };
+
+  const fetchPatientProfileByEmail = async (email) => {
+    try {
+      const response = await axiosSecure.get(`/api/patients/email/${email}`);
+      setPatientProfile(response.data);
+    } catch (error) {
+      console.log("No patient profile found or error:", error);
+    }
+  };
+
+  const fetchAppointmentsByEmail = async (email) => {
+    try {
+      const response = await axiosSecure.get("/api/appointments");
+      const userAppointments = response.data.filter(
+        apt => apt.patientEmail === email && apt.paymentStatus === "paid"
+      );
+      setAppointments(userAppointments);
+      
+      // Calculate statistics
+      const upcoming = userAppointments.filter(apt => apt.state === "upcoming").length;
+      const completed = userAppointments.filter(apt => apt.state === "completed").length;
+      
+      setAppointmentStats({
+        total: userAppointments.length,
+        upcoming: upcoming,
+        completed: completed
+      });
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
     }
   };
 
@@ -81,6 +123,19 @@ const UserDetails = () => {
     }
   };
 
+  const getGenderBangla = (gender) => {
+    switch (gender) {
+      case "male":
+        return "পুরুষ";
+      case "female":
+        return "নারী";
+      case "other":
+        return "অন্যান্য";
+      default:
+        return gender || "N/A";
+    }
+  };
+
   const getRoleBadgeColor = (role) => {
     switch (role) {
       case "admin":
@@ -129,6 +184,35 @@ const UserDetails = () => {
             ব্যবহারকারীর বিস্তারিত তথ্য
           </h2>
 
+          {/* Profile Status Badge */}
+          <div className="mb-6 flex justify-center">
+            {patientProfile ? (
+              <span className="px-6 py-3 rounded-full bg-green-100 text-green-700 text-lg font-semibold border-2 border-green-300">
+                ✓ সম্পূর্ণ প্রোফাইল
+              </span>
+            ) : (
+              <span className="px-6 py-3 rounded-full bg-gray-100 text-gray-700 text-lg font-semibold border-2 border-gray-300">
+                ○ অসম্পূর্ণ প্রোফাইল
+              </span>
+            )}
+          </div>
+
+          {/* Appointment Statistics */}
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 text-center">
+              <p className="text-sm text-gray-600 font-semibold mb-1">মোট অ্যাপয়েন্টমেন্ট</p>
+              <p className="text-3xl font-bold text-blue-600">{appointmentStats.total}</p>
+            </div>
+            <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 text-center">
+              <p className="text-sm text-gray-600 font-semibold mb-1">আসন্ন অ্যাপয়েন্টমেন্ট</p>
+              <p className="text-3xl font-bold text-yellow-600">{appointmentStats.upcoming}</p>
+            </div>
+            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 text-center">
+              <p className="text-sm text-gray-600 font-semibold mb-1">সম্পন্ন অ্যাপয়েন্টমেন্ট</p>
+              <p className="text-3xl font-bold text-green-600">{appointmentStats.completed}</p>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* User ID */}
             <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
@@ -139,7 +223,7 @@ const UserDetails = () => {
             {/* Name */}
             <div className="bg-green-50 p-4 rounded-lg border border-green-200">
               <p className="text-sm text-gray-600 mb-1 font-semibold">নাম</p>
-              <p className="text-lg text-gray-800">{user.name || "N/A"}</p>
+              <p className="text-lg text-gray-800">{patientProfile?.name || user.name || "N/A"}</p>
             </div>
 
             {/* Email */}
@@ -160,6 +244,54 @@ const UserDetails = () => {
               </span>
             </div>
 
+            {/* Age */}
+            {patientProfile?.age && (
+              <div className="bg-pink-50 p-4 rounded-lg border border-pink-200">
+                <p className="text-sm text-gray-600 mb-1 font-semibold">বয়স</p>
+                <p className="text-lg text-gray-800">{patientProfile.age} বছর</p>
+              </div>
+            )}
+
+            {/* Gender */}
+            {patientProfile?.gender && (
+              <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
+                <p className="text-sm text-gray-600 mb-1 font-semibold">লিঙ্গ</p>
+                <p className="text-lg text-gray-800">{getGenderBangla(patientProfile.gender)}</p>
+              </div>
+            )}
+
+            {/* Phone */}
+            {patientProfile?.phone && (
+              <div className="bg-teal-50 p-4 rounded-lg border border-teal-200">
+                <p className="text-sm text-gray-600 mb-1 font-semibold">মোবাইল</p>
+                <p className="text-lg text-gray-800">{patientProfile.phone}</p>
+              </div>
+            )}
+
+            {/* Blood Group */}
+            {patientProfile?.bloodGroup && (
+              <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                <p className="text-sm text-gray-600 mb-1 font-semibold">রক্তের গ্রুপ</p>
+                <p className="text-lg text-gray-800">{patientProfile.bloodGroup}</p>
+              </div>
+            )}
+
+            {/* Profession */}
+            {patientProfile?.profession && (
+              <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                <p className="text-sm text-gray-600 mb-1 font-semibold">পেশা</p>
+                <p className="text-lg text-gray-800">{patientProfile.profession}</p>
+              </div>
+            )}
+
+            {/* Emergency Contact */}
+            {patientProfile?.emergencyContact && (
+              <div className="bg-rose-50 p-4 rounded-lg border border-rose-200">
+                <p className="text-sm text-gray-600 mb-1 font-semibold">জরুরি যোগাযোগ</p>
+                <p className="text-lg text-gray-800">{patientProfile.emergencyContact}</p>
+              </div>
+            )}
+
             {/* Created At */}
             {user.createdAt && (
               <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
@@ -175,26 +307,43 @@ const UserDetails = () => {
                 <p className="text-lg text-gray-800">{formatDate(user.updatedAt)}</p>
               </div>
             )}
+
+            {/* Profile Created At */}
+            {patientProfile?.createdAt && (
+              <div className="bg-cyan-50 p-4 rounded-lg border border-cyan-200">
+                <p className="text-sm text-gray-600 mb-1 font-semibold">প্রোফাইল তৈরির তারিখ</p>
+                <p className="text-lg text-gray-800">{formatDate(patientProfile.createdAt)}</p>
+              </div>
+            )}
+
+            {/* Profile Updated At */}
+            {patientProfile?.updatedAt && (
+              <div className="bg-lime-50 p-4 rounded-lg border border-lime-200">
+                <p className="text-sm text-gray-600 mb-1 font-semibold">প্রোফাইল আপডেটের তারিখ</p>
+                <p className="text-lg text-gray-800">{formatDate(patientProfile.updatedAt)}</p>
+              </div>
+            )}
           </div>
 
-          {/* Additional Info for Different Roles */}
-          {user.role === "patient" && user.age && (
-            <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <p className="text-sm text-gray-600 mb-1 font-semibold">অতিরিক্ত তথ্য</p>
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                {user.age && <p className="text-gray-800">বয়স: {user.age}</p>}
-                {user.gender && <p className="text-gray-800">লিঙ্গ: {user.gender}</p>}
-                {user.phone && <p className="text-gray-800">ফোন: {user.phone}</p>}
-              </div>
+          {/* Address */}
+          {patientProfile?.address && (
+            <div className="mt-6 bg-blue-50 border-2 border-blue-200 p-4 rounded-lg">
+              <p className="text-sm text-gray-600 font-semibold mb-2">ঠিকানা</p>
+              <p className="text-gray-800">{patientProfile.address}</p>
             </div>
           )}
 
-          {user.role === "doctor" && user.specialization && (
-            <div className="mt-6 bg-green-50 p-4 rounded-lg border border-green-200">
-              <p className="text-sm text-gray-600 mb-1 font-semibold">অতিরিক্ত তথ্য</p>
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                {user.specialization && <p className="text-gray-800">বিশেষত্ব: {user.specialization}</p>}
-                {user.phone && <p className="text-gray-800">ফোন: {user.phone}</p>}
+          {/* Profile Image */}
+          {patientProfile?.image && (
+            <div className="mt-6">
+              <p className="text-sm text-gray-600 font-semibold mb-3">প্রোফাইল ছবি:</p>
+              <div className="flex justify-center">
+                <img 
+                  src={patientProfile.image} 
+                  alt="Patient Profile"
+                  className="w-48 h-48 object-cover rounded-full border-4 border-gray-200 cursor-pointer hover:opacity-90 transition"
+                  onClick={() => window.open(patientProfile.image, '_blank')}
+                />
               </div>
             </div>
           )}
