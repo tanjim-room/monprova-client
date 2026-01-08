@@ -147,7 +147,7 @@ const AssessmentForm = () => {
     const isAnswered = Object.keys(answers).length === assessment.questions.length;
 
     return (
-        <div className="min-h-[850px] bg-[#E1ECFF] rounded-lg mt-16 p-10">
+        <div className="min-h-[850px] bg-[#E1ECFF] rounded-lg mt-0 p-10">
             <div className="max-w-2xl mx-auto">
                 <div className="mb-8">
                     <h2 className="text-3xl font-bold text-gray-800 text-center mb-2">

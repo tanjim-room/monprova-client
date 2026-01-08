@@ -42,9 +42,9 @@ const Games = () => {
     };
 
     return (
-        <div className="h-[calc(100vh-80px)] bg-[#E1ECFF] rounded-lg mt-4 p-6 overflow-auto">
-            <div className="max-w-7xl mx-auto">
-                <div className="text-center mb-6">
+        <div className="h-[calc(100vh-80px)] bg-[#E1ECFF] rounded-lg mt-0 p-4 overflow-auto">
+            <div className="">
+                <div className="text-center mb-6 p-4">
                     <h1 className="text-3xl font-bold text-gray-800 mb-2">
                         🎮 মানসিক স্বাস্থ্য গেমস
                     </h1>
@@ -53,7 +53,7 @@ const Games = () => {
                     </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 p-4">
                     {games.map((game) => (
                         <div
                             key={game.id}
@@ -81,7 +81,7 @@ const Games = () => {
                     ))}
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl mx-4 p-4 py-8 border border-blue-200">
                     <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">
                         💡 কেন খেলা গুরুত্বপূর্ণ?
                     </h3>
