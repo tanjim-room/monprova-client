@@ -34,7 +34,7 @@ const Login = () => {
             const dbUser = users?.find(user => user.email === googleUser?.email);
             if (dbUser) {
                 if (dbUser.role !== role) {
-                    setError("আপনার রোল মেলে না, দয়া করে সঠিক রোল দিন।");
+                    setError("আপনার রোল মেলে না, দয়া করে সঠিক রোল দিন।");
                     return;
                 }
                 else {
@@ -68,7 +68,7 @@ const Login = () => {
             // Register Google user with role (doctor or patient based on selection)
 
         } catch (err) {
-            setError("গুগল দিয়ে লগইন করা যায়নি");
+            setError("গুগল দিয়ে লগইন করা যায়নি");
             console.error(err.message);
         }
     };
@@ -76,49 +76,36 @@ const Login = () => {
     // Handle login
   const handleLogin = (event) => {
     event.preventDefault();
-    
-    // Reset all error messages
-    setError("");
-    setEmailError("");
-    setPasswordError("");
-    setRoleError("");
+    setError("");  // Reset error message
 
     const form = event.target;
     const email = form.email.value.trim();
     const password = form.password.value.trim();
 
     // ===== Validation =====
-    let hasError = false;
-
     // Check if email is empty
     if (!email) {
-        setEmailError("ইমেইল দিন");
-        hasError = true;
+        return setError("ইমেইল দিন");
     }
+
     // Check if email format is valid
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setEmailError("সঠিক ইমেইল দিন");
-        hasError = true;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return setError("সঠিক ইমেইল দিন");
     }
 
     // Check if password is empty
     if (!password) {
-        setPasswordError("পাসওয়ার্ড দিন");
-        hasError = true;
+        return setError("পাসওয়ার্ড দিন");
     }
+
     // Check if password meets basic criteria
-    else if (password.length < 6) {
-        setPasswordError("পাসওয়ার্ডে কমপক্ষে ৬টি ক্যারেক্টার থাকতে হবে");
-        hasError = true;
+    if (password.length < 6) {
+        return setError("পাসওয়ার্ডে কমপক্ষে ৬টি ক্যারেক্টার থাকতে হবে");
     }
 
     // Ensure role is selected
-    if (!role) {
-        setRoleError("দয়া করে আপনার রোল (রোগী বা ডাক্তার) নির্বাচন করুন");
-        hasError = true;
-    }
-
-    if (hasError) return;
+    if (!role) return setError("দয়া করে আপনার রোল (রোগী বা ডাক্তার) নির্বাচন করুন");
 
     // Check if the email exists in the user list
     const dbUser = users?.find(user => user.email === email);
@@ -150,15 +137,15 @@ const Login = () => {
                     }
                 })
                 .catch(error => {
-                    setError("ভুল ইমেইল বা পাসওয়ার্ড দিয়েছেন");
+                    setError("ভুল ইমেইল বা পাসওয়ার্ড দিয়েছেন");
                     Swal.close();
                 });
         } else {
-            setError("আপনার রোল মেলে না, দয়া করে সঠিক লগইন পদ্ধতি ব্যবহার করুন।");
+            setError("আপনার রোল মেলে না, দয়া করে সঠিক লগইন পদ্ধতি ব্যবহার করুন।");
             Swal.close();
         }
     } else {
-        setError("ইমেইল খুঁজে পাওয়া যায়নি। দয়া করে সঠিক ইমেইল দিন।");
+        setError("ইমেইল খুঁজে পাওয়া যায়নি। দয়া করে সঠিক ইমেইল দিন।");
         Swal.close();
     }
 };
@@ -173,7 +160,7 @@ const Login = () => {
             <div className="w-full max-w-6xl bg-base-100 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-2 overflow-hidden">
                 {/* Left Section */}
                 <div className="p-8 md:p-12 flex flex-col justify-center">
-                    <h2 className="text-3xl font-bold mb-2">মনপ্রভায় স্বাগতম</h2>
+                    <h2 className="text-3xl font-bold mb-2">মনপ্রভায় স্বাগতম</h2>
                     <p className="text-sm text-gray-500 mb-8">
                         আপনার প্রোফাইল এ লগইন করুন।
                     </p>
@@ -186,56 +173,50 @@ const Login = () => {
                             <label className="label">
                                 <span className="label-text">ইমেইল দিন</span>
                             </label>
-                            {emailError && <p className='text-red-600 text-xs mb-1'>** {emailError} **</p>}
                             <input
                                 type="email"
                                 name="email"
                                 placeholder="আপনার ইমেইল লিখুন"
-                                className={`input input-bordered w-full px-4 border bg-white ${emailError ? 'border-red-500' : ''}`}
-                                onChange={() => setEmailError("")}
+                                className="input input-bordered w-full px-4 border bg-white"
                             />
                         </div>
 
-                        <div className="mb-6">
-                            <label htmlFor="" className="block mb-2">কি অ্যাকাউন্টে লগইন করতে চান?</label>
-                            {roleError && <p className='text-red-600 text-xs mb-1'>** {roleError} **</p>}
-                            <div className="flex gap-4">
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        name="role"
-                                        value="patient"
-                                        checked={role === "patient"}
-                                        onChange={() => { setRole("patient"); setRoleError(""); }}
-                                        className="radio text-green-500 border-2"
-                                    />
-                                    <span className="ml-2">রোগী</span>
-                                </label>
-                                <label className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        name="role"
-                                        value="doctor"
-                                        checked={role === "doctor"}
-                                        onChange={() => { setRole("doctor"); setRoleError(""); }}
-                                        className="radio text-green-500 border-2"
-                                    />
-                                    <span className="ml-2">ডাক্তার</span>
-                                </label>
-                            </div>
+                        <div className="mb-6 flex gap-4">
+                            <label htmlFor="">কি অ্যাকাউন্টে লগইন করতে চান?</label>
+                            <br />
+                            <label className="flex items-center">
+                                <input
+                                    type="radio"
+                                    name="role"
+                                    value="patient"
+                                    checked={role === "patient"}
+                                    onChange={() => setRole("patient")}
+                                    className="radio text-green-500 border-2"
+                                />
+                                <span className="ml-2">রোগী</span>
+                            </label>
+                            <label className="flex items-center">
+                                <input
+                                    type="radio"
+                                    name="role"
+                                    value="doctor"
+                                    checked={role === "doctor"}
+                                    onChange={() => setRole("doctor")}
+                                    className="radio text-green-500 border-2"
+                                />
+                                <span className="ml-2">ডাক্তার</span>
+                            </label>
                         </div>
 
                         <div className="form-control mb-6">
                             <label className="label">
-                                <span className="label-text">পাসওয়ার্ড দিন</span>
+                                <span className="label-text">পাসওয়ার্ড দিন</span>
                             </label>
-                            {passwordError && <p className='text-red-600 text-xs mb-1'>** {passwordError} **</p>}
                             <input
                                 type="password"
                                 name="password"
-                                placeholder="আপনার পাসওয়ার্ড লিখুন"
-                                className={`input input-bordered w-full px-4 border bg-white ${passwordError ? 'border-red-500' : ''}`}
-                                onChange={() => setPasswordError("")}
+                                placeholder="আপনার পাসওয়ার্ড লিখুন"
+                                className="input input-bordered w-full px-4 border bg-white"
                             />
 
                             <p className='mt-2'><Link to={"/resetpassword"} className="text-blue-600 hover:underline ">পাসওয়ার্ড ভুলে গেছেন?</Link></p>
@@ -255,7 +236,7 @@ const Login = () => {
                             alt="Google"
                             className="w-5 h-5 "
                         />
-                        গুগল দিয়ে শুরু করুন
+                        গুগল দিয়ে শুরু করুন
                     </button>
 
                     <p className="text-sm text-center mt-6">

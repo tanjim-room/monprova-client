@@ -12,6 +12,10 @@ import useUser from '../../hooks/useUser';
 const Register = () => {
     const axiosPublic = useAxiosPublic();
     const [error, setError] = useState("");
+    const [nameError, setNameError] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const [roleError, setRoleError] = useState("");
     const [role, setRole] = useState("");
     const [users] = useUser();
     const navigate = useNavigate();
@@ -21,8 +25,10 @@ const Register = () => {
     const { signUpEmail, signInWithGoogle } = useContext(AuthContext);
 
     // Handle Google Login
-       const handleGoogleLogin = async () => {
-        if (!role) return setError("দয়া করে আপনার রোল (রোগী বা ডাক্তার) নির্বাচন করুন");
+    const handleGoogleLogin = async () => {
+        setRoleError("");
+        setError("");
+        if (!role) return setRoleError("দয়া করে আপনার রোল (রোগী বা ডাক্তার) নির্বাচন করুন");
         try {
 
             const result = await signInWithGoogle();
@@ -72,7 +78,13 @@ const Register = () => {
     // Handle registration
     const handleSignUp = async (event) => {
         event.preventDefault();
-        setError("");  // Reset error message
+        
+        // Reset all error messages
+        setError("");
+        setNameError("");
+        setEmailError("");
+        setPasswordError("");
+        setRoleError("");
 
         const form = event.target;
         const name = form.name.value.trim();
@@ -80,17 +92,44 @@ const Register = () => {
         const password = form.password.value;
 
         // ===== Validation =====
-        if (!name) return setError("আপনার নাম দিন");
+        let hasError = false;
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) return setError("আপনার সঠিক ইমেইল দিন");
+        if (!name) {
+            setNameError("আপনার নাম দিন");
+            hasError = true;
+        }
 
-        if (password.length < 6) return setError("কমপক্ষে ৬ সংখ্যার পাসওয়ার্ড দিন");
+        if (!email) {
+            setEmailError("ইমেইল দিন");
+            hasError = true;
+        } else {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                setEmailError("আপনার সঠিক ইমেইল দিন");
+                hasError = true;
+            }
+        }
 
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/;
-        if (!passwordRegex.test(password)) return setError("পাসওয়ার্ডে আপার, লোয়ার, সংখ্যা ও বিশেষ চিহ্ন থাকতে হবে");
+        if (!password) {
+            setPasswordError("পাসওয়ার্ড দিন");
+            hasError = true;
+        } else if (password.length < 6) {
+            setPasswordError("কমপক্ষে ৬ সংখ্যার পাসওয়ার্ড দিন");
+            hasError = true;
+        } else {
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/;
+            if (!passwordRegex.test(password)) {
+                setPasswordError("পাসওয়ার্ডে আপার, লোয়ার, সংখ্যা ও বিশেষ চিহ্ন থাকতে হবে");
+                hasError = true;
+            }
+        }
 
-        if (!role) return setError("দয়া করে আপনার রোল (রোগী বা ডাক্তার) নির্বাচন করুন");
+        if (!role) {
+            setRoleError("দয়া করে আপনার রোল (রোগী বা ডাক্তার) নির্বাচন করুন");
+            hasError = true;
+        }
+
+        if (hasError) return;
 
         // Create user profile
         const user = {
@@ -144,11 +183,13 @@ const Register = () => {
                             <label className="label">
                                 <span className="label-text">নাম দিন</span>
                             </label>
+                            {nameError && <p className='text-red-600 text-xs mb-1'>** {nameError} **</p>}
                             <input
                                 name="name"
                                 type="text"
                                 placeholder="আপনার নাম লিখুন"
-                                className="input input-bordered border w-full px-4 bg-white"
+                                className={`input input-bordered border w-full px-4 bg-white ${nameError ? 'border-red-500' : ''}`}
+                                onChange={() => setNameError("")}
                             />
                         </div>
 
@@ -156,50 +197,56 @@ const Register = () => {
                             <label className="label">
                                 <span className="label-text">ইমেইল দিন</span>
                             </label>
+                            {emailError && <p className='text-red-600 text-xs mb-1'>** {emailError} **</p>}
                             <input
                                 type="email"
                                 name="email"
                                 placeholder="আপনার ইমেইল লিখুন"
-                                className="input input-bordered border w-full px-4 bg-white"
+                                className={`input input-bordered border w-full px-4 bg-white ${emailError ? 'border-red-500' : ''}`}
+                                onChange={() => setEmailError("")}
                             />
                         </div>
 
-                        <div className="mb-6 flex gap-4">
-                            <label htmlFor="">কোন ধরণের অ্যাকাউন্ট খুলতে চান?</label>
-                            <br />
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    name="role"
-                                    value="patient"
-                                    checked={role === "patient"}
-                                    onChange={() => setRole("patient")}
-                                    className="radio text-green-500 border-2"
-                                />
-                                <span className="ml-2">রোগী</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    name="role"
-                                    value="doctor"
-                                    checked={role === "doctor"}
-                                    onChange={() => setRole("doctor")}
-                                    className="radio text-green-500 border-2"
-                                />
-                                <span className="ml-2">ডাক্তার</span>
-                            </label>
+                        <div className="mb-6">
+                            <label htmlFor="" className="block mb-2">কোন ধরণের অ্যাকাউন্ট খুলতে চান?</label>
+                            {roleError && <p className='text-red-600 text-xs mb-1'>** {roleError} **</p>}
+                            <div className="flex gap-4">
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="role"
+                                        value="patient"
+                                        checked={role === "patient"}
+                                        onChange={() => { setRole("patient"); setRoleError(""); }}
+                                        className="radio text-green-500 border-2"
+                                    />
+                                    <span className="ml-2">রোগী</span>
+                                </label>
+                                <label className="flex items-center">
+                                    <input
+                                        type="radio"
+                                        name="role"
+                                        value="doctor"
+                                        checked={role === "doctor"}
+                                        onChange={() => { setRole("doctor"); setRoleError(""); }}
+                                        className="radio text-green-500 border-2"
+                                    />
+                                    <span className="ml-2">ডাক্তার</span>
+                                </label>
+                            </div>
                         </div>
 
                         <div className="form-control mb-6">
                             <label className="label">
                                 <span className="label-text">পাসওয়ার্ড দিন</span>
                             </label>
+                            {passwordError && <p className='text-red-600 text-xs mb-1'>** {passwordError} **</p>}
                             <input
                                 type="password"
                                 name="password"
-                                placeholder="আপনার পাসওয়ার্ড লিখুন"
-                                className="input input-bordered border w-full px-4 bg-white"
+                                placeholder="আপনার পাসওয়ার্ড লিখুন"
+                                className={`input input-bordered border w-full px-4 bg-white ${passwordError ? 'border-red-500' : ''}`}
+                                onChange={() => setPasswordError("")}
                             />
                         </div>
 
