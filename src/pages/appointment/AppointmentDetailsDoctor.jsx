@@ -6,6 +6,7 @@ import axios from "axios";
 import useAppointment from "../../hooks/useAppointment";
 import useDoctor from "../../hooks/useDoctor";
 import Button from "../../components/Button";
+import BackButton from "../../components/BackButton";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { FaSpinner } from "react-icons/fa"; // Spinner for loading state
 
@@ -80,8 +81,11 @@ const AppointmentDetailsDoctor = () => {
     };
 
     return (
-        <div className="p-4 bg-white rounded-xl mt-0">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="min-h-screen bg-gray-50 py-6 px-4">
+            <div className="max-w-7xl mx-auto">
+            <BackButton destination="/dashboardDoctor/appointment" />
+            <div className="bg-white p-6 rounded-lg shadow-md mb-4">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* Appointment Information */}
                 <div className="bg-blue-100 p-6 mb-8 card bg-base-100 shadow-md border rounded-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
                     <h2 className="text-2xl font-semibold text-gray-800 mb-4">অ্যাপয়েন্টমেন্ট এর তথ্যসমূহ</h2>
@@ -95,47 +99,76 @@ const AppointmentDetailsDoctor = () => {
                 </div>
 
                 {/* Patient Information */}
-                <div className="bg-green-100 p-6 mb-8 card bg-base-100 shadow-md border rounded-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">রোগীর তথ্যসমূহ</h2>
-                    <div className="space-y-4">
-                        <p><span className="font-bold">রোগীর নামঃ</span> {appointment.patientName}</p>
-                        <p><span className="font-bold">মোবাইলঃ</span> {appointment.phone}</p>
-                        <p><span className="font-bold">ইমেইলঃ</span> {appointment.patientEmail}</p>
-                        <p><span className="font-bold">বয়সঃ</span> {appointment.age} বছর</p>
-                        <p><span className="font-bold">জেন্ডারঃ</span> {gender}</p>
-                        <p><span className="font-bold">ব্লাড গ্রুপঃ</span> {appointment.bloodGroup}</p>
-                        <p><span className="font-bold">পেশাঃ</span> {appointment.profession}</p>
-                        <p><span className="font-bold">সমস্যা/রোগের বিবরণঃ</span> </p>
-                        <p>{appointment.problem}</p>
+                <div className="bg-green-50 p-5 rounded-lg border border-green-200 shadow-sm">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <span className="w-1 h-6 bg-green-500 mr-3 rounded"></span>
+                        রোগীর তথ্যসমূহ
+                    </h2>
+                    <div className="space-y-2.5">
+                        <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                            <span className="font-semibold text-gray-700">রোগীর নামঃ</span>
+                            <span className="ml-2 text-gray-600">{appointment?.patientName || 'নাম নেই'}</span>
+                        </div>
+                        <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                            <span className="font-semibold text-gray-700">মোবাইলঃ</span>
+                            <span className="ml-2 text-gray-600">{appointment?.phone || 'ফোন নেই'}</span>
+                        </div>
+                        <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                            <span className="font-semibold text-gray-700">ইমেইলঃ</span>
+                            <span className="ml-2 text-gray-600">{appointment?.patientEmail || 'ইমেইল নেই'}</span>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2.5">
+                            <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                                <span className="font-semibold text-gray-700 block text-sm">বয়স</span>
+                                <span className="text-gray-600">{appointment?.age || 0} বছর</span>
+                            </div>
+                            <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                                <span className="font-semibold text-gray-700 block text-sm">জেন্ডার</span>
+                                <span className="text-gray-600">{gender}</span>
+                            </div>
+                            <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                                <span className="font-semibold text-gray-700 block text-sm">ব্লাড</span>
+                                <span className="text-gray-600">{appointment?.bloodGroup || 'N/A'}</span>
+                            </div>
+                        </div>
+                        <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                            <span className="font-semibold text-gray-700">পেশাঃ</span>
+                            <span className="ml-2 text-gray-600">{appointment?.profession || 'পেশা নেই'}</span>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg border border-gray-100">
+                            <span className="font-semibold text-gray-700 block mb-2">সমস্যা/রোগের বিবরণঃ</span>
+                            <p className="text-gray-600 leading-relaxed">{appointment?.problem || 'বিবরণ নেই'}</p>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div className="flex gap-6 mt-8">
-                <div className="w-full">
-                    <Link to={`/dashboardDoctor/createPrescription/${appointment._id}`}>
-                        <Button btnName="প্রেস্ক্রিপশন লিখুন" bgColor="bg-primary-color" />
-                    </Link>
-                </div>
-
-                <div className="w-full" >
-
-
-                    <button
-                        onClick={handleFinishAppointment}
-                        className={`w-full rounded-md bg-secondary-color text-white py-3 transition ${appointment.state === "completed" ? "opacity-25 text-black cursor-not-allowed bg-gray-500 " : ""
-                            }`}
-                        disabled={appointment.state === "completed"}
-                    >
-                        {appointment.state === "completed" ? "অ্যাপয়েন্টমেন্ট সম্পন্ন" : "শেষ করুন"}
-                    </button>
-                </div>
             </div>
 
-            <div className="mt-6">
-                <Link to={`/dashboardDoctor/prescriptionDetails/${appointmentId}`}>
-                    <Button btnName="প্রেস্ক্রিপশন দেখুন" bgColor="bg-primary-color" className="w-full" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                <Link to={`/dashboardDoctor/createPrescription/${appointment?._id}`}>
+                    <button className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-blue-600 transition-all duration-200">
+                        প্রেস্ক্রিপশন লিখুন
+                    </button>
                 </Link>
+
+                <button
+                    onClick={handleFinishAppointment}
+                    className={`w-full rounded-lg font-semibold py-3 px-4 shadow-md transition-all duration-200 ${
+                        appointment?.state === "completed"
+                            ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                            : "bg-green-500 text-white hover:bg-green-600"
+                    }`}
+                    disabled={appointment?.state === "completed"}
+                >
+                    {appointment?.state === "completed" ? "অ্যাপয়েন্টমেন্ট সম্পন্ন" : "শেষ করুন"}
+                </button>
+            </div>
+
+            <Link to={`/dashboardDoctor/prescriptionDetails/${appointmentId}`}>
+                <button className="w-full bg-purple-500 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-purple-600 transition-all duration-200">
+                    প্রেস্ক্রিপশন দেখুন
+                </button>
+            </Link>
             </div>
         </div>
     );

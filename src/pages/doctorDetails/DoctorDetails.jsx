@@ -61,100 +61,122 @@ const DoctorDetails = () => {
   };
 
   return (
-    <div className="p-0">
-      <div className="min-h-[850px] p-0 bg-white rounded-md">
-        <div className="w-full text-left border p-4 rounded-md">
-
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          
           {/* Back Button */}
-          <div className='px-6'>
+          <div className='p-6 bg-gray-50 border-b'>
             <BackButton destination={user ? "/dashboardPatient/doctorList" : "/doctorList"}></BackButton>
           </div>
 
-          {/* Doctor Name */}
-
           {/* Doctor Info Card */}
-          <div className="flex flex-col md:flex-row items-center justify-center border rounded-md p-4 mx-6 gap-6">
-            <div className=''>
-              <img src={image || "https://i.ibb.co.com/ym2wsZXY/avater-Grey-User-Circles-Set.png"} alt={name} className="w-48 h-48 object-cover rounded-full border mb-6 md:mb-0" />
-            </div>
-            <div className="space-y-1 md:text-left text-center">
-              <h2 className="font-semibold text-xl">{name}</h2>
-              <p className="text-lg font-semibold text-gray-700">{designation}</p>
-
-              <div className="mt-0 text-center md:text-left">
-                <p className="primary-color">{degrees}</p>
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-8">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+              <div className='flex-shrink-0'>
+                <img 
+                  src={image || "https://i.ibb.co.com/ym2wsZXY/avater-Grey-User-Circles-Set.png"} 
+                  alt={name} 
+                  className="w-40 h-40 object-cover rounded-full border-4 border-white shadow-lg" 
+                />
               </div>
-
-              <div className="mt-2">
-                <p className="text-base text-gray-700 font-semibold">
-                  BMDC Reg. No: <span className="bg-secondary-color px-2 py-1 text-white rounded-md text-sm font-semibold">{regNo}</span>
-                </p>
+              <div className="flex-1 text-center md:text-left space-y-3">
+                <h1 className="text-3xl font-bold text-gray-800">{name}</h1>
+                <p className="text-xl font-semibold text-gray-700">{designation}</p>
+                <p className="text-lg text-blue-600 font-medium">{degrees}</p>
+                <div className="inline-block bg-white px-4 py-2 rounded-lg shadow">
+                  <p className="text-sm text-gray-600">
+                    BMDC Reg. No: <span className="font-bold text-gray-800">{regNo}</span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Doctor Details */}
-          <div className="flex gap-6 mt-6 mx-6 space-y- mb-8">
+          <div className="p-8">
+            <div className="grid md:grid-cols-2 gap-8">
+              
+              {/* Left Column */}
+              <div className='space-y-6'>
+                {/* Workplace */}
+                <div>
+                  <h3 className="text-xl font-bold text-blue-600 mb-3 flex items-center gap-2">
+                    <span className="w-1 h-6 bg-blue-600 rounded"></span>
+                    কর্মক্ষেত্র
+                  </h3>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-gray-700 mb-1">{designation}</p>
+                    <p className="font-semibold text-gray-800">{institute}</p>
+                  </div>
+                </div>
 
-            <div className='w-1/2'>
-              {/* Workplace */}
-              <div className="text-start mb-4">
-                <p className="text-xl font-bold primary-color py-1">কর্মক্ষেত্র</p>
-                <div className="rounded-md px-0 py-2">
-                  <span className='py-2'>{designation}</span>
-                  <p className="font-semibold py-2">{institute}</p>
+                {/* Specialities */}
+                <div>
+                  <h3 className="text-xl font-bold text-blue-600 mb-3 flex items-center gap-2">
+                    <span className="w-1 h-6 bg-blue-600 rounded"></span>
+                    দক্ষতাসমূহ
+                  </h3>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-gray-800">{expertise}</p>
+                  </div>
+                </div>
+
+                {/* Experience */}
+                <div>
+                  <h3 className="text-xl font-bold text-blue-600 mb-3 flex items-center gap-2">
+                    <span className="w-1 h-6 bg-blue-600 rounded"></span>
+                    অভিজ্ঞতা
+                  </h3>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="font-semibold text-gray-800 text-lg">{yearsOfExperience} বছর</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Specialities */}
-              <div className="text-start mb-4">
-                <p className="text-xl font-bold primary-color py-1">দক্ষতাসমূহ</p>
-                <div className="rounded-md px-0 py-2">
-                  <p className="py-2">{expertise}</p>
+              {/* Right Column */}
+              <div className='space-y-6'>
+                {/* Bio */}
+                <div>
+                  <h3 className="text-xl font-bold text-blue-600 mb-3 flex items-center gap-2">
+                    <span className="w-1 h-6 bg-blue-600 rounded"></span>
+                    সংক্ষিপ্ত পরিচয়
+                  </h3>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-gray-700 text-justify leading-relaxed">{shortBio || "কোনো বিবরণ নেই"}</p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Experience */}
-              <div className="text-start">
-                <p className="text-xl font-bold primary-color py-1">অভিজ্ঞতা</p>
-                <div className="rounded-md px-0 py-2">
-                  <span className="font-semibold py-2">{yearsOfExperience} বছর</span>
-                </div>
-              </div>
-            </div>
+                {/* Consultation Info */}
+                <div className="space-y-4">
+                  {/* Consultation Type */}
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                    <p className="text-sm text-gray-600 mb-2">রোগী দেখার মাধ্যম</p>
+                    <div className="flex items-center gap-2">
+                      <div className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold">
+                        {medium === 'online' ? "অনলাইন" : medium === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}
+                      </div>
+                    </div>
+                  </div>
 
-            <div className='w-1/2 border-l-2 pl-4'>
-              {/* Bio */}
-              <div className="text-start">
-                <p className="text-xl font-bold primary-color py-1">সংক্ষিপ্ত পরিচয়</p>
-                <div className=" px-0 p-2 ">
-                  <p className="font-normal text-justify leading-loose py-2">{shortBio}</p>
+                  {/* Fee */}
+                  <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                    <p className="text-sm text-gray-600 mb-2">পরামর্শ ফি</p>
+                    <div className="flex items-center gap-2">
+                      <div className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold text-lg">
+                        ৳ {consultationFee}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className='flex flex-row-reverse justify-center gap-4 p-4 border rounded-md mx-6'>
-            {/* Consultation Type */}
-            <div className="text-start flex gap-4">
-              <p className="text-xl font-bold primary-color py-1">রোগী দেখার মাধ্যম:</p>
-              <div className="bg-secondary-color inline-block rounded-md px-2 py-2 border">
-                <p className="text-md text-white font-semibold">{medium === 'online' ? "অনলাইন" : medium === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</p>
-              </div>
-            </div>
-
-            {/* Fee */}
-            <div className="text-start flex  gap-4">
-              <p className="text-xl font-bold primary-color py-1">পরামর্শ ফি:</p>
-              <div className="bg-secondary-color inline-block rounded-md px-2 py-2 border">
-                <p className="text-md text-white font-semibold">{consultationFee} টাকা</p>
-              </div>
-            </div>
-          </div>
           {/* Appointment Button */}
-          <div className="mt-8 mx-6">
+          <div className="p-8 bg-gray-50 border-t">
             <Link to={user ? `/dashboardPatient/appointmentForm/${doctorId}` : "#"} onClick={handleAppointmentClick}>
-              <Button btnName="অ্যাপয়েন্টমেন্ট নিন" bgColor="bg-primary-color w-full" />
+              <Button btnName="অ্যাপয়েন্টমেন্ট নিন" bgColor="bg-primary-color w-full text-lg py-4 hover:bg-blue-700 transition-colors" />
             </Link>
           </div>
         </div>

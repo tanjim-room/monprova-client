@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 import useUser from "../../hooks/useUser";
+import { FaMoneyBillWave, FaCheckCircle, FaClock, FaEye } from 'react-icons/fa';
 
 const Payout = () => {
   const navigate = useNavigate();
@@ -12,12 +13,22 @@ const Payout = () => {
   const [payouts, setPayouts] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [users, setUsers] = useState([]); // For admin names
+  const [payments, setPayments] = useState([]);
+  const [appointments, setAppointments] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredDoctors, setFilteredDoctors] = useState([]);
   const [completedAppointments, setCompletedAppointments] = useState([]);
   const [doctorPayoutHistory, setDoctorPayoutHistory] = useState([]);
   const [showPayoutForm, setShowPayoutForm] = useState(false);
+  const [showMorePayouts, setShowMorePayouts] = useState(false);
+  const [showMorePayments, setShowMorePayments] = useState(false);
+  const [paymentStats, setPaymentStats] = useState({
+    monthlyPaymentAmount: 0,
+    monthlyPayoutAmount: 0,
+    monthlyPaymentCount: 0,
+    monthlyPayoutCount: 0
+  });
   const [doctorEarnings, setDoctorEarnings] = useState({
     totalIncome: 0,
     netIncome: 0,
@@ -40,7 +51,58 @@ const Payout = () => {
     fetchPayouts();
     fetchDoctors();
     fetchUsers();
+    fetchPaymentsAndAppointments();
   }, []);
+
+  const fetchPaymentsAndAppointments = async () => {
+    try {
+      const [paymentsRes, appointmentsRes, payoutsRes] = await Promise.all([
+        axiosSecure.get('/api/payments'),
+        axiosSecure.get('/api/appointments'),
+        axiosSecure.get('/api/payouts')
+      ]);
+      
+      const paymentsData = paymentsRes.data;
+      const appointmentsData = appointmentsRes.data;
+      const payoutsData = payoutsRes.data;
+      
+      setPayments(paymentsData);
+      setAppointments(appointmentsData);
+      setPayouts(payoutsData);
+      
+      // Calculate current month stats
+      const today = new Date();
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+      
+      // Filter successful payments for current month
+      const successfulPayments = paymentsData.filter(p => 
+        p.status === 'paid' || p.status === 'success' || p.status === 'completed'
+      );
+      
+      const monthlyPayments = successfulPayments.filter(payment => {
+        const paymentDate = new Date(payment.paidAt || payment.date || payment.createdAt);
+        return paymentDate.getMonth() === currentMonth && 
+               paymentDate.getFullYear() === currentYear;
+      });
+      
+      // Filter payouts for current month
+      const monthlyPayouts = payoutsData.filter(payout => {
+        const payoutDate = new Date(payout.timestamp || payout.date || payout.createdAt);
+        return payoutDate.getMonth() === currentMonth && 
+               payoutDate.getFullYear() === currentYear;
+      });
+      
+      setPaymentStats({
+        monthlyPaymentAmount: monthlyPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0),
+        monthlyPayoutAmount: monthlyPayouts.reduce((sum, p) => sum + (Number(p.amount) || 0), 0),
+        monthlyPaymentCount: monthlyPayments.length,
+        monthlyPayoutCount: monthlyPayouts.length
+      });
+    } catch (error) {
+      console.error('Error fetching payments and appointments:', error);
+    }
+  };
 
   const fetchUsers = async () => {
     try {
@@ -78,6 +140,31 @@ const Payout = () => {
     } catch (error) {
       console.error("Error fetching payouts:", error);
     }
+  };
+
+  const formatCurrency = (amount) => {
+    if (!amount) return '0';
+    return new Intl.NumberFormat('en-IN').format(amount);
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('bn-BD', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getAppointmentForPayment = (payment) => {
+    return appointments.find(apt => apt._id === payment.appointmentID);
+  };
+
+  const getDoctorName = (doctorId) => {
+    const doctor = doctors.find(d => d._id === doctorId);
+    return doctor?.name || 'Unknown';
   };
 
   const calculateDoctorEarnings = async (doctorId, doctorName, doctor) => {
@@ -308,6 +395,51 @@ const Payout = () => {
           পেআউট সংক্রান্ত তথ্য
         </h2>
 
+        {/* Stats Bar - Only show when no doctor is selected */}
+        {!selectedDoctor && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-green-500">
+            <div className="flex items-center justify-between">
+              <FaMoneyBillWave className="text-3xl text-green-500" />
+              <div className="text-right">
+                <p className="text-2xl font-bold text-gray-800">৳ {formatCurrency(paymentStats.monthlyPaymentAmount)}</p>
+                <p className="text-sm text-gray-600">এই মাসের পেমেন্ট</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-blue-500">
+            <div className="flex items-center justify-between">
+              <FaMoneyBillWave className="text-3xl text-blue-500" />
+              <div className="text-right">
+                <p className="text-2xl font-bold text-gray-800">৳ {formatCurrency(paymentStats.monthlyPayoutAmount)}</p>
+                <p className="text-sm text-gray-600">এই মাসের পেআউট</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-purple-500">
+            <div className="flex items-center justify-between">
+              <FaCheckCircle className="text-3xl text-purple-500" />
+              <div className="text-right">
+                <p className="text-2xl font-bold text-gray-800">{paymentStats.monthlyPaymentCount}</p>
+                <p className="text-sm text-gray-600">এই মাসের পেমেন্ট সংখ্যা</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-orange-500">
+            <div className="flex items-center justify-between">
+              <FaClock className="text-3xl text-orange-500" />
+              <div className="text-right">
+                <p className="text-2xl font-bold text-gray-800">{paymentStats.monthlyPayoutCount}</p>
+                <p className="text-sm text-gray-600">এই মাসের পেআউট সংখ্যা</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        )}
+
         {/* Doctor Search Section */}
         {!selectedDoctor && (
           <div className="mb-8">
@@ -335,12 +467,12 @@ const Payout = () => {
                       <div className="flex justify-between items-start">
                         <div>
                           <p className="font-bold text-gray-800">{doctor.name || doctor.fullName}</p>
-                          <p className="text-sm text-gray-600">{doctor.specialization}</p>
+                          <p className="text-sm text-gray-600">{doctor.expertise || 'N/A'}</p>
                           <p className="text-xs text-gray-500 mt-1">আইডি: {doctor._id}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-sm text-gray-600">{doctor.email}</p>
-                          <p className="text-sm text-gray-600">{doctor.phone}</p>
+                          <p className="text-sm text-gray-600">{doctor.phone || 'N/A'}</p>
                         </div>
                       </div>
                     </div>
@@ -382,7 +514,7 @@ const Payout = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">বিশেষত্ব</p>
-                  <p className="text-lg font-bold text-gray-800">{selectedDoctor.specialization}</p>
+                  <p className="text-lg font-bold text-gray-800">{selectedDoctor.expertise || 'N/A'}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">ইমেইল</p>
@@ -390,7 +522,7 @@ const Payout = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">ফোন</p>
-                  <p className="text-lg font-bold text-gray-800">{selectedDoctor.phone}</p>
+                  <p className="text-lg font-bold text-gray-800">{selectedDoctor.phone || 'N/A'}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">ডাক্তার আইডি</p>
@@ -629,10 +761,11 @@ const Payout = () => {
           </div>
         )}
 
-        {/* All Payouts History Table */}
-        <div className="mt-12">
+        {/* Payout History Table (Max 5, with See More) - Only show when no doctor is selected */}
+        {!selectedDoctor && (
+        <div className="mt-8 mb-8">
           <h3 className="text-xl font-bold text-gray-800 mb-4 bg-[#EFF7FE] p-3 rounded-md border text-center">
-            সকল পেআউট হিস্টোরি
+            পেআউট হিস্টোরি
           </h3>
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-left bg-white shadow-md rounded-lg">
@@ -646,52 +779,159 @@ const Payout = () => {
                 </tr>
               </thead>
               <tbody>
-                {payouts.map((p, i) => {
-                  // Find doctor name from doctors list if not in payout
-                  const doctorName = p.doctorName || doctors.find(d => d._id === p.doctorId)?.name || "Unknown";
-                  // Use admin email directly from payout
-                  const adminEmail = admin?.email || "Unknown";
-                  
-                  return (
-                    <tr 
-                      key={p._id || i} 
-                      className="border-b hover:bg-blue-50 cursor-pointer transition-colors"
-                      onClick={() => {
-                        if (p._id) {
-                          navigate(`/dashboardAdmin/payout/${p._id}`);
-                        } else {
-                          console.error("Payout _id is missing:", p);
-                          Swal.fire({
-                            icon: "error",
-                            title: "ত্রুটি!",
-                            text: "পেআউট আইডি পাওয়া যায়নি",
-                            confirmButtonColor: "#d33"
-                          });
-                        }
-                      }}
-                    >
-                      <td className="px-4 py-3">{new Date(p.timestamp).toLocaleDateString('bn-BD')}</td>
-                      <td className="px-4 py-3">{doctorName}</td>
-                      <td className="px-4 py-3 font-semibold text-green-600">৳ {Number(p.amount).toFixed(2)}</td>
-                      <td className="px-4 py-3 font-mono text-sm">{p.transactionId}</td>
-                      <td className="px-4 py-3 text-sm">{adminEmail}</td>
-                    </tr>
-                  );
-                })}
+                {payouts
+                  .slice(0, showMorePayouts ? payouts.length : 5)
+                  .map((p, i) => {
+                    // Find doctor name from doctors list if not in payout
+                    const doctorName = p.doctorName || doctors.find(d => d._id === p.doctorId)?.name || "Unknown";
+                    // Use admin email directly from payout
+                    const adminEmail = admin?.email || "Unknown";
+                    
+                    return (
+                      <tr 
+                        key={p._id || i} 
+                        className="border-b hover:bg-blue-50 cursor-pointer transition-colors"
+                        onClick={() => {
+                          if (p._id) {
+                            navigate(`/dashboardAdmin/payout/${p._id}`);
+                          } else {
+                            console.error("Payout _id is missing:", p);
+                            Swal.fire({
+                              icon: "error",
+                              title: "ত্রুটি!",
+                              text: "পেআউট আইডি পাওয়া যায়নি",
+                              confirmButtonColor: "#d33"
+                            });
+                          }
+                        }}
+                      >
+                        <td className="px-4 py-3">{new Date(p.timestamp).toLocaleDateString('bn-BD')}</td>
+                        <td className="px-4 py-3">{doctorName}</td>
+                        <td className="px-4 py-3 font-semibold text-green-600">৳ {Number(p.amount).toFixed(2)}</td>
+                        <td className="px-4 py-3 font-mono text-sm">{p.transactionId}</td>
+                        <td className="px-4 py-3 text-sm">{adminEmail}</td>
+                      </tr>
+                    );
+                  })}
                 {payouts.length === 0 && (
                   <tr>
                     <td
                       colSpan="5"
                       className="text-center text-gray-500 py-6"
                     >
-                      এখনও কোনো পেমেন্ট রেকর্ড নেই
+                      এখনও কোনো পেআউট রেকর্ড নেই
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
           </div>
+          {payouts.length > 5 && (
+            <div className="text-center mt-4">
+              <button
+                onClick={() => setShowMorePayouts(!showMorePayouts)}
+                className="bg-[#007AF5] hover:bg-[#0066cc] text-white font-semibold px-6 py-2 rounded-md transition"
+              >
+                {showMorePayouts ? 'কম দেখুন' : `আরো দেখুন (${payouts.length - 5} টি)`}
+              </button>
+            </div>
+          )}
         </div>
+        )}
+
+        {/* Payment History Log (Max 5, with See More) - Only show when no doctor is selected */}
+        {!selectedDoctor && (
+        <div className="mb-8">
+          <h3 className="text-xl font-bold text-gray-800 mb-4 bg-[#EFF7FE] p-3 rounded-md border text-center">
+            পেমেন্ট হিস্টোরি
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 shadow-md rounded-lg">
+              <thead className="bg-[#007AF5] text-white">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    তারিখ ও সময়
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    ডাক্তার
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    পরিমাণ
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                    স্ট্যাটাস
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider">
+                    অ্যাকশন
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {payments
+                  .filter(p => p.status === 'paid' || p.status === 'success' || p.status === 'completed')
+                  .sort((a, b) => {
+                    const dateA = new Date(a.paidAt || a.date || a.createdAt);
+                    const dateB = new Date(b.paidAt || b.date || b.createdAt);
+                    return dateB - dateA; // Most recent first
+                  })
+                  .slice(0, showMorePayments ? payments.filter(p => p.status === 'paid' || p.status === 'success' || p.status === 'completed').length : 5)
+                  .map((payment, index) => {
+                    const appointment = getAppointmentForPayment(payment);
+                    return (
+                      <tr key={payment._id || index} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {formatDate(payment.paidAt || payment.date || payment.createdAt)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {getDoctorName(payment.doctorID)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
+                          ৳ {formatCurrency(payment.amount)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            {payment.status === 'paid' ? 'পরিশোধিত' : 
+                             payment.status === 'success' ? 'সফল' : 'সম্পন্ন'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
+                          {appointment ? (
+                            <button
+                              onClick={() => navigate(`/dashboardAdmin/appointments/${appointment._id}`)}
+                              className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-md transition"
+                              title="অ্যাপয়েন্টমেন্ট দেখুন"
+                            >
+                              <FaEye />
+                            </button>
+                          ) : (
+                            <span className="text-gray-400 text-sm">N/A</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                {payments.filter(p => p.status === 'paid' || p.status === 'success' || p.status === 'completed').length === 0 && (
+                  <tr>
+                    <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
+                      কোনো পেমেন্ট হিস্টোরি পাওয়া যায়নি
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+          {payments.filter(p => p.status === 'paid' || p.status === 'success' || p.status === 'completed').length > 5 && (
+            <div className="text-center mt-4">
+              <button
+                onClick={() => setShowMorePayments(!showMorePayments)}
+                className="bg-[#007AF5] hover:bg-[#0066cc] text-white font-semibold px-6 py-2 rounded-md transition"
+              >
+                {showMorePayments ? 'কম দেখুন' : `আরো দেখুন (${payments.filter(p => p.status === 'paid' || p.status === 'success' || p.status === 'completed').length - 5} টি)`}
+              </button>
+            </div>
+          )}
+        </div>
+        )}
       </div>
     </div>
   );

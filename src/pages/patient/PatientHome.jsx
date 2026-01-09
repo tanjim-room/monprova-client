@@ -69,7 +69,7 @@ const PatientHome = () => {
             // Find next upcoming appointment
             const upcomingAppointments = myAppointments
                 .filter(apt => apt.state === 'upcoming')
-                .sort((a, b) => new Date(a.date) - new Date(b.date));
+                .sort((a, b) => new Date(a.appointmentDate) - new Date(b.appointmentDate));
             
             if (upcomingAppointments.length > 0) {
                 setNextAppointment(upcomingAppointments[0]);
@@ -112,7 +112,7 @@ const PatientHome = () => {
 
     const getDoctorSpecialty = (doctorID) => {
         const doctor = doctors.find(d => d._id === doctorID);
-        return doctor?.specialty || 'N/A';
+        return doctor?.expertise || 'N/A';
     };
 
     const formatDate = (dateString) => {
@@ -186,8 +186,8 @@ const PatientHome = () => {
                             </div>
                             <div>
                                 <p className="text-sm opacity-90">তারিখ ও সময়</p>
-                                <p className="text-xl font-bold">{formatDate(nextAppointment.date)}</p>
-                                <p className="text-lg opacity-90">{formatTime(nextAppointment.time)}</p>
+                                <p className="text-xl font-bold">{formatDate(nextAppointment.appointmentDate)}</p>
+                                <p className="text-lg opacity-90">{formatTime(nextAppointment.appointmentTime)}</p>
                             </div>
                             <div>
                                 <p className="text-sm opacity-90">মাধ্যম</p>
