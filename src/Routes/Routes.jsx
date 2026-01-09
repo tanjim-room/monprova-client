@@ -66,6 +66,7 @@ import ResetPassword from "../pages/login/ResetPassword";
 import AdminHelp from "../pages/help/AdminHelp";
 import Contact from "../pages/contact/Contact";
 import Complaints from "../pages/admin/Complaints";
+import UpdatePassword from "../pages/UpdatePassword";
 
 export const router = createBrowserRouter([
   {
@@ -318,6 +319,10 @@ export const router = createBrowserRouter([
       {
         path: "/dashboardDoctor",
         element: <DoctorHome></DoctorHome>
+      },
+      {
+        path: "change-password",
+        element: <UpdatePassword></UpdatePassword>
       },
       {
         path: "doctorHelp",

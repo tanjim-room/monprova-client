@@ -44,7 +44,7 @@ const DashboardNavBar = ({ fullName, role }) => {
             <div className="flex flex-col items-center mb-4 ">
                 <img src={displayImg} alt="" className="w-20 h-20 rounded-full object-cover border-2 p-1" />
                 <div className="mt-2">
-                    <p className="font-semibold ">{displayNames}</p>
+                    <p className="font-semibold text-center">{displayNames}</p>
                     <p className="text-center text-red-500"> {role === "admin" ? "অ্যাডমিন ড্যাশবোর্ড"
                         : role === "doctor" ? "ডাক্তারের ড্যাশবোর্ড"
                             : "রোগীর ড্যাশবোর্ড"}</p>
