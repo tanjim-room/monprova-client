@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useDoctor from '../../hooks/useDoctor';
 import useAuth from '../../hooks/useAuth';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
@@ -10,9 +10,9 @@ const DoctorHome = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const axiosSecure = useAxiosSecure();
-    
+
     const doctor = doctors?.find(d => d.email === user?.email);
-    
+
     const [loading, setLoading] = useState(true);
     const [appointments, setAppointments] = useState([]);
     const [todayAppointments, setTodayAppointments] = useState([]);
@@ -46,11 +46,11 @@ const DoctorHome = () => {
             const myAppointments = allAppointments.filter(
                 apt => apt.doctorID === doctor._id && apt.paymentStatus === 'paid'
             );
-            
+
             console.log('All my appointments:', myAppointments.length);
             console.log('Appointment states:', myAppointments.map(apt => apt.state));
             console.log('Sample appointment:', myAppointments[0]);
-            
+
             setAppointments(myAppointments);
 
             // Get today's date
@@ -71,24 +71,24 @@ const DoctorHome = () => {
                     const dateB = new Date(`${b.date}T${b.time}`);
                     return dateA - dateB;
                 });
-            
+
             if (upcomingAppointments.length > 0) {
                 setNextAppointment(upcomingAppointments[0]);
             }
 
             // Calculate statistics
-            const completedAppointments = myAppointments.filter(apt => 
+            const completedAppointments = myAppointments.filter(apt =>
                 apt.state === 'completed' || apt.state === 'Completed'
             );
             const completed = completedAppointments.length;
             const upcoming = myAppointments.filter(apt => apt.state === 'upcoming').length;
-            
+
             console.log('Completed appointments count:', completed);
             console.log('Completed appointments:', completedAppointments);
-            
+
             // Get unique patients
             const uniquePatients = new Set(myAppointments.map(apt => apt.patientEmail));
-            
+
             // Get pending prescriptions (completed appointments without prescription)
             const completedAppointmentIds = completedAppointments.map(apt => apt._id);
             const prescribedAppointmentIds = allPrescriptions
@@ -103,17 +103,17 @@ const DoctorHome = () => {
             const currentYear = new Date().getFullYear();
             const completedThisMonth = completedAppointments.filter(apt => {
                 const aptDate = new Date(apt.date);
-                return aptDate.getMonth() === currentMonth && 
-                       aptDate.getFullYear() === currentYear;
+                return aptDate.getMonth() === currentMonth &&
+                    aptDate.getFullYear() === currentYear;
             });
-            
+
             console.log('Completed appointments this month:', completedThisMonth);
             console.log('Fees from completed appointments:', completedThisMonth.map(apt => ({
                 id: apt._id,
                 fee: apt.fee,
                 date: apt.date
             })));
-            
+
             // Calculate 80% of fees (doctor's share after 20% platform fee)
             // Use appointment fee if available, otherwise use doctor's consultation fee
             const doctorFee = Number(doctor?.consultationFee) || 0;
@@ -123,7 +123,7 @@ const DoctorHome = () => {
                 console.log(`Appointment fee: ${apt.fee}, using: ${fee}, Doctor share (80%): ${doctorShare}`);
                 return sum + doctorShare;
             }, 0);
-            
+
             console.log('Total monthly earnings (80% of fees):', monthlyEarnings);
 
             setStats({
@@ -175,6 +175,17 @@ const DoctorHome = () => {
     return (
         <div className="min-h-screen bg-[#E6F0FF] p-8">
             <div className="max-w-7xl mx-auto">
+                <div className="relative">
+                    <Link
+                        to="/dashboardDoctor/change-password"
+                        className="absolute top-2 right-0 inline-flex items-center gap-2
+                   bg-secondary-color hover:bg-primary-400
+                   text-white px-4 py-2 rounded-lg"
+                    >
+                        <p className="text-sm">পাসওয়ার্ড পরিবর্তন করুন</p>
+                    </Link>
+                </div>
+
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-gray-800 mb-2">
@@ -265,7 +276,7 @@ const DoctorHome = () => {
                 {/* Statistics Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     {/* Today's Appointments */}
-                    <div 
+                    <div
                         onClick={() => navigate('/dashboardDoctor/appointment')}
                         className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-blue-500 cursor-pointer hover:shadow-xl hover:scale-105 transition-all"
                     >
@@ -279,7 +290,7 @@ const DoctorHome = () => {
                     </div>
 
                     {/* Total Patients */}
-                    <div 
+                    <div
                         onClick={() => navigate('/dashboardDoctor/appointment')}
                         className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-green-500 cursor-pointer hover:shadow-xl hover:scale-105 transition-all"
                     >
@@ -293,7 +304,7 @@ const DoctorHome = () => {
                     </div>
 
                     {/* Pending Prescriptions */}
-                    <div 
+                    <div
                         onClick={() => navigate('/dashboardDoctor/appointment')}
                         className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-red-500 cursor-pointer hover:shadow-xl hover:scale-105 transition-all"
                     >
@@ -307,7 +318,7 @@ const DoctorHome = () => {
                     </div>
 
                     {/* Monthly Earnings */}
-                    <div 
+                    <div
                         onClick={() => navigate('/dashboardDoctor/income')}
                         className="bg-white rounded-lg shadow-lg p-6 border-t-4 border-purple-500 cursor-pointer hover:shadow-xl hover:scale-105 transition-all"
                     >
@@ -372,15 +383,14 @@ const DoctorHome = () => {
                                         onClick={() => navigate(`/dashboardDoctor/appointmentDetailsDoctor/${appointment._id}`)}
                                     >
                                         <div className="flex items-center gap-4">
-                                            <div className={`p-2 rounded-full ${
-                                                appointment.state === 'completed' ? 'bg-green-100' :
+                                            <div className={`p-2 rounded-full ${appointment.state === 'completed' ? 'bg-green-100' :
                                                 appointment.state === 'upcoming' ? 'bg-blue-100' :
-                                                'bg-gray-100'
-                                            }`}>
+                                                    'bg-gray-100'
+                                                }`}>
                                                 <FaUserInjured className={
                                                     appointment.state === 'completed' ? 'text-green-600' :
-                                                    appointment.state === 'upcoming' ? 'text-blue-600' :
-                                                    'text-gray-600'
+                                                        appointment.state === 'upcoming' ? 'text-blue-600' :
+                                                            'text-gray-600'
                                                 } />
                                             </div>
                                             <div>
@@ -392,14 +402,13 @@ const DoctorHome = () => {
                                                 </p>
                                             </div>
                                         </div>
-                                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                                            appointment.state === 'completed' ? 'bg-green-100 text-green-700' :
+                                        <span className={`px-3 py-1 rounded-full text-sm font-semibold ${appointment.state === 'completed' ? 'bg-green-100 text-green-700' :
                                             appointment.state === 'upcoming' ? 'bg-blue-100 text-blue-700' :
-                                            'bg-gray-100 text-gray-700'
-                                        }`}>
-                                            {appointment.state === 'completed' ? 'সম্পন্ন' : 
-                                             appointment.state === 'upcoming' ? 'আসন্ন' : 
-                                             appointment.state}
+                                                'bg-gray-100 text-gray-700'
+                                            }`}>
+                                            {appointment.state === 'completed' ? 'সম্পন্ন' :
+                                                appointment.state === 'upcoming' ? 'আসন্ন' :
+                                                    appointment.state}
                                         </span>
                                     </div>
                                 ))
