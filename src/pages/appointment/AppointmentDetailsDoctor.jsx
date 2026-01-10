@@ -2,15 +2,13 @@ import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import axios from "axios";
 import useAppointment from "../../hooks/useAppointment";
 import useDoctor from "../../hooks/useDoctor";
 import Button from "../../components/Button";
 import BackButton from "../../components/BackButton";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
-import { FaSpinner } from "react-icons/fa"; // Spinner for loading state
+import { FaSpinner } from "react-icons/fa";
 
-// Initialize SweetAlert2
 const MySwal = withReactContent(Swal);
 
 const AppointmentDetailsDoctor = () => {
@@ -27,7 +25,6 @@ const AppointmentDetailsDoctor = () => {
         </div>
     );
 
-    // Find the specific appointment using appointmentId
     const appointment = appointments.find((a) => a._id === appointmentId);
     const link = appointment?.sessionLink;
     const [sessionLink, setSessionLink] = useState(link);
@@ -36,9 +33,16 @@ const AppointmentDetailsDoctor = () => {
 
     const gender = appointment?.gender === "male" ? "পুরুষ" : appointment?.gender === "female" ? "নারী" : "অন্যান্য";
 
-    // Find the corresponding doctor for the appointment
     const doctor = doctors.find((d) => d._id === appointment.doctorID);
-    if (!doctor) return <div className="text-center text-red-600">Doctor not found</div>;
+    if (!doctor)
+        return <div className="text-center text-red-600">Doctor not found</div>;
+
+    const gender =
+        appointment?.gender === "male"
+            ? "পুরুষ"
+            : appointment?.gender === "female"
+            ? "নারী"
+            : "অন্যান্য";
 
     const handleStartSession = async () => {
         // Check if session link is provided
@@ -107,14 +111,14 @@ const AppointmentDetailsDoctor = () => {
     const handleFinishAppointment = async (event) => {
         event.preventDefault();
         const result = await MySwal.fire({
-            title: "আপনি কি নিশ্চিত?", // Bengali message: "Are you sure?"
-            text: "এই অ্যাপয়েন্টমেন্টটি সম্পন্ন হিসেবে চিহ্নিত হবে।", // Appointment completion warning message
+            title: "আপনি কি নিশ্চিত?",
+            text: "এই অ্যাপয়েন্টমেন্টটি সম্পন্ন হিসেবে চিহ্নিত হবে।",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonText: "হ্যাঁ, সম্পন্ন করুন", // "Yes, complete"
-            cancelButtonText: "বাতিল", // "Cancel"
-            confirmButtonColor: "#16a34a", // Green color
-            cancelButtonColor: "#6b7280", // Gray color
+            confirmButtonText: "হ্যাঁ, সম্পন্ন করুন",
+            cancelButtonText: "বাতিল",
+            confirmButtonColor: "#16a34a",
+            cancelButtonColor: "#6b7280",
         });
 
         if (!result.isConfirmed) return;
@@ -125,20 +129,18 @@ const AppointmentDetailsDoctor = () => {
             // Show success message
             await MySwal.fire({
                 icon: "success",
-                title: "✅ সম্পন্ন!", // Appointment completed successfully
-                text: "অ্যাপয়েন্টমেন্ট সফলভাবে সম্পন্ন হিসেবে সংরক্ষণ করা হয়েছে।", // Appointment saved as completed
-                confirmButtonText: "ঠিক আছে", // "Okay"
-                confirmButtonColor: "#16a34a", // Green color
+                title: "✅ সম্পন্ন!",
+                text: "অ্যাপয়েন্টমেন্ট সফলভাবে সংরক্ষিত হয়েছে।",
+                confirmButtonText: "ঠিক আছে",
+                confirmButtonColor: "#16a34a",
             });
-
-            // Reload the page to reflect changes
             window.location.reload();
         } catch (err) {
-            console.error("Error in finishing appointment:", err);  // More specific error logging
+            console.error("Error in finishing appointment:", err);
             MySwal.fire({
                 icon: "error",
-                title: "❌ ত্রুটি!", // Error message
-                text: "অ্যাপয়েন্টমেন্ট সম্পন্ন করা যায়নি। আবার চেষ্টা করুন।", // Try again message
+                title: "❌ ত্রুটি!",
+                text: "অ্যাপয়েন্টমেন্ট সম্পন্ন করা যায়নি। আবার চেষ্টা করুন।",
             });
         }
     };
@@ -218,46 +220,56 @@ const AppointmentDetailsDoctor = () => {
                     </div>
                 </div>
 
-                <div className="flex gap-6 mt-8">
-                    <div className="w-full">
-                        {appointment?.mode === 'online' && (
-                            <div onClick={handleStartSession}>
-                                <Button btnName={"সেশন শুরু করুন"} bgColor={"bg-secondary-color"} />
-                            </div>
-                        )}
-                    </div>
-                    <div className="w-full">
-                        {appointment?.mode === 'online' && (
-                            <div onClick={handleSetSessionLink}>
-                                <Button btnName={"সেশন লিঙ্ক দিন"} bgColor={"bg-primary-color"}></Button>
-                            </div>
-                        )}
+                <div className="bg-green-100 p-6 rounded-lg shadow hover:shadow-lg transition-all duration-200">
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">রোগীর তথ্যসমূহ</h2>
+                    <div className="space-y-2 text-gray-700">
+                        <p><span className="font-bold">রোগীর নামঃ</span> {appointment.patientName}</p>
+                        <p><span className="font-bold">মোবাইলঃ</span> {appointment.phone}</p>
+                        <p><span className="font-bold">ইমেইলঃ</span> {appointment.patientEmail}</p>
+                        <p><span className="font-bold">বয়সঃ</span> {appointment.age} বছর</p>
+                        <p><span className="font-bold">জেন্ডারঃ</span> {gender}</p>
+                        <p><span className="font-bold">ব্লাড গ্রুপঃ</span> {appointment.bloodGroup}</p>
+                        <p><span className="font-bold">পেশাঃ</span> {appointment.profession}</p>
+                        <p><span className="font-bold">সমস্যা/রোগের বিবরণঃ</span> {appointment.problem}</p>
                     </div>
                 </div>
+            </div>
 
-                <div className="w-full" >
-                    <button
-                        onClick={handleFinishAppointment}
-                        className={`w-full rounded-md bg-secondary-color text-white py-3 transition ${appointment.state === "completed" ? "opacity-25 text-black cursor-not-allowed bg-gray-500 " : ""}`}
-                        disabled={appointment.state === "completed"}
-                    >
-                        {appointment.state === "completed" ? "অ্যাপয়েন্টমেন্ট সম্পন্ন" : "শেষ করুন"}
+            {/* Action Buttons */}
+            <div className="flex gap-4 flex-wrap">
+                {/* 1. Prescription লিখুন */}
+                <Link to={`/dashboardDoctor/createPrescription/${appointment._id}`} className="flex-1">
+                    <Button btnName="প্রেস্ক্রিপশন লিখুন" bgColor="bg-primary-color" />
+                </Link>
+
+                {/* 2. Finish Appointment */}
+                <button
+                    onClick={handleFinishAppointment}
+                    className={`flex-1 w-full rounded-md bg-secondary-color text-white py-3 transition ${
+                        appointment.state === "completed" ? "opacity-25 text-black cursor-not-allowed bg-gray-500" : ""
+                    }`}
+                    disabled={appointment.state === "completed"}
+                >
+                    {appointment.state === "completed" ? "অ্যাপয়েন্টমেন্ট সম্পন্ন" : "শেষ করুন"}
+                </button>
+            </div>
+
+            {/* Prescription View Buttons */}
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* 1. আগের Prescription দেখুন (patient uploaded) */}
+                <Link to={`/dashboardDoctor/prescriptionDetails/${appointment._id}`} className="flex-1">
+                    <button className="w-full bg-cyan-500 text-white py-3 rounded-md hover:bg-cyan-600 transition">
+                        পূর্বের প্রেস্ক্রিপশন দেখুন
                     </button>
-                </div>
+                </Link>
 
-                <div className="flex gap-6 mt-8">
-                    <div className="w-full">
-                        <Link to={`/dashboardDoctor/createPrescription/${appointment._id}`}>
-                            <Button btnName="প্রেস্ক্রিপশন লিখুন" bgColor="bg-tertiary-color" />
-                        </Link>
-                    </div>
+                {/* 2. Prescription দেখুন (general) */}
+                <Link to={`/dashboardDoctor/prescriptionDetails/${appointment._id}`} className="flex-1">
+                   <button className="w-full bg-indigo-500 text-white py-3 rounded-md hover:bg-indigo-600 transition">
+    বর্তমান প্রেস্ক্রিপশন দেখুন
+</button>
 
-                    <div className="w-full">
-                        <Link to={`/dashboardDoctor/prescriptionDetails/${appointmentId}`}>
-                            <Button btnName="প্রেস্ক্রিপশন দেখুন" bgColor="bg-primary-color" className="w-full" />
-                        </Link>
-                    </div>
-                </div>
+                </Link>
             </div>
         </div>
     );
