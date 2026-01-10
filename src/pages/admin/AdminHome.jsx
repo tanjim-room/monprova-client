@@ -17,7 +17,9 @@ const AdminHome = () => {
     totalPatients: 0,
     completedPatients: 0,
     monthlyRevenue: 0,
-    totalRevenue: 0
+    monthlyPaymentCount: 0,
+    totalRevenue: 0,
+    totalPaymentCount: 0
   });
   const [recentActivities, setRecentActivities] = useState([]);
 
@@ -27,15 +29,17 @@ const AdminHome = () => {
 
   const fetchAllStats = async () => {
     try {
-      const [usersRes, doctorsRes, appointmentsRes] = await Promise.all([
+      const [usersRes, doctorsRes, appointmentsRes, paymentsRes] = await Promise.all([
         axiosSecure.get('/api/users'),
         axiosSecure.get('/api/doctors'),
-        axiosSecure.get('/api/appointments')
+        axiosSecure.get('/api/appointments'),
+        axiosSecure.get('/api/payments')
       ]);
 
       const users = usersRes.data;
       const doctors = doctorsRes.data;
       const appointments = appointmentsRes.data;
+      const payments = paymentsRes.data;
 
       // Calculate doctor statistics
       const pendingVerifications = doctors.filter(d => d.verificationStatus === 'pending').length;
@@ -54,27 +58,37 @@ const AdminHome = () => {
 
       const paidAppointments = appointments.filter(apt => apt.paymentStatus === 'paid');
       const todayAppointments = paidAppointments.filter(apt => {
-        const aptDate = new Date(apt.date);
+        const aptDate = new Date(apt.appointmentDate);
         return aptDate >= today && aptDate < tomorrow;
       }).length;
 
       const upcomingAppointments = paidAppointments.filter(apt => {
-        const aptDate = new Date(apt.date);
+        const aptDate = new Date(apt.appointmentDate);
         return aptDate >= today && apt.state === 'upcoming';
       }).length;
 
-      // Calculate revenue
+      // Calculate revenue from payments collection
       const currentMonth = today.getMonth();
       const currentYear = today.getFullYear();
+      const now = new Date();
       
-      const monthlyRevenue = paidAppointments
-        .filter(apt => {
-          const aptDate = new Date(apt.date);
-          return aptDate.getMonth() === currentMonth && aptDate.getFullYear() === currentYear;
-        })
-        .reduce((sum, apt) => sum + (apt.fee || 0), 0);
+      // Filter for successful/paid payments only
+      const successfulPayments = payments.filter(payment => 
+        payment.status === 'paid' || payment.status === 'success' || payment.status === 'completed'
+      );
+      
+      const monthlyPayments = successfulPayments.filter(payment => {
+        const paymentDate = new Date(payment.paidAt || payment.date || payment.createdAt);
+        return paymentDate.getMonth() === currentMonth && 
+               paymentDate.getFullYear() === currentYear &&
+               paymentDate <= now;
+      });
+      
+      const monthlyRevenue = monthlyPayments.reduce((sum, payment) => sum + (Number(payment.amount) || 0), 0);
+      const monthlyPaymentCount = monthlyPayments.length;
 
-      const totalRevenue = paidAppointments.reduce((sum, apt) => sum + (apt.fee || 0), 0);
+      const totalRevenue = successfulPayments.reduce((sum, payment) => sum + (Number(payment.amount) || 0), 0);
+      const totalPaymentCount = successfulPayments.length;
 
       setStats({
         pendingVerifications,
@@ -86,17 +100,19 @@ const AdminHome = () => {
         totalPatients: patients.length,
         completedPatients,
         monthlyRevenue,
-        totalRevenue
+        monthlyPaymentCount,
+        totalRevenue,
+        totalPaymentCount
       });
 
       // Get recent activities (last 5 appointments)
       const recentAppts = paidAppointments
-        .sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date))
+        .sort((a, b) => new Date(b.createdAt || b.appointmentDate) - new Date(a.createdAt || a.appointmentDate))
         .slice(0, 5)
         .map(apt => ({
           type: 'appointment',
-          message: `${apt.patientName} এর সাথে ${apt.mode === 'online' ? 'অনলাইন' : 'অফলাইন'} অ্যাপয়েন্টমেন্ট`,
-          date: apt.createdAt || apt.date,
+          message: `${apt.patientName || 'রোগী'} এর সাথে ${apt.mode === 'online' ? 'অনলাইন' : 'অফলাইন'} অ্যাপয়েন্টমেন্ট`,
+          date: apt.createdAt || apt.appointmentDate,
           state: apt.state
         }));
 
@@ -117,6 +133,11 @@ const AdminHome = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const formatCurrency = (amount) => {
+    if (!amount) return '0';
+    return new Intl.NumberFormat('en-IN').format(amount);
   };
 
   if (loading) {
@@ -225,13 +246,13 @@ const AdminHome = () => {
             <div className="flex items-center justify-between mb-4">
               <FaMoneyBillWave className="text-4xl text-orange-500" />
               <div className="text-right">
-                <p className="text-2xl font-bold text-gray-800">৳ {stats.monthlyRevenue}</p>
-                <p className="text-sm text-gray-600">এই মাসের আয়</p>
+                <p className="text-2xl font-bold text-gray-800">৳ {formatCurrency(stats.monthlyRevenue)}</p>
+                <p className="text-sm text-gray-600">মোট পেমেন্ট (এই মাস)</p>
               </div>
             </div>
             <div className="border-t pt-3 text-center">
-              <p className="text-lg font-semibold text-gray-800">৳ {stats.totalRevenue}</p>
-              <p className="text-sm text-gray-600">মোট আয়</p>
+              <p className="text-lg font-semibold text-gray-800">{stats.monthlyPaymentCount} টি</p>
+              <p className="text-sm text-gray-600">পেমেন্ট সংখ্যা</p>
             </div>
           </div>
         </div>

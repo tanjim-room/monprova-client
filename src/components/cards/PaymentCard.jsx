@@ -44,6 +44,7 @@ const PaymentCard = ({ appointment }) => {
             console.error('Error during payment initiation:', error);
         }
     };
+    
 
 
     return (

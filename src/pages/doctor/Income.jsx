@@ -32,25 +32,28 @@ const Income = () => {
       console.log(`Appointments for doctor ${doctorId}:`, doctorAppointments.length);
       console.log("Sample appointment:", doctorAppointments[0]);
       
-      // Filter by state = 'completed'
-      const completedAppointments = doctorAppointments.filter(app => 
-        app.state === 'completed' || app.state === 'Completed'
+      // Filter by paymentStatus = 'paid' (all booked appointments)
+      const paidAppointments = doctorAppointments.filter(app => 
+        app.paymentStatus === 'paid'
       );
-      console.log("Completed appointments for this doctor:", completedAppointments.length);
-      console.log("Completed appointments data:", completedAppointments);
-      console.log("Fees from completed:", completedAppointments.map(app => ({ 
+      console.log("Paid appointments for this doctor:", paidAppointments.length);
+      console.log("Paid appointments data:", paidAppointments);
+      console.log("Fees from paid appointments:", paidAppointments.map(app => ({ 
         id: app._id, 
         fee: app.fee, 
+        consultationFee: app.consultationFee,
         feeType: typeof app.fee,
-        patientName: app.patientName 
+        patientName: app.patientName,
+        state: app.state
       })));
 
-      setAppointments(completedAppointments);
+      setAppointments(paidAppointments);
 
       // Calculate total income using actual fee from each appointment
-      const total = completedAppointments.reduce((sum, app) => {
-        const appointmentFee = Number(app.fee) || Number(doctorFee) || 0;
-        console.log(`Processing appointment ${app._id}: fee=${app.fee}, doctorFee=${doctorFee}, using=${appointmentFee}`);
+      const total = paidAppointments.reduce((sum, app) => {
+        // Use fee from appointment, fallback to doctor's consultation fee
+        const appointmentFee = Number(app.fee) || Number(app.consultationFee) || Number(doctorFee) || 0;
+        console.log(`Processing appointment ${app._id}: fee=${app.fee}, consultationFee=${app.consultationFee}, doctorFee=${doctorFee}, using=${appointmentFee}`);
         return sum + appointmentFee;
       }, 0);
       const net = total * 0.8; // 80% to doctor
@@ -116,7 +119,7 @@ const Income = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <div className="card bg-white shadow-md p-6 rounded-md text-center border border-gray-200">
             <h3 className="text-xl font-semibold text-gray-700">
-              সম্পন্ন অ্যাপয়েন্টমেন্ট
+              বুকড অ্যাপয়েন্টমেন্ট
             </h3>
             <p className="text-3xl font-bold text-blue-600 mt-2">
               {appointments.length}
@@ -178,11 +181,11 @@ const Income = () => {
                   </tr>
                 ) : (
                   appointments.map((app, index) => {
-                    const fee = Number(app.fee) || Number(doctor?.consultationFee) || 0;
+                    const fee = Number(app.fee) || Number(app.consultationFee) || Number(doctor?.consultationFee) || 0;
                     const deduction = fee * 0.2;
                     const net = fee * 0.8;
-                    const appointmentDate = app.createdAt || app.date || new Date().toISOString();
-                    const displayDate = new Date(appointmentDate).toLocaleDateString('bn-BD', {
+                    const appointmentDate = app.createdAt || app.date || app.appointmentDate || new Date().toISOString();
+                    const displayDate = new Date(appointmentDate).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'short',
                       day: 'numeric'
@@ -230,7 +233,7 @@ const Income = () => {
                 ) : (
                   payouts.map((p, i) => (
                     <tr key={p._id || i} className="hover:bg-blue-50">
-                      <td className="text-left">{new Date(p.timestamp).toLocaleDateString('bn-BD')}</td>
+                      <td className="text-left">{new Date(p.timestamp).toLocaleDateString('en-US')}</td>
                       <td className="text-left">{p.method}</td>
                       <td className="text-left">{p.transactionId}</td>
                       <td className="text-left">৳ {Number(p.amount).toFixed(2)}</td>

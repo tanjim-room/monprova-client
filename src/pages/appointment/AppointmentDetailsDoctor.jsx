@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import useAppointment from "../../hooks/useAppointment";
 import useDoctor from "../../hooks/useDoctor";
 import Button from "../../components/Button";
+import BackButton from "../../components/BackButton";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { FaSpinner } from "react-icons/fa";
 
@@ -30,8 +31,12 @@ const AppointmentDetailsDoctor = () => {
         );
 
     const appointment = appointments.find((a) => a._id === appointmentId);
-    if (!appointment)
-        return <div className="text-center text-red-600">Appointment not found</div>;
+    const link = appointment?.sessionLink;
+    const [sessionLink, setSessionLink] = useState(link);
+
+    if (!appointment) return <div className="text-center text-red-600">Appointment not found</div>;
+
+    const gender = appointment?.gender === "male" ? "পুরুষ" : appointment?.gender === "female" ? "নারী" : "অন্যান্য";
 
     const doctor = doctors.find((d) => d._id === appointment.doctorID);
     if (!doctor)
@@ -44,6 +49,70 @@ const AppointmentDetailsDoctor = () => {
             ? "নারী"
             : "অন্যান্য";
 
+    const handleStartSession = async () => {
+        // Check if session link is provided
+        if (!sessionLink) {
+            // If no session link, show a SweetAlert prompt asking the user to provide a link
+            await MySwal.fire({
+                icon: 'warning',
+                title: '⚠️ সেশন লিঙ্ক প্রয়োজন!',
+                text: 'দয়া করে সেশন লিঙ্ক দিন যেন আপনি সেশন শুরু করতে পারেন।',
+                confirmButtonText: 'ঠিক আছে',
+                confirmButtonColor: '#16a34a',
+            });
+            return;
+        }
+
+        // If session link is available, start the session by redirecting to the session link
+        window.open(sessionLink, '_blank');
+    };
+
+    const handleSetSessionLink = async () => {
+        // If sessionLink is not provided, show SweetAlert to ask for a link
+        const { value: link } = await MySwal.fire({
+            title: '🔗 সেশন লিঙ্ক দিন',
+            subTitle: "Google Meet Link দিন",
+            input: 'url',
+            inputPlaceholder: 'যেমনঃ https://meet.google.com/abc-defg-hij',
+            inputValue: sessionLink || "",
+            showCancelButton: true,
+            cancelButtonText: 'বাতিল',
+            confirmButtonText: 'সংরক্ষণ করুন',
+            confirmButtonColor: '#16a34a',
+            cancelButtonColor: '#6b7280',
+            inputValidator: (value) => {
+                if (!value) {
+                    return '⚠️ দয়া করে একটি লিঙ্ক দিন!';
+                }
+            },
+        });
+
+        if (link) {
+            setSessionLink(link);  // Save link to state
+
+            try {
+                // Send PATCH request to update the session link in the backend
+                const response = await axiosPublic.patch(`/api/sessionlink/${appointment._id}`, { sessionLink: link });
+
+                await MySwal.fire({
+                    icon: 'success',
+                    title: '✅ লিঙ্ক সংরক্ষণ হয়েছে!',
+                    text: 'সেশন লিঙ্ক সফলভাবে সংরক্ষণ করা হয়েছে।',
+                    confirmButtonText: 'ঠিক আছে',
+                    confirmButtonColor: '#16a34a',
+                });
+            } catch (error) {
+                console.error('Error updating session link:', error);
+                MySwal.fire({
+                    icon: 'error',
+                    title: '❌ ত্রুটি!',
+                    text: 'সেশন লিঙ্ক সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।',
+                });
+            }
+        }
+    };
+
+    // Handle finishing the appointment
     const handleFinishAppointment = async (event) => {
         event.preventDefault();
         const result = await MySwal.fire({
@@ -60,7 +129,9 @@ const AppointmentDetailsDoctor = () => {
         if (!result.isConfirmed) return;
 
         try {
-            await axiosPublic.patch(`/api/appointments/${appointmentId}`);
+            const response = await axiosPublic.patch(`/api/appointments/${appointmentId}`);
+
+            // Show success message
             await MySwal.fire({
                 icon: "success",
                 title: "✅ সম্পন্ন!",

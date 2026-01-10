@@ -6,6 +6,10 @@ import usePrescription from "../../hooks/usePrescription";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { IoMdDownload } from "react-icons/io";
 import { FaSpinner } from "react-icons/fa";
+import usePrescription from "../../hooks/usePrescription";
+import { FaSpinner } from "react-icons/fa"; // Make sure to import the FaSpinner icon
+import pdfService from "../../pdfService";
+import Swal from "sweetalert2";
 
 const AppointmentDetailsPatient = () => {
     const [appointments] = useAppointment();
@@ -13,6 +17,8 @@ const AppointmentDetailsPatient = () => {
     const [prescriptions] = usePrescription();
     const axiosPublic = useAxiosPublic();
     const { appointmentId } = useParams();
+    const [prescriptions] = usePrescription();
+    const prescription = prescriptions?.find(prescription => prescription.appointmentID === appointmentId);
 
     const [files, setFiles] = useState([]);
     const [uploading, setUploading] = useState(false);
@@ -297,7 +303,6 @@ const AppointmentDetailsPatient = () => {
                             </p>
                         </div>
                     </div>
-                </div>
 
                 {/* Prescriptions List */}
                 <div>

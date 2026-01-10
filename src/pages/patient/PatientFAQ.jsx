@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { FaChevronDown, FaChevronUp, FaQuestionCircle } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const PatientFAQ = () => {
     const [openIndex, setOpenIndex] = useState(null);
+    const navigate = useNavigate();
 
     const toggleFAQ = (index) => {
         setOpenIndex(openIndex === index ? null : index);
@@ -36,10 +38,6 @@ const PatientFAQ = () => {
         {
             question: "আমার প্রোফাইল কীভাবে আপডেট করবো?",
             answer: "ড্যাশবোর্ডে 'প্রোফাইল' বাটনে ক্লিক করুন। সেখানে আপনি আপনার ব্যক্তিগত তথ্য, যোগাযোগের বিবরণ, জরুরি যোগাযোগ, রক্তের গ্রুপ এবং ছবি আপডেট করতে পারবেন। সম্পূর্ণ প্রোফাইল আপনার চিকিৎসায় সহায়ক হবে।"
-        },
-        {
-            question: "অ্যাপয়েন্টমেন্ট বাতিল বা পরিবর্তন করতে পারবো?",
-            answer: "হ্যাঁ, আপনি অ্যাপয়েন্টমেন্টের ২৪ ঘন্টা আগে পর্যন্ত বাতিল বা পরিবর্তন করতে পারবেন। 'অ্যাপয়েন্টমেন্ট' সেকশনে গিয়ে আপনার অ্যাপয়েন্টমেন্টে ক্লিক করুন এবং 'বাতিল করুন' অপশন নির্বাচন করুন। ২৪ ঘন্টার মধ্যে বাতিল করলে পুরো ফি ফেরত পাবেন।"
         },
         {
             question: "জরুরি সাহায্য প্রয়োজন হলে কী করবো?",
@@ -115,12 +113,12 @@ const PatientFAQ = () => {
                     <p className="text-gray-700 mb-4">
                         আপনার প্রশ্নের উত্তর খুঁজে পাননি? আমাদের সাহায্য বিভাগে যোগাযোগ করুন।
                     </p>
-                    <a 
-                        href="mailto:support@monprova.com"
+                    <button 
+                        onClick={() => navigate('/contact')}
                         className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition"
                     >
                         যোগাযোগ করুন
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>

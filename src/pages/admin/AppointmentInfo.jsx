@@ -14,8 +14,7 @@ const AppointmentInfo = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [stateFilter, setStateFilter] = useState("all");
   const [modeFilter, setModeFilter] = useState("all");
-  const [paymentFilter, setPaymentFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("appointmentDate");
+  const [sortBy, setSortBy] = useState("createdAt");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,7 +23,7 @@ const AppointmentInfo = () => {
 
   useEffect(() => {
     filterAndSortAppointments();
-  }, [searchQuery, stateFilter, modeFilter, paymentFilter, sortBy, appointments]);
+  }, [searchQuery, stateFilter, modeFilter, sortBy, appointments]);
 
   const fetchAllData = async () => {
     try {
@@ -82,11 +81,6 @@ const AppointmentInfo = () => {
       filtered = filtered.filter(apt => apt.mode === modeFilter);
     }
 
-    // Filter by payment status
-    if (paymentFilter !== "all") {
-      filtered = filtered.filter(apt => apt.paymentStatus === paymentFilter);
-    }
-
     // Filter by search query (doctor name, patient name, or email)
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
@@ -101,7 +95,7 @@ const AppointmentInfo = () => {
       });
     }
 
-    // Sort appointments
+    // Sort appointments - default by creation time (recent first)
     filtered = [...filtered].sort((a, b) => {
       let compareValue = 0;
 
@@ -110,7 +104,8 @@ const AppointmentInfo = () => {
           compareValue = new Date(a.appointmentDate || 0) - new Date(b.appointmentDate || 0);
           break;
         case "createdAt":
-          compareValue = new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+          // Sort by creation time in descending order (recent first)
+          compareValue = new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
           break;
         case "state":
           compareValue = (a.state || "").localeCompare(b.state || "");
@@ -214,7 +209,7 @@ const AppointmentInfo = () => {
           </div>
 
           {/* Filters Row */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* State Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -248,23 +243,6 @@ const AppointmentInfo = () => {
               </select>
             </div>
 
-            {/* Payment Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                পেমেন্ট
-              </label>
-              <select
-                value={paymentFilter}
-                onChange={(e) => setPaymentFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">সব</option>
-                <option value="paid">পরিশোধিত</option>
-                <option value="pending">অপেক্ষমাণ</option>
-                <option value="failed">ব্যর্থ</option>
-              </select>
-            </div>
-
             {/* Sort By */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -275,8 +253,8 @@ const AppointmentInfo = () => {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="appointmentDate">অ্যাপয়েন্টমেন্ট তারিখ</option>
                 <option value="createdAt">তৈরির তারিখ</option>
+                <option value="appointmentDate">অ্যাপয়েন্টমেন্ট তারিখ</option>
                 <option value="state">অবস্থা</option>
                 <option value="doctorName">ডাক্তারের নাম</option>
                 <option value="patientName">রোগীর নাম</option>
@@ -292,9 +270,9 @@ const AppointmentInfo = () => {
               <p className="text-2xl font-bold text-blue-600">{appointments.length}</p>
             </div>
             <div className="bg-yellow-50 p-4 rounded-lg text-center">
-              <p className="text-sm text-gray-600">অপেক্ষমাণ</p>
+              <p className="text-sm text-gray-600">আসন্ন</p>
               <p className="text-2xl font-bold text-yellow-600">
-                {appointments.filter(a => a.state === "pending").length}
+                {appointments.filter(a => a.state === "upcoming").length}
               </p>
             </div>
             <div className="bg-green-50 p-4 rounded-lg text-center">

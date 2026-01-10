@@ -4,7 +4,9 @@ import usePatient from '../../hooks/usePatient';
 import useAuth from '../../hooks/useAuth';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 import useUser from '../../hooks/useUser';
-import { FaCalendarAlt, FaCheckCircle, FaClock, FaUserMd, FaFilePrescription, FaExclamationTriangle, FaArrowRight, FaCalendarPlus, FaUser, FaList, FaBrain, FaBookOpen, FaVideo, FaQuestionCircle, FaGamepad } from 'react-icons/fa';
+import { FaCalendarAlt, FaCheckCircle, FaClock, FaUserMd, FaFilePrescription, FaExclamationTriangle, FaArrowRight, FaCalendarPlus, FaUser, FaList, FaBrain, FaBookOpen, FaVideo, FaQuestionCircle, FaGamepad, FaBell } from 'react-icons/fa';
+import useNotifications from '../../hooks/useNotifications';
+import NotificationDropdown from '../../components/NotificationDropdown';
 
 const PatientHome = () => {
     const [patients] = usePatient();
@@ -12,6 +14,8 @@ const PatientHome = () => {
     const [users] = useUser();
     const navigate = useNavigate();
     const axiosSecure = useAxiosSecure();
+    const { unreadCount } = useNotifications();
+    const [showNotifications, setShowNotifications] = useState(false);
     
     const patient = patients?.find(p => p.email === user?.email);
     const userAccount = users?.find(u => u.email === user?.email);
@@ -68,11 +72,23 @@ const PatientHome = () => {
 
             // Find next upcoming appointment
             const upcomingAppointments = myAppointments
-                .filter(apt => apt.state === 'upcoming')
-                .sort((a, b) => new Date(a.date) - new Date(b.date));
+                .filter(apt => apt.state === 'upcoming' && apt.appointmentDate)
+                .sort((a, b) => {
+                    const dateA = new Date(a.appointmentDate);
+                    const dateB = new Date(b.appointmentDate);
+                    return dateA - dateB;
+                });
+            
+            console.log('All my appointments:', myAppointments);
+            console.log('Filtered upcoming appointments:', upcomingAppointments);
             
             if (upcomingAppointments.length > 0) {
                 setNextAppointment(upcomingAppointments[0]);
+                console.log('Next appointment data:', upcomingAppointments[0]);
+                console.log('appointmentDate:', upcomingAppointments[0].appointmentDate);
+                console.log('slot:', upcomingAppointments[0].slot);
+            } else {
+                console.log('No upcoming appointments found');
             }
 
             setLoading(false);
@@ -112,16 +128,27 @@ const PatientHome = () => {
 
     const getDoctorSpecialty = (doctorID) => {
         const doctor = doctors.find(d => d._id === doctorID);
-        return doctor?.specialty || 'N/A';
+        return doctor?.expertise || 'N/A';
     };
 
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
-        return new Date(dateString).toLocaleDateString('bn-BD', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return 'N/A';
+            
+            // Use English locale for reliable formatting
+            const formattedDate = date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            return formattedDate;
+        } catch (error) {
+            console.error('Date formatting error:', error);
+            return 'N/A';
+        }
     };
 
     const formatTime = (timeString) => {
@@ -138,7 +165,26 @@ const PatientHome = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#E6F0FF] p-8">
+        <div className="min-h-screen bg-[#E6F0FF] p-8 relative">
+            {/* Fixed Notification Button - Top Right Corner */}
+            <div className="fixed top-4 right-4 z-50">
+                <button
+                    onClick={() => setShowNotifications(!showNotifications)}
+                    className="relative bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-full shadow-xl hover:shadow-2xl transition-all hover:scale-110"
+                >
+                    <FaBell className="text-2xl" />
+                    {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center animate-pulse">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                    )}
+                </button>
+                <NotificationDropdown 
+                    isOpen={showNotifications} 
+                    onClose={() => setShowNotifications(false)} 
+                />
+            </div>
+
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-8">
@@ -186,8 +232,14 @@ const PatientHome = () => {
                             </div>
                             <div>
                                 <p className="text-sm opacity-90">তারিখ ও সময়</p>
-                                <p className="text-xl font-bold">{formatDate(nextAppointment.date)}</p>
-                                <p className="text-lg opacity-90">{formatTime(nextAppointment.time)}</p>
+                                <p className="text-xl font-bold">
+                                    {nextAppointment.appointmentDate 
+                                        ? formatDate(nextAppointment.appointmentDate) 
+                                        : 'তারিখ পাওয়া যায়নি'}
+                                </p>
+                                <p className="text-lg opacity-90">
+                                    {nextAppointment.slot || 'সময় পাওয়া যায়নি'}
+                                </p>
                             </div>
                             <div>
                                 <p className="text-sm opacity-90">মাধ্যম</p>
@@ -269,7 +321,7 @@ const PatientHome = () => {
                             <p className="text-gray-500 text-center py-8">কোনো অ্যাপয়েন্টমেন্ট নেই</p>
                         ) : (
                             appointments
-                                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                                .sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate))
                                 .slice(0, 5)
                                 .map((appointment, index) => (
                                     <div
@@ -293,7 +345,7 @@ const PatientHome = () => {
                                                     ডাঃ {getDoctorName(appointment.doctorID)}
                                                 </p>
                                                 <p className="text-sm text-gray-500">
-                                                    {formatDate(appointment.date)} - {formatTime(appointment.time)}
+                                                    {formatDate(appointment.appointmentDate)} - {appointment.slot || 'N/A'}
                                                 </p>
                                             </div>
                                         </div>

@@ -159,7 +159,7 @@ const UpdatePassword = () => {
 
           <button
             type="submit"
-            className={`w-full py-2 rounded-md text-white ${loading ? 'bg-gray-500' : 'bg-blue-600 hover:bg-blue-700'} transition`}
+            className={`w-full py-2 rounded-md text-white ${loading ? 'bg-gray-500' : 'bg-red-500 hover:bg-red-700'} transition`}
             disabled={loading}
           >
             {loading ? "পরিবর্তন হচ্ছে..." : "পাসওয়ার্ড পরিবর্তন করুন"}
