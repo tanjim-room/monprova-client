@@ -185,7 +185,7 @@ const DoctorList = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 xl:grid-cols-3 gap-8 mx-auto px-0 mt-16">
+            <div className="grid grid-cols-2 xl:grid-cols-3 gap-8 mx-auto px-0 mt-8">
                 {
                     filteredDoctors.length > 0 ? (
                         filteredDoctors.map(doctor => (

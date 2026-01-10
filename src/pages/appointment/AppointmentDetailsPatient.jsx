@@ -2,11 +2,14 @@ import { useParams } from "react-router-dom";
 import useAppointment from "../../hooks/useAppointment";
 import useDoctor from "../../hooks/useDoctor";
 import { IoMdDownload } from "react-icons/io";
+import usePrescription from "../../hooks/usePrescription";
 
 const AppointmentDetailsPatient = () => {
     const [appointments] = useAppointment();
     const [doctors] = useDoctor();
     const { appointmentId } = useParams();
+    const [prescriptions] = usePrescription();
+    const prescription = prescriptions?.find(prescription => prescription.appointmentID === appointmentId);
 
     if (!appointments || !doctors) {
         return (
@@ -64,6 +67,21 @@ const AppointmentDetailsPatient = () => {
                         <p><strong>সময়ঃ</strong> {appointment.slot || "Not available"}</p>
                         <p><strong>ফিঃ</strong> {doctor.consultationFee} টাকা</p>
                         <p><strong>স্ট্যাটাসঃ</strong> <span className={`font-semibold ${appointment.state === "completed" ? "text-green-600" : "text-yellow-600"}`}>{appointment.state || "upcoming"}</span></p>
+                        {prescription && (
+                            <div className="mt-8">
+                                <button
+                                    onClick={() =>
+                                        window.open(
+                                            `http://localhost:8000/api/prescription/${prescription?.appointmentID}/pdf`,
+                                            "_blank"
+                                        )
+                                    } className="w-full flex justify-center items-center bg-red-500 text-white py-3 rounded-md shadow-md hover:bg-red-600 transition-all duration-200"
+                                >
+                                    <IoMdDownload className="text-xl mr-3" />
+                                    <span className="text-lg font-semibold">প্রেসক্রিপশন ডাউনলোড করুন</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -126,17 +144,7 @@ const AppointmentDetailsPatient = () => {
                 </div>
 
                 {/* Download Button */}
-                {appointment.sessionLink && (
-                    <div className="mt-8">
-                        <button
-                            onClick={handleDownload}
-                            className="w-full flex justify-center items-center bg-blue-600 text-white py-3 rounded-md shadow-md hover:bg-blue-700 transition-all duration-200"
-                        >
-                            <IoMdDownload className="text-xl mr-3" />
-                            <span className="text-lg font-semibold">প্রেসক্রিপশন ডাউনলোড করুন</span>
-                        </button>
-                    </div>
-                )}
+
             </div>
         </div>
     );

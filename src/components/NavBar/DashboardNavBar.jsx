@@ -6,6 +6,8 @@ import Logo from "../Logo.jsx";
 import useAuth from "../../hooks/useAuth.jsx";
 import usePatient from "../../hooks/usePatient.jsx";
 import useDoctor from "../../hooks/useDoctor.jsx";
+import { GrUpdate } from "react-icons/gr";
+import { MdVerified } from "react-icons/md";
 
 const DashboardNavBar = ({ fullName, role }) => {
     const { user } = useAuth();
@@ -41,16 +43,25 @@ const DashboardNavBar = ({ fullName, role }) => {
 
     return (
         <aside className="w-1/5 bg-white shadow-lg p-6 fixed h-full overflow-y-auto">
+
             <div className="flex flex-col items-center mb-4 ">
+                <div className="relative">
+                    {role === "doctor" && (
+                        <p className={`absolute -top-1 right-4 ${doctor?.verificationStatus === "verified" ? "text-green-500" : doctor?.verificationStatus === "not-verified" ? "text-gray-500" : doctor?.verificationStatus === "pending" ? "text-yellow-500" : doctor?.verificationStatus === "rejected" ? "text-red-500" : "text-gray-500"} text-4xl bg-white rounded-full`}>
+                            <MdVerified />
+                        </p>
+                    )}
+                </div>
+
                 <img src={displayImg} alt="" className="w-20 h-20 rounded-full object-cover border-2 p-1" />
                 <div className="mt-2">
                     <p className="font-semibold text-center">{displayNames}</p>
-                    <p className="text-center text-red-500"> {role === "admin" ? "অ্যাডমিন ড্যাশবোর্ড"
+                    <p className="text-center text-red-500 text-sm"> {role === "admin" ? "অ্যাডমিন ড্যাশবোর্ড"
                         : role === "doctor" ? "ডাক্তারের ড্যাশবোর্ড"
                             : "রোগীর ড্যাশবোর্ড"}</p>
                 </div>
             </div>
-            
+
 
             <ul className="space-y-4">
                 {menuItems.map((item, index) => {
@@ -90,6 +101,19 @@ const DashboardNavBar = ({ fullName, role }) => {
                     );
                 })}
             </ul>
+            {
+                <div className="flex justify-center mt-4">
+                    <Link
+                        to="/dashboardDoctor/change-password"
+                        className="inline-flex items-center gap-2
+                   bg-gray-500 hover:bg-primary-400
+                   text-white px-4 py-2 rounded-lg w-full"
+                    >
+                        <p className="text-sm inline-flex items-center gap-2"> <GrUpdate /> পাসওয়ার্ড পরিবর্তন করুন</p>
+                    </Link>
+                </div>
+
+            }
 
 
 

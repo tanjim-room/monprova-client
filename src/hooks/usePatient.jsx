@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 
 const usePatient = () => {
     const axiosSecure = useAxiosSecure();
-    const { data: patients = [] } = useQuery({
+    const { data: patients = [] , refetch} = useQuery({
         queryKey: ['patients'],
         queryFn: async () => {
             const res = await axiosSecure.get('/api/patients', {
@@ -15,7 +15,7 @@ const usePatient = () => {
             return res.data
         }
     })
-    return [patients]
+    return [patients, refetch]
 };
 
 export default usePatient;

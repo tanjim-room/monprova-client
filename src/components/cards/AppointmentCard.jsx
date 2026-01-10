@@ -59,7 +59,7 @@ const AppointmentCard = ({ appointment }) => {
                     <p className="mb-4">সময়ঃ {appointment?.slot || "অনুপস্থিত"}</p>
                     <div className="mt-4 flex justify-between gap-8">
                         {/* Join Session Button (Visible only for online appointments) */}
-                        {appointment?.mode === 'online' && (
+                        {appointment?.mode === 'online' && appointment?.state === "upcoming" && (
                             <div className="w-full" onClick={handleJoinSession}>
                                 <Button btnName="ভিডিও সেশন এ জয়েন করুন" bgColor="bg-primary-color hover:bg-primary-400" />
                             </div>

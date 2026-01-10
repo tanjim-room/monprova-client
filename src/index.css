@@ -25,6 +25,9 @@ html {
 .bg-secondary-color {
   background-color : #ea676b;
 }
+.bg-tertiary-color {
+  background-color: #4e395f;
+}
 
 .border-primary-color {
   border-color : #27b294;
