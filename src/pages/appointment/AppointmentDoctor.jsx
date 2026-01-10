@@ -38,32 +38,64 @@ const AppointmentDoctor = () => {
             appointmentList = completedOfflineAppointment;
         }
 
-        if (appointmentList.length === 0) {
-            return <p className="text-gray-500">কোনো অ্যাপয়েন্টমেন্ট নেই</p>;
+        if (!appointmentList || appointmentList.length === 0) {
+            return (
+                <div className="bg-white p-8 rounded-lg shadow-md text-center">
+                    <p className="text-gray-500 text-lg">কোনো অ্যাপয়েন্টমেন্ট নেই</p>
+                </div>
+            );
         }
         console.log(appointmentList)
         return appointmentList.map((appointment, idx) => (
-            <AppointmentCardDoctor key={idx} appointment={appointment}></AppointmentCardDoctor>
+            <AppointmentCardDoctor key={appointment?._id || idx} appointment={appointment}></AppointmentCardDoctor>
         ));
     };
 
     return (
-        <div>
-            <div className="min-h-[850px] p-0  rounded-lg mt-0">
+        <div className="min-h-screen bg-gray-50 p-6">
+            <div className="max-w-7xl mx-auto">
                 <div className='pb-8'>
                 <SectionHeader heading={"আপনার অ্যাপয়েন্টমেন্টসমুহ"} subHeading={"আপনার অ্যাপয়েন্টমেন্ট গুলো এখানে দেখুন"}></SectionHeader>
             </div>
                 {/* Tabs */}
-                <div className="flex gap-4 mb-8">
+                <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+                <div className="flex gap-2 justify-between">
                     {/* Upcoming Button */}
                     <button
-                        className={`px-4 py-2 rounded-lg font-semibold ${activeTab === "upcoming"
-                            ? "bg-secondary-color text-white"
-                            : "bg-white text-secondary-color border border-secondary-color"}`
-                        }
+                        className={`px-4 py-3 rounded-lg font-semibold transition-all duration-200 whitespace-nowrap ${
+                            activeTab === "upcoming"
+                                ? "bg-blue-500 text-white shadow-md"
+                                : "bg-blue-50 text-blue-700 hover:bg-blue-100"
+                        }`}
                         onClick={() => setActiveTab("upcoming")}
                     >
                         আপকামিং
+                    </button>
+
+                    
+
+                    {/* Upcoming Online Button */}
+                    <button
+                        className={`px-4 py-3 rounded-lg font-semibold transition-all duration-200 whitespace-nowrap ${
+                            activeTab === "upcomingOnline"
+                                ? "bg-purple-500 text-white shadow-md"
+                                : "bg-purple-50 text-purple-700 hover:bg-purple-100"
+                        }`}
+                        onClick={() => setActiveTab("upcomingOnline")}
+                    >
+                        আপকামিং (অনলাইন)
+                    </button>
+
+                    {/* Upcoming Offline Button */}
+                    <button
+                        className={`px-4 py-3 rounded-lg font-semibold transition-all duration-200 whitespace-nowrap ${
+                            activeTab === "upcomingOffline"
+                                ? "bg-indigo-500 text-white shadow-md"
+                                : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
+                        }`}
+                        onClick={() => setActiveTab("upcomingOffline")}
+                    >
+                        আপকামিং (অফলাইন)
                     </button>
 
                     {/* Completed Button */}
@@ -77,34 +109,13 @@ const AppointmentDoctor = () => {
                         সম্পন্ন
                     </button>
 
-                    {/* Upcoming Online Button */}
-                    <button
-                        className={`px-4 py-2 rounded-lg font-semibold ${activeTab === "upcomingOnline"
-                            ? "bg-secondary-color text-white"
-                            : "bg-white text-secondary-color border border-secondary-color"}`
-                        }
-                        onClick={() => setActiveTab("upcomingOnline")}
-                    >
-                        আপকামিং (অনলাইন)
-                    </button>
-
-                    {/* Upcoming Offline Button */}
-                    <button
-                        className={`px-4 py-2 rounded-lg font-semibold ${activeTab === "upcomingOffline"
-                            ? "bg-secondary-color text-white"
-                            : "bg-white text-secondary-color border border-secondary-color"}`
-                        }
-                        onClick={() => setActiveTab("upcomingOffline")}
-                    >
-                        আপকামিং (অফলাইন)
-                    </button>
-
                     {/* Completed Online Button */}
                     <button
-                        className={`px-4 py-2 rounded-lg font-semibold ${activeTab === "completedOnline"
-                            ? "bg-secondary-color text-white"
-                            : "bg-white text-secondary-color border border-secondary-color"}`
-                        }
+                        className={`px-4 py-3 rounded-lg font-semibold transition-all duration-200 whitespace-nowrap ${
+                            activeTab === "completedOnline"
+                                ? "bg-teal-500 text-white shadow-md"
+                                : "bg-teal-50 text-teal-700 hover:bg-teal-100"
+                        }`}
                         onClick={() => setActiveTab("completedOnline")}
                     >
                         সম্পন্ন (অনলাইন)
@@ -112,18 +123,20 @@ const AppointmentDoctor = () => {
 
                     {/* Completed Offline Button */}
                     <button
-                        className={`px-4 py-2 rounded-lg font-semibold ${activeTab === "completedOffline"
-                            ? "bg-secondary-color text-white"
-                            : "bg-white text-secondary-color border border-secondary-color"}`
-                        }
+                        className={`px-4 py-3 rounded-lg font-semibold transition-all duration-200 whitespace-nowrap ${
+                            activeTab === "completedOffline"
+                                ? "bg-cyan-500 text-white shadow-md"
+                                : "bg-cyan-50 text-cyan-700 hover:bg-cyan-100"
+                        }`}
                         onClick={() => setActiveTab("completedOffline")}
                     >
                         সম্পন্ন (অফলাইন)
                     </button>
                 </div>
+                </div>
 
                 {/* Appointment List */}
-                <div className="space-y-4">{renderAppointments()}</div>
+                <div className="grid grid-cols-1 gap-6">{renderAppointments()}</div>
             </div>
         </div>
     );

@@ -20,6 +20,8 @@ const DoctorProfile = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [medium, setMedium] = useState("");
     const [division, setDivision] = useState("")
+    const [specialist, setSpecialist] = useState("");
+
     const [verificationStatus, setVerificationStatus] = useState("not-verified");
     const [isVerifying, setIsVerifying] = useState(false);
 
@@ -34,6 +36,8 @@ const DoctorProfile = () => {
         if (doctorInfo && !initialized.current) {
             setMedium(doctorInfo.medium || "");
             setDivision(doctorInfo.division || "");
+            setSpecialist(doctorInfo.specialist || "");
+
             initialized.current = true;
         }
     }, [doctorInfo]);
@@ -607,7 +611,24 @@ const DoctorProfile = () => {
                                 required
                             />
                         </div>
-                        <div>
+                        
+                         <div>
+        <label className="label-text font-semibold mb-1">বিশেষজ্ঞ</label>
+        <select
+            value={specialist}
+            onChange={(e) => setSpecialist(e.target.value)}
+            disabled={!isEditable}
+            className="select select-bordered w-full border-2 p-2"
+        >
+            <option value="">নির্বাচন করুন</option>
+            <option value="psychologist">সাইকোলজিস্ট</option>
+            <option value="psychiatrist">সাইকিয়াট্রিস্ট</option>
+        </select>
+    </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                         <div>
                             <label className="label-text font-semibold mb-1">বিশেষ দক্ষতা</label>
                             <input
                                 type="text"
@@ -617,20 +638,7 @@ const DoctorProfile = () => {
                                 className="input input-bordered w-full border-2 p-2"
                             />
                         </div>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label className="label-text font-semibold mb-1">পরামর্শ ফি (টাকা)</label>
-                            <input
-                                type="number"
-                                name="consultationFee"
-                                defaultValue={doctorInfo?.consultationFee || ''} // Default to empty if undefined
-                                disabled={!isEditable}
-                                className="input input-bordered w-full border-2 p-2"
-                                required
-                            />
-                        </div>
                         <div>
                             <label className="label-text font-semibold mb-1">রেজিস্ট্রেশন নাম্বার</label>
                             <input
@@ -666,6 +674,13 @@ const DoctorProfile = () => {
                         </div>
                     </div>
 
+    
+
+    
+
+
+
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label className="label-text font-semibold mb-1">বিভাগ</label>
@@ -689,6 +704,18 @@ const DoctorProfile = () => {
                                 <option value="Rangpur">রংপুর</option>
                             </select>
                         </div>
+<div>
+                            <label className="label-text font-semibold mb-1">পরামর্শ ফি (টাকা)</label>
+                            <input
+                                type="number"
+                                name="consultationFee"
+                                defaultValue={doctorInfo?.consultationFee || ''} // Default to empty if undefined
+                                disabled={!isEditable}
+                                className="input input-bordered w-full border-2 p-2"
+                                required
+                            />
+                        </div>
+
                     </div>
 
 

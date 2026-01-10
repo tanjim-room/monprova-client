@@ -7,10 +7,11 @@ const DoctorList = () => {
     const [doctors] = useDoctor();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDivision, setSelectedDivision] = useState('');
-    const [filteredDoctors, setFilteredDoctors] = useState([]); // Initially set to empty array
-    const [showStatus, setShowStatus] = useState('both');  // 'all', 'online', 'offline'
+    const [selectedSpecialist, setSelectedSpecialist] = useState('');
+    const [filteredDoctors, setFilteredDoctors] = useState([]);
+    const [showStatus, setShowStatus] = useState('both');  // 'both', 'online', 'offline'
 
-    // Mapping of English division names to Bangla names
+    // Division mapping English -> Bangla
     const divisionMapping = {
         'Dhaka': 'ঢাকা',
         'Chattogram': 'চট্টগ্রাম',
@@ -20,100 +21,60 @@ const DoctorList = () => {
         'Sylhet': 'সিলেট',
         'Rangpur': 'রংপুর',
         'Mymensingh': 'ময়মনসিংহ',
-        
     };
 
-    // List of divisions in English
-    const divisions = Object.keys(divisionMapping);
+    // Specialist mapping English -> Bangla
+    const specialistMapping = {
+        'Psychologist': 'সাইকোলজিস্ট',
+        'Psychiatrist': 'সাইকিয়াট্রিস্ট',
+    };
 
-    // Handle search input change
-    const handleSearch = () => {
+    const divisions = Object.keys(divisionMapping);
+    const specialists = Object.keys(specialistMapping);
+
+    const filterDoctors = () => {
         let results = doctors;
 
-        // ✅ Filter only verified doctors
-        results = results.filter(doctor => doctor.verificationStatus === 'verified');
+        results = results.filter(d => d.verificationStatus === 'verified');
 
-        // If there is a search query, filter the doctors based on that
         if (searchQuery) {
-            results = results.filter(doctor =>
-                Object.values(doctor).some(value =>
-                    value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+            results = results.filter(d =>
+                Object.values(d).some(value =>
+                    value?.toString().toLowerCase().includes(searchQuery.toLowerCase())
                 )
             );
         }
 
-        // Apply division filter
         if (selectedDivision) {
-            results = results.filter(doctor =>
-                doctor.division?.toLowerCase() === selectedDivision.toLowerCase()
+            results = results.filter(d =>
+                d.division?.toLowerCase() === selectedDivision.toLowerCase()
             );
         }
 
-        // Apply status filter (online/offline)
-        if (showStatus === 'online') {
-            results = results.filter(doctor => doctor.medium === 'online');
-        } else if (showStatus === 'offline') {
-            results = results.filter(doctor => doctor.medium === 'offline');
-        }
-
-        // Update filtered doctors list
-        setFilteredDoctors(results);
-    };
-
-    // Handle division filter change (real-time)
-    const handleDivisionFilter = () => {
-        let results = doctors;
-
-        // ✅ Filter only verified doctors
-        results = results.filter(doctor => doctor.verificationStatus === 'verified');
-
-        // Apply division filter if selected
-        if (selectedDivision) {
-            results = results.filter(doctor =>
-                doctor.division?.toLowerCase() === selectedDivision.toLowerCase()
+        if (selectedSpecialist) {
+            results = results.filter(d =>
+                d.specialist?.toLowerCase() === selectedSpecialist.toLowerCase()
             );
         }
 
-        // Apply status filter (online/offline)
         if (showStatus === 'online') {
-            results = results.filter(doctor => doctor.medium === 'online');
+            results = results.filter(d => d.medium === 'online');
         } else if (showStatus === 'offline') {
-            results = results.filter(doctor => doctor.medium === 'offline');
+            results = results.filter(d => d.medium === 'offline');
         }
 
-        // Update filtered doctors list
         setFilteredDoctors(results);
     };
 
-    // Handle reset button click (clear search and division filter)
+    useEffect(() => {
+        filterDoctors();
+    }, [searchQuery, selectedDivision, selectedSpecialist, showStatus, doctors]);
+
     const handleReset = () => {
         setSearchQuery('');
         setSelectedDivision('');
-        setShowStatus('both');  // Show all doctors
-        // setFilteredDoctors([]);  // Reset to show no doctors
-    };
-
-    // Effect to filter doctors based on search query or division whenever they change
-    useEffect(() => {
-        handleDivisionFilter();  // Update filter when division changes or search is applied
-    }, [selectedDivision, doctors, searchQuery, showStatus]);
-
-    // Handle showing all doctors
-    const showAllDoctors = () => {
+        setSelectedSpecialist('');
         setShowStatus('both');
-        handleSearch();
-    };
-
-    // Handle showing online doctors only
-    const showOnlineDoctors = () => {
-        setShowStatus('online');
-        handleSearch();
-    };
-
-    // Handle showing offline doctors only
-    const showOfflineDoctors = () => {
-        setShowStatus('offline');
-        handleSearch();
     };
 
     return (
@@ -121,80 +82,84 @@ const DoctorList = () => {
             <PageCover 
                 coverTitle="আমাদের বিশেষজ্ঞ ডাক্তারগণ" 
                 coverSubtitle="আপনার স্বাস্থ্যের জন্য আমাদের ডাক্তারদের নির্ভুল পরিচিতি" 
-                coverImg="https://i.ibb.co.com/Z6bp254P/medium-shot-scientists-posing-together.jpg" 
+                coverImg="https://i.ibb.co/Z6bp254P/medium-shot-scientists-posing-together.jpg" 
             />
-            
-            <div className="my-8 text-center">
-                {/* Search input with width adjustment */}
+
+            {/* Search & Filters */}
+            <div className="my-8 text-center flex flex-col md:flex-row items-center justify-center gap-3 flex-wrap">
                 <input
                     type="text"
                     placeholder="ডাক্তার খুঁজুন..."
-                    className="border px-4 py-2 rounded w-full max-w-xl mx-auto"  // Wider search box
+                    className="border-2 border-blue-300 bg-blue-50 placeholder-blue-400 px-4 py-3 rounded-lg w-full md:w-96 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-300 focus:bg-blue-100 transition-colors duration-300"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}  // Trigger search query update
+                    onChange={(e) => setSearchQuery(e.target.value)}
                 />
 
-                <button
-                    onClick={handleSearch}  // Trigger search on button click
-                    className="ml-4 px-4 py-2 bg-primary-color text-white rounded"
-                >
-                    খুঁজুন
-                </button>
-
-                {/* Division filter dropdown */}
                 <select
                     value={selectedDivision}
-                    onChange={(e) => setSelectedDivision(e.target.value)}  // Trigger division filter on selection
-                    className="ml-4 px-4 py-2 border rounded"
+                    onChange={(e) => setSelectedDivision(e.target.value)}
+                    className="px-4 py-2 border rounded"
                 >
                     <option value="">সব বিভাগ</option>
-                    {divisions.map((division) => (
-                        <option key={division} value={division}>
-                            {divisionMapping[division]}  {/* Show Bangla division names */}
+                    {divisions.map(div => (
+                        <option key={div} value={div}>
+                            {divisionMapping[div]}
                         </option>
                     ))}
                 </select>
-                
+
+                <select
+                    value={selectedSpecialist}
+                    onChange={(e) => setSelectedSpecialist(e.target.value)}
+                    className="px-4 py-2 border rounded"
+                >
+                    <option value="">সব বিশেষজ্ঞ</option>
+                    {specialists.map(spec => (
+                        <option key={spec} value={spec}>
+                            {specialistMapping[spec]}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
+            {/* Status Buttons + Reset */}
+            <div className="text-center mb-6 space-x-2">
                 <button
-                    onClick={handleReset}  // Reset both search and division filters
-                    className="ml-4 px-4 py-2 bg-secondary-color text-white rounded"
+                    onClick={() => setShowStatus('both')}
+                    className={`px-4 py-2 rounded ${showStatus==='both'?'bg-blue-500 text-white':'bg-gray-300'}`}
+                >
+                    সব ডাক্তার
+                </button>
+                <button
+                    onClick={() => setShowStatus('online')}
+                    className={`px-4 py-2 rounded ${showStatus==='online'?'bg-blue-500 text-white':'bg-gray-300'}`}
+                >
+                    অনলাইন
+                </button>
+                <button
+                    onClick={() => setShowStatus('offline')}
+                    className={`px-4 py-2 rounded ${showStatus==='offline'?'bg-blue-500 text-white':'bg-gray-300'}`}
+                >
+                    অফলাইন
+                </button>
+
+                <button
+                    onClick={handleReset}
+                    className="px-4 py-2 bg-gray-500 text-white rounded ml-4"
                 >
                     রিসেট
                 </button>
-
-                {/* Buttons for showing all, online, and offline doctors */}
-                <div className="mt-4">
-                    <button
-                        onClick={showAllDoctors}
-                        className={`ml-4 px-4 py-2 rounded ${showStatus === 'both' ? 'bg-primary-color text-white' : 'bg-gray-500 text-white'}`}
-                    >
-                        সব ডাক্তার
-                    </button>
-                    <button
-                        onClick={showOnlineDoctors}
-                        className={`ml-4 px-4 py-2 rounded ${showStatus === 'online' ? 'bg-primary-color text-white' : 'bg-gray-500 text-white'}`}
-                    >
-                        অনলাইন ডাক্তার
-                    </button>
-                    <button
-                        onClick={showOfflineDoctors}
-                        className={`ml-4 px-4 py-2 rounded ${showStatus === 'offline' ? 'bg-primary-color text-white' : 'bg-gray-500 text-white'}`}
-                    >
-                        অফলাইন ডাক্তার
-                    </button>
-                </div>
             </div>
 
-            <div className="grid grid-cols-2 xl:grid-cols-3 gap-8 mx-auto px-0 mt-16">
-                {
-                    filteredDoctors.length > 0 ? (
-                        filteredDoctors.map(doctor => (
-                            <DoctorCard key={doctor.id} doctor={doctor} />
-                        ))
-                    ) : (
-                        <p>কোনো ডাক্তারের তথ্য পাওয়া যায়নি।</p>
-                    )
-                }
+            {/* Doctor Cards */}
+            <div className="grid grid-cols-2 xl:grid-cols-3 gap-8 mx-auto px-4 mt-8">
+                {filteredDoctors.length > 0 ? (
+                    filteredDoctors.map(doc => (
+                        <DoctorCard key={doc.id} doctor={doc} />
+                    ))
+                ) : (
+                    <p className="text-center col-span-full">কোনো ডাক্তার পাওয়া যায়নি।</p>
+                )}
             </div>
         </div>
     );
