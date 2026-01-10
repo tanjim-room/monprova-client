@@ -18,7 +18,7 @@ const AppointmentDetailsDoctor = () => {
     const [appointments] = useAppointment(); // Hook to fetch appointments
     const [doctors] = useDoctor(); // Hook to fetch doctors
     const { appointmentId } = useParams(); // Get appointment ID from URL
-    
+
     // 🧾 Safe loading check
     const loading = !Array.isArray(appointments) || !Array.isArray(doctors) || appointments.length === 0 || doctors.length === 0;
     if (loading) return (
@@ -202,6 +202,17 @@ const AppointmentDetailsDoctor = () => {
                                     <span className="font-semibold text-gray-700 block mb-2">সমস্যা/রোগের বিবরণঃ</span>
                                     <p className="text-gray-600 leading-relaxed">{appointment?.problem || 'বিবরণ নেই'}</p>
                                 </div>
+
+                                {
+                                    appointment.previousPrescription && (
+                                        <div className="w-full">
+                                            <Link to={`http://localhost:8000/download-pdf`}>
+                                                <Button btnName="রোগীর দেওয়া প্রেস্ক্রিপশন" bgColor="bg-tertiary-color" />
+                                            </Link>
+
+                                        </div>
+                                    )
+                                }
                             </div>
                         </div>
                     </div>

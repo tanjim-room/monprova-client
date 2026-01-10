@@ -1,19 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 import { useQuery } from '@tanstack/react-query';
+import useComplaint from '../../hooks/useComplaint';
 
 const Complaints = () => {
     const axiosSecure = useAxiosSecure();
     const [selectedComplaint, setSelectedComplaint] = useState(null);
     const [filterStatus, setFilterStatus] = useState('all');
-
-    const { data: complaints = [], refetch } = useQuery({
-        queryKey: ['complaints'],
-        queryFn: async () => {
-            const res = await axiosSecure.get('/api/complaints');
-            return res.data;
-        }
-    });
+    const [complaints] = useComplaint();
 
     const handleStatusChange = async (complaintId, newStatus) => {
         try {

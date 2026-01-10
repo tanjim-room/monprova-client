@@ -6,82 +6,131 @@ import usePrescription from "../../hooks/usePrescription";
 import { FaSpinner } from "react-icons/fa"; // Make sure to import the FaSpinner icon
 import pdfService from "../../pdfService";
 import Swal from "sweetalert2";
+import { useState } from "react";
 
 const AppointmentDetailsPatient = () => {
+    const { appointmentId } = useParams();
+
     const [appointments] = useAppointment();
     const [doctors] = useDoctor();
-    const { appointmentId } = useParams();
     const [prescriptions] = usePrescription();
-    const prescription = prescriptions?.find(prescription => prescription.appointmentID === appointmentId);
+
+    const prescription = prescriptions?.find(
+        p => p.appointmentID === appointmentId
+    );
+
+    const [pdfFile, setPdfFile] = useState(null);
+    const [pdfUrl, setPdfUrl] = useState("");
+    const [uploading, setUploading] = useState(false);
 
     if (!appointments || !doctors) {
         return (
             <div className="flex justify-center items-center min-h-screen">
-                <FaSpinner className="animate-spin text-3xl text-blue-600" />
+                <FaSpinner className="animate-spin text-4xl text-blue-600" />
             </div>
         );
     }
 
-    const appointment = appointments.find((appointment) => appointment._id === appointmentId);
-   
-    const doctor = doctors.find((doctor) => doctor._id === appointment?.doctorID);
+    const appointment = appointments.find(a => a._id === appointmentId);
+    const doctor = doctors.find(d => d._id === appointment?.doctorID);
 
     if (!appointment || !doctor) {
         return (
             <div className="text-center text-xl text-red-500 mt-20">
-                <p>Appointment or doctor not found</p>
+                Appointment or Doctor not found
             </div>
         );
     }
 
-    // Handle download for prescription
-  const downloadPdfFile = async () => {
-  try {
-    // Show loading alert
-    Swal.fire({
-      title: 'প্রেসক্রিপশন ডাউনলোড হচ্ছে...',
-      text: 'অনুগ্রহ করে অপেক্ষা করুন',
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
+    // ================= FILE HANDLERS =================
+    const handleFileChange = (e) => {
+        setPdfFile(e.target.files[0]);
+    };
 
-    // API call
-    const response = await pdfService.downloadPDF(appointmentId);
+    const handleUpload = async () => {
+        if (!pdfFile) {
+            Swal.fire({
+                icon: "warning",
+                title: "ফাইল নির্বাচন করুন",
+                text: "অনুগ্রহ করে একটি PDF ফাইল নির্বাচন করুন",
+            });
+            return;
+        }
 
-    // Create PDF blob
-    const blob = new Blob([response.data], { type: 'application/pdf' });
+        const formData = new FormData();
+        formData.append("pdf", pdfFile);
+        formData.append("appointmentId", appointmentId);
 
-    // Trigger download
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.download = 'prescription.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+        try {
+            setUploading(true);
 
-    // Close loading & show success
-    Swal.fire({
-      icon: 'success',
-      title: 'ডাউনলোড সম্পন্ন',
-      text: 'প্রেসক্রিপশন সফলভাবে ডাউনলোড হয়েছে',
-      timer: 2000,
-      showConfirmButton: false
-    });
+            Swal.fire({
+                title: "PDF আপলোড হচ্ছে...",
+                text: "অনুগ্রহ করে অপেক্ষা করুন",
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+            });
 
-  } catch (error) {
-    console.error("Error downloading PDF:", error);
+            const res = await fetch(`http://localhost:8000/api/upload-prescription/${appointmentId}`, {
+                method: "POST",
+                body: formData,
+            });
 
-    // Show error alert
-    Swal.fire({
-      icon: 'error',
-      title: 'ডাউনলোড ব্যর্থ',
-      text: 'প্রেসক্রিপশন ডাউনলোড করা যায়নি'
-    });
-  }
-};
+            const data = await res.json();
+            setPdfUrl(data.url);
+
+            Swal.fire({
+                icon: "success",
+                title: "আপলোড সফল",
+                text: "PDF সফলভাবে আপলোড হয়েছে",
+                timer: 2000,
+                showConfirmButton: false,
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "আপলোড ব্যর্থ",
+                text: "PDF আপলোড করা যায়নি",
+            });
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    // ================= DOWNLOAD PRESCRIPTION =================
+    const downloadPdfFile = async () => {
+        try {
+            Swal.fire({
+                title: "প্রেসক্রিপশন ডাউনলোড হচ্ছে...",
+                text: "অনুগ্রহ করে অপেক্ষা করুন",
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+            });
+
+            const response = await pdfService.downloadPDF(appointmentId);
+            const blob = new Blob([response.data], { type: "application/pdf" });
+
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(blob);
+            link.download = "prescription.pdf";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            Swal.fire({
+                icon: "success",
+                title: "ডাউনলোড সম্পন্ন",
+                timer: 2000,
+                showConfirmButton: false,
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "ডাউনলোড ব্যর্থ",
+                text: "প্রেসক্রিপশন ডাউনলোড করা যায়নি",
+            });
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 py-6 px-4">
@@ -96,7 +145,7 @@ const AppointmentDetailsPatient = () => {
                             <p><strong>সময়ঃ</strong> {appointment.slot || "Not available"}</p>
                             <p><strong>ফিঃ</strong> {doctor.consultationFee} টাকা</p>
                             <p><strong>স্ট্যাটাসঃ</strong> <span className={`font-semibold ${appointment.state === "completed" ? "text-green-600" : "text-yellow-600"}`}>{appointment.state || "upcoming"}</span></p>
-                            
+
                             {/* Prescription Download Button */}
                             {prescription && (
                                 <div className="mt-8">
@@ -211,7 +260,35 @@ const AppointmentDetailsPatient = () => {
                     </div>
 
                 </div>
+
             </div>
+            <div className=" mx-auto mt-10 bg-white p-6 rounded-xl shadow border">
+                <h2 className="text-xl font-bold text-center mb-4">
+                 প্রেসক্রিপশন আপলোড
+                </h2>
+
+                <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={handleFileChange}
+                    className="file-input file-input-bordered w-full mb-4"
+                />
+
+                <button
+                    onClick={handleUpload}
+                    disabled={uploading || !pdfFile}
+                    className={`w-full py-3 rounded-md text-white font-semibold
+                            ${uploading || !pdfFile
+                            ? "bg-gray-400"
+                            : "bg-blue-600 hover:bg-blue-700"
+                        }`}
+                >
+                    {uploading ? "আপলোড হচ্ছে..." : "আপলোড করুন"}
+                </button>
+
+              
+            </div>
+
         </div>
     );
 }
