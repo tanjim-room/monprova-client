@@ -67,6 +67,7 @@ import AdminHelp from "../pages/help/AdminHelp";
 import Contact from "../pages/contact/Contact";
 import Complaints from "../pages/admin/Complaints";
 import UpdatePassword from "../pages/UpdatePassword";
+import PrescriptionDetailsPrint from "../pages/prescription/PrescriptionDetailsPrint";
 
 export const router = createBrowserRouter([
   {
@@ -77,13 +78,18 @@ export const router = createBrowserRouter([
         path: "/",
         element: <Home></Home>,
       },
+     
       {
         path: "admin",
         element: <AdminLogin></AdminLogin>
       },
+        {
+        path: "prescription-details/:appointmentId",
+        element: <PrivateRoute><PrescriptionDetailsPrint></PrescriptionDetailsPrint></PrivateRoute>
+      },
       {
         path: "/dashboardAdmin",
-        element: <AdminDashboardLayout></AdminDashboardLayout>,
+        element: <PrivateRoute role="admin"> <AdminDashboardLayout></AdminDashboardLayout></PrivateRoute>,
         children: [
           {
             path: "/dashboardAdmin",
@@ -94,8 +100,8 @@ export const router = createBrowserRouter([
             element: <UserManagement></UserManagement>
           },
           {
-             path: "help",
-             element: <AdminHelp></AdminHelp>
+            path: "help",
+            element: <AdminHelp></AdminHelp>
           },
           {
             path: "users/:id",
@@ -196,9 +202,10 @@ export const router = createBrowserRouter([
 
     ]
   },
+
   {
     path: "/dashboardPatient",
-    element: <PrivateRoute><PatientDashboardLayout></PatientDashboardLayout></PrivateRoute>,
+    element: <PrivateRoute ><PatientDashboardLayout></PatientDashboardLayout></PrivateRoute>,
     children: [
       // Dashboard routes can be added here
       {
@@ -209,6 +216,7 @@ export const router = createBrowserRouter([
         path: "prescription",
         element: <Prescription></Prescription>
       },
+     
       {
         path: "patientHelp",
         element: <PatientHelp></PatientHelp>

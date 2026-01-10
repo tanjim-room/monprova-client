@@ -14,7 +14,7 @@ const PatientProfile = () => {
   const axiosSecure = useAxiosSecure(); // (যদি ভবিষ্যতে secure লাগে)
   const axiosPublic = useAxiosPublic();
 
-  const [patients] = usePatient();
+  const [patients, refetch] = usePatient();
   const [users] = useUser();
   const { user } = useAuth();
 
@@ -139,6 +139,7 @@ const PatientProfile = () => {
         confirmButtonText: "ঠিক আছে",
         confirmButtonColor: "#2563eb",
       });
+      refetch();
 
       setIsEditable(false);
 

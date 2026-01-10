@@ -28,27 +28,28 @@ const AppointmentPatient = () => {
         ));
     };
     return (
-        <div>
-
-            <div className="min-h-[850px] p-4  rounded-lg mt-0">
-                {/* Tabs */}
-                <div className='mb-6'>
+        <div className="min-h-screen bg-gray-50 p-6">
+            <div className="max-w-7xl mx-auto">
+                {/* Header */}
+                <div className='mb-8'>
                     <SectionHeader heading={"আপনার অ্যাপয়েন্টমেন্টসমুহ"} subHeading={"আপনার অ্যাপয়েন্টমেন্ট গুলো এখানে দেখুন"}></SectionHeader>
                 </div>
-                <div className="flex gap-4 mb-8">
+                
+                {/* Tabs */}
+                <div className="flex gap-4 mb-8 bg-white p-4 rounded-lg shadow-md">
                     <button
-                        className={`px-4 py-2 rounded-lg font-semibold ${activeTab === "upcoming"
-                            ? "bg-secondary-color text-white"
-                            : "bg-white text-secondary-color border border-secondary-color"
+                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${activeTab === "upcoming"
+                            ? "bg-blue-600 text-white shadow-lg scale-105"
+                            : "bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200"
                             }`}
                         onClick={() => setActiveTab("upcoming")}
                     >
                         আপকামিং
                     </button>
                     <button
-                        className={`px-4 py-2 rounded-lg font-semibold ${activeTab === "completed"
-                            ? "bg-secondary-color text-white"
-                            : "bg-white text-secondary-color border border-secondary-color"
+                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${activeTab === "completed"
+                            ? "bg-green-600 text-white shadow-lg scale-105"
+                            : "bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200"
                             }`}
                         onClick={() => setActiveTab("completed")}
                     >
@@ -57,7 +58,7 @@ const AppointmentPatient = () => {
                 </div>
 
                 {/* Appointment List */}
-                <div className="space-y-4">{renderAppointments()}</div>
+                <div className="grid grid-cols-1 gap-6">{renderAppointments()}</div>
             </div>
         </div>
     );

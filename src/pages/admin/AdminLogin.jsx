@@ -108,7 +108,7 @@ const AdminLogin = () => {
 
           <input
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+            className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-700 transition"
             value="লগইন করুন"
           />
         </form>
