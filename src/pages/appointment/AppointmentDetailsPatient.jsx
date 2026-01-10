@@ -10,15 +10,22 @@ import usePrescription from "../../hooks/usePrescription";
 import { FaSpinner } from "react-icons/fa"; // Make sure to import the FaSpinner icon
 import pdfService from "../../pdfService";
 import Swal from "sweetalert2";
+import { useState } from "react";
 
 const AppointmentDetailsPatient = () => {
+    const { appointmentId } = useParams();
+
     const [appointments] = useAppointment();
     const [doctors] = useDoctor();
     const [prescriptions] = usePrescription();
-    const axiosPublic = useAxiosPublic();
-    const { appointmentId } = useParams();
-    const [prescriptions] = usePrescription();
-    const prescription = prescriptions?.find(prescription => prescription.appointmentID === appointmentId);
+
+    const prescription = prescriptions?.find(
+        p => p.appointmentID === appointmentId
+    );
+
+    const [pdfFile, setPdfFile] = useState(null);
+    const [pdfUrl, setPdfUrl] = useState("");
+    const [uploading, setUploading] = useState(false);
 
     const [files, setFiles] = useState([]);
     const [uploading, setUploading] = useState(false);
@@ -27,220 +34,130 @@ const AppointmentDetailsPatient = () => {
 
     if (!appointments || !doctors) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-50">
-                <FaSpinner className="animate-spin text-4xl text-indigo-500" />
+            <div className="flex justify-center items-center min-h-screen">
+                <FaSpinner className="animate-spin text-4xl text-blue-600" />
             </div>
         );
     }
 
-    const appointment = appointments.find((a) => a._id === appointmentId);
-    const doctor = doctors.find((d) => d._id === appointment?.doctorID);
-
-    useEffect(() => {
-        setUploadMessage("");
-    }, [appointmentId]);
+    const appointment = appointments.find(a => a._id === appointmentId);
+    const doctor = doctors.find(d => d._id === appointment?.doctorID);
 
     if (!appointment || !doctor) {
         return (
             <div className="text-center text-xl text-red-500 mt-20">
-                <p>Appointment or doctor not found</p>
+                Appointment or Doctor not found
             </div>
         );
     }
 
-    const patientPrescriptions = prescriptions?.filter(
-        (p) => p.patientID === appointment.patientID
-    ) || [];
-
-    const onDrop = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const dropped = Array.from(e.dataTransfer.files || []);
-        const pdfs = dropped.filter(
-            (f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf")
-        );
-        setFiles((prev) => [...prev, ...pdfs]);
-    }, []);
-
-    const onDragOver = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-    };
-
+    // ================= FILE HANDLERS =================
     const handleFileChange = (e) => {
-        const selected = Array.from(e.target.files || []);
-        const pdfs = selected.filter(
-            (f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf")
-        );
-        setFiles((prev) => [...prev, ...pdfs]);
+        setPdfFile(e.target.files[0]);
     };
-
-    const removeFile = (index) =>
-        setFiles((prev) => prev.filter((_, i) => i !== index));
 
     const handleUpload = async () => {
-        if (files.length === 0) {
-            setUploadMessage("কোনো ফাইল নির্বাচন করা হয়নি");
+        if (!pdfFile) {
+            Swal.fire({
+                icon: "warning",
+                title: "ফাইল নির্বাচন করুন",
+                text: "অনুগ্রহ করে একটি PDF ফাইল নির্বাচন করুন",
+            });
             return;
         }
-        setUploading(true);
-        setUploadMessage("");
-        try {
-            const formData = new FormData();
-            files.forEach((file) => formData.append("files", file));
-            formData.append("patientID", appointment.patientID);
-            formData.append("doctorID", appointment.doctorID);
-            formData.append("appointmentID", appointment._id);
-            formData.append("sharedWithDoctor", shareWithDoctor ? "true" : "false");
 
-            await axiosPublic.post("/api/prescriptions/upload", formData, {
-                headers: { "Content-Type": "multipart/form-data" },
+        const formData = new FormData();
+        formData.append("pdf", pdfFile);
+        formData.append("appointmentId", appointmentId);
+
+        try {
+            setUploading(true);
+
+            Swal.fire({
+                title: "PDF আপলোড হচ্ছে...",
+                text: "অনুগ্রহ করে অপেক্ষা করুন",
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
             });
 
-            setUploadMessage("ফাইল আপলোড সফল হয়েছে");
-            setFiles([]);
-        } catch (err) {
-            console.error(err);
-            setUploadMessage("আপলোডে ত্রুটি হয়েছে, পরে আবার চেষ্টা করুন");
+            const res = await fetch(`http://localhost:8000/api/upload-prescription/${appointmentId}`, {
+                method: "POST",
+                body: formData,
+            });
+
+            const data = await res.json();
+            setPdfUrl(data.url);
+
+            Swal.fire({
+                icon: "success",
+                title: "আপলোড সফল",
+                text: "PDF সফলভাবে আপলোড হয়েছে",
+                timer: 2000,
+                showConfirmButton: false,
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "আপলোড ব্যর্থ",
+                text: "PDF আপলোড করা যায়নি",
+            });
         } finally {
             setUploading(false);
         }
     };
 
+    // ================= DOWNLOAD PRESCRIPTION =================
+    const downloadPdfFile = async () => {
+        try {
+            Swal.fire({
+                title: "প্রেসক্রিপশন ডাউনলোড হচ্ছে...",
+                text: "অনুগ্রহ করে অপেক্ষা করুন",
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+            });
+
+            const response = await pdfService.downloadPDF(appointmentId);
+            const blob = new Blob([response.data], { type: "application/pdf" });
+
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(blob);
+            link.download = "prescription.pdf";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            Swal.fire({
+                icon: "success",
+                title: "ডাউনলোড সম্পন্ন",
+                timer: 2000,
+                showConfirmButton: false,
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "ডাউনলোড ব্যর্থ",
+                text: "প্রেসক্রিপশন ডাউনলোড করা যায়নি",
+            });
+        }
+    };
+
     return (
-        <div className="min-h-screen py-8 px-4 bg-gray-50">
-            <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6 space-y-8">
-                {/* Appointment Info */}
-                <div className="bg-indigo-50 p-6 rounded-lg shadow hover:shadow-lg transition-all duration-200">
-                    <h2 className="text-2xl font-semibold text-indigo-700 mb-4">
-                        অ্যাপয়েন্টমেন্ট সম্পর্কিত তথ্য
-                    </h2>
-                    <div className="space-y-2 text-gray-700">
-                        <p>
-                            <strong>মাধ্যমঃ</strong>{" "}
-                            <span className="bg-indigo-500 text-white px-2 py-1 rounded">
-                                {appointment.mode === "online"
-                                    ? "অনলাইন"
-                                    : appointment.mode === "offline"
-                                    ? "অফলাইন"
-                                    : "অনলাইন/অফলাইন"}
-                            </span>
-                        </p>
-                        <p>
-                            <strong>তারিখঃ</strong>{" "}
-                            {appointment.appointmentDate
-                                ? new Date(appointment.appointmentDate).toLocaleDateString(
-                                      "en-BD",
-                                      { day: "2-digit", month: "long", year: "numeric" }
-                                  )
-                                : "Not available"}
-                        </p>
-                        <p>
-                            <strong>সময়ঃ</strong> {appointment.slot || "Not available"}
-                        </p>
-                        <p>
-                            <strong>ফিঃ</strong> {doctor.consultationFee} টাকা
-                        </p>
-                        <p>
-                            <strong>স্ট্যাটাসঃ</strong>{" "}
-                            <span
-                                className={`font-semibold ${
-                                    appointment.state === "completed"
-                                        ? "text-green-600"
-                                        : "text-yellow-600"
-                                }`}
-                            >
-                                {appointment.state || "upcoming"}
-                            </span>
-                        </p>
-                    </div>
-                </div>
+        <div className="min-h-screen bg-gray-50 py-6 px-4">
+            <div className="max-w-7xl mx-auto">
+                <div className="bg-white p-8 rounded-lg shadow-lg">
+                    {/* Section 1: Appointment Information */}
+                    <div className="bg-blue-100 p-6 mb-8 card bg-base-100 shadow-md border rounded-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
+                        <h2 className="text-xl font-semibold text-gray-800 mb-4">অ্যাপয়েন্টমেন্ট সম্পর্কিত তথ্যসমূহঃ</h2>
+                        <div className="space-y-4 text-gray-700">
+                            <p><strong>মাধ্যমঃ</strong> <span className='bg-secondary-color text-white px-2 py-1 rounded-md text-sm'>{appointment.mode === 'online' ? "অনলাইন" : appointment.mode === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</span></p>
+                            <p><strong>তারিখঃ</strong> {appointment.appointmentDate ? new Date(appointment.appointmentDate).toLocaleDateString("en-BD", { day: "2-digit", month: "long", year: "numeric" }) : "Not available"}</p>
+                            <p><strong>সময়ঃ</strong> {appointment.slot || "Not available"}</p>
+                            <p><strong>ফিঃ</strong> {doctor.consultationFee} টাকা</p>
+                            <p><strong>স্ট্যাটাসঃ</strong> <span className={`font-semibold ${appointment.state === "completed" ? "text-green-600" : "text-yellow-600"}`}>{appointment.state || "upcoming"}</span></p>
 
-                {/* Patient & Doctor Info */}
-                <div className="flex flex-col md:flex-row gap-8">
-                    {/* Patient Info */}
-                    <div className="bg-green-50 p-6 rounded-lg shadow flex-1 hover:shadow-lg transition-all duration-200">
-                        <h2 className="text-xl font-semibold text-green-700 mb-4">
-                            রোগীর তথ্য
-                        </h2>
-                        <div className="space-y-2 text-gray-700">
-                            <p>
-                                <strong>নামঃ</strong> {appointment.patientName}
-                            </p>
-                            <p>
-                                <strong>মোবাইলঃ</strong> {appointment.phone}
-                            </p>
-                            <p>
-                                <strong>ইমেইলঃ</strong> {appointment.patientEmail}
-                            </p>
-                            <p>
-                                <strong>বয়সঃ</strong> {appointment.age} বছর
-                            </p>
-                            <p>
-                                <strong>জেন্ডারঃ</strong>{" "}
-                                {appointment.gender === "male"
-                                    ? "পুরুষ"
-                                    : appointment.gender === "female"
-                                    ? "মহিলা"
-                                    : "অন্যান্য"}
-                            </p>
-                            <p>
-                                <strong>ব্লাড গ্রুপঃ</strong> {appointment.bloodGroup}
-                            </p>
-                            <p>
-                                <strong>পেশাঃ</strong> {appointment.profession}
-                            </p>
-                            <p>
-                                <strong>সমস্যা/রোগের বিবরণঃ</strong>{" "}
-                                {appointment.problem}
-                            </p>
-                        </div>
-
-                        {/* Upload Prescription */}
-                        <div className="mt-6">
-                            <h3 className="font-semibold mb-2">পূর্বের প্রেসক্রিপশন আপলোড করুন (PDF)</h3>
-                            <div
-                                onDrop={onDrop}
-                                onDragOver={onDragOver}
-                                className="border-2 border-dashed rounded-md p-6 text-center bg-white"
-                            >
-                                <p className="mb-2">
-                                    ফাইল এখানে টেনে আনুন অথবা নিচের বাটন ব্যবহার করুন
-                                </p>
-                                <input
-                                    type="file"
-                                    accept="application/pdf"
-                                    multiple
-                                    onChange={handleFileChange}
-                                    className="mb-3"
-                                />
-                                {files.length > 0 && (
-                                    <div className="text-left space-y-2">
-                                        {files.map((f, idx) => (
-                                            <div
-                                                key={idx}
-                                                className="flex justify-between items-center bg-gray-100 p-2 rounded-md"
-                                            >
-                                                <span className="truncate">{f.name}</span>
-                                                <button
-                                                    onClick={() => removeFile(idx)}
-                                                    className="text-red-500"
-                                                >
-                                                    Remove
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                                <div className="flex items-center gap-3 mt-4">
-                                    <label className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            checked={shareWithDoctor}
-                                            onChange={(e) => setShareWithDoctor(e.target.checked)}
-                                        />
-                                        <span>ডাক্তারের সাথে একসাথে শেয়ার করুন</span>
-                                    </label>
+                            {/* Prescription Download Button */}
+                            {prescription && (
+                                <div className="mt-8">
                                     <button
                                         onClick={handleUpload}
                                         className="ml-auto bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all duration-200"
@@ -340,7 +257,35 @@ const AppointmentDetailsPatient = () => {
                         </div>
                     )}
                 </div>
+
             </div>
+            <div className=" mx-auto mt-10 bg-white p-6 rounded-xl shadow border">
+                <h2 className="text-xl font-bold text-center mb-4">
+                 প্রেসক্রিপশন আপলোড
+                </h2>
+
+                <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={handleFileChange}
+                    className="file-input file-input-bordered w-full mb-4"
+                />
+
+                <button
+                    onClick={handleUpload}
+                    disabled={uploading || !pdfFile}
+                    className={`w-full py-3 rounded-md text-white font-semibold
+                            ${uploading || !pdfFile
+                            ? "bg-gray-400"
+                            : "bg-blue-600 hover:bg-blue-700"
+                        }`}
+                >
+                    {uploading ? "আপলোড হচ্ছে..." : "আপলোড করুন"}
+                </button>
+
+              
+            </div>
+
         </div>
     );
 };
