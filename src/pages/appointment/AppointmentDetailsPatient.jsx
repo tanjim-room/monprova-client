@@ -1,21 +1,22 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useAppointment from "../../hooks/useAppointment";
 import useDoctor from "../../hooks/useDoctor";
 import usePrescription from "../../hooks/usePrescription";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { IoMdDownload } from "react-icons/io";
 import { FaSpinner } from "react-icons/fa";
-import usePrescription from "../../hooks/usePrescription";
-import { FaSpinner } from "react-icons/fa"; // Make sure to import the FaSpinner icon
+
+// Make sure to import the FaSpinner icon
 import pdfService from "../../pdfService";
 import Swal from "sweetalert2";
-import { useState } from "react";
+import Button from "../../components/Button";
+
 
 const AppointmentDetailsPatient = () => {
     const { appointmentId } = useParams();
 
-    const [appointments] = useAppointment();
+    const [appointments, refetch] = useAppointment();
     const [doctors] = useDoctor();
     const [prescriptions] = usePrescription();
 
@@ -28,7 +29,7 @@ const AppointmentDetailsPatient = () => {
     const [uploading, setUploading] = useState(false);
 
     const [files, setFiles] = useState([]);
-    const [uploading, setUploading] = useState(false);
+
     const [uploadMessage, setUploadMessage] = useState("");
     const [shareWithDoctor, setShareWithDoctor] = useState(false);
 
@@ -42,7 +43,7 @@ const AppointmentDetailsPatient = () => {
 
     const appointment = appointments.find(a => a._id === appointmentId);
     const doctor = doctors.find(d => d._id === appointment?.doctorID);
-
+    const gender = appointment.gender === "male" ? "পুরুষ" : appointment.gender === "female" ? "নারী" : "অন্যান্য"
     if (!appointment || !doctor) {
         return (
             <div className="text-center text-xl text-red-500 mt-20">
@@ -95,6 +96,7 @@ const AppointmentDetailsPatient = () => {
                 timer: 2000,
                 showConfirmButton: false,
             });
+            refetch()
         } catch (error) {
             Swal.fire({
                 icon: "error",
@@ -146,7 +148,7 @@ const AppointmentDetailsPatient = () => {
             <div className="max-w-7xl mx-auto">
                 <div className="bg-white p-8 rounded-lg shadow-lg">
                     {/* Section 1: Appointment Information */}
-                    <div className="bg-blue-100 p-6 mb-8 card bg-base-100 shadow-md border rounded-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
+                    <div className="bg-blue-100 p-6 mb-8 card bg-base-100 shadow-md border border-blue-200 rounded-lg overflow-hidden transform transition-transform  hover:shadow-lg">
                         <h2 className="text-xl font-semibold text-gray-800 mb-4">অ্যাপয়েন্টমেন্ট সম্পর্কিত তথ্যসমূহঃ</h2>
                         <div className="space-y-4 text-gray-700">
                             <p><strong>মাধ্যমঃ</strong> <span className='bg-secondary-color text-white px-2 py-1 rounded-md text-sm'>{appointment.mode === 'online' ? "অনলাইন" : appointment.mode === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</span></p>
@@ -156,28 +158,71 @@ const AppointmentDetailsPatient = () => {
                             <p><strong>স্ট্যাটাসঃ</strong> <span className={`font-semibold ${appointment.state === "completed" ? "text-green-600" : "text-yellow-600"}`}>{appointment.state || "upcoming"}</span></p>
 
                             {/* Prescription Download Button */}
-                            {prescription && (
-                                <div className="mt-8">
-                                    <button
-                                        onClick={handleUpload}
-                                        className="ml-auto bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all duration-200"
-                                        disabled={uploading}
-                                    >
-                                        {uploading ? "Uploading..." : "আপলোড করুন"}
-                                    </button>
-                                </div>
-                                {uploadMessage && (
-                                    <p className="mt-2 text-sm text-green-700">{uploadMessage}</p>
-                                )}
-                            </div>
+                          
+                               
                         </div>
                     </div>
 
                     {/* Doctor Info */}
-                    <div className="bg-purple-50 p-6 rounded-lg shadow flex-1 hover:shadow-lg transition-all duration-200">
-                        <h2 className="text-xl font-semibold text-purple-700 mb-4">
-                            ডাক্তার এর তথ্য
-                        </h2>
+                  <div className="grid grid-cols-2 gap-4">
+                        <div className="col-span-1 bg-green-50 p-5 rounded-lg border border-green-200 shadow-sm">
+                            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                                <span className="w-1 h-6 bg-green-500 mr-3 rounded"></span>
+                                রোগীর তথ্যসমূহ
+                            </h2>
+                            <div className="space-y-2.5">
+                                <div className="p-2.5 rounded-lg">
+                                    <span className="font-semibold text-gray-700">রোগীর নামঃ</span>
+                                    <span className="ml-2 text-gray-600">{appointment?.patientName || 'নাম নেই'}</span>
+                                </div>
+                                <div className="p-2.5 rounded-lg">
+                                    <span className="font-semibold text-gray-700">মোবাইলঃ</span>
+                                    <span className="ml-2 text-gray-600">{appointment?.phone || 'ফোন নেই'}</span>
+                                </div>
+                                <div className="p-2.5 rounded-lg">
+                                    <span className="font-semibold text-gray-700">ইমেইলঃ</span>
+                                    <span className="ml-2 text-gray-600">{appointment?.patientEmail || 'ইমেইল নেই'}</span>
+                                </div>
+                                <div className="grid grid-cols-3 gap-2.5">
+                                    <div className="p-2.5 rounded-lg">
+                                        <span className="font-semibold text-gray-700 block text-sm">বয়স</span>
+                                        <span className="text-gray-600">{appointment?.age || 0} বছর</span>
+                                    </div>
+                                    <div className="p-2.5 rounded-lg">
+                                        <span className="font-semibold text-gray-700 block text-sm">জেন্ডার</span>
+                                        <span className="text-gray-600">{gender}</span>
+                                    </div>
+                                    <div className="p-2.5 rounded-lg">
+                                        <span className="font-semibold text-gray-700 block text-sm">ব্লাড</span>
+                                        <span className="text-gray-600">{appointment?.bloodGroup || 'N/A'}</span>
+                                    </div>
+                                </div>
+                                <div className="p-2.5 rounded-lg">
+                                    <span className="font-semibold text-gray-700">পেশাঃ</span>
+                                    <span className="ml-2 text-gray-600">{appointment?.profession || 'পেশা নেই'}</span>
+                                </div>
+                                <div className="p-2.5 rounded-lg">
+                                    <span className="font-semibold text-gray-700 block mb-2">সমস্যা/রোগের বিবরণঃ</span>
+                                    <p className="text-gray-600 leading-relaxed">{appointment?.problem || 'বিবরণ নেই'}</p>
+                                </div>
+
+                                {
+                                    appointment.previousPrescription && (
+                                        <div className="w-full">
+                                            <Link to={`http://localhost:8000/download-pdf`}>
+                                                <Button btnName="রোগীর দেওয়া প্রেস্ক্রিপশন" bgColor="bg-tertiary-color" />
+                                            </Link>
+
+                                        </div>
+                                    )
+                                }
+                            </div>
+                        </div>
+                    <div className="col-span-1 bg-purple-50 p-6 rounded-lg border flex-1 hover:shadow-lg transition-all duration-200 border-purple-200 shadow-sm">
+                         <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                                <span className="w-1 h-6 bg-purple-500 mr-3 rounded"></span>
+                                ডাক্তারের তথ্যসমূহ
+                            </h2>
                         <div className="flex items-center gap-6 mb-6">
                             <img
                                 src={
@@ -220,43 +265,12 @@ const AppointmentDetailsPatient = () => {
                             </p>
                         </div>
                     </div>
+                  </div>
+
+                    
 
                 {/* Prescriptions List */}
-                <div>
-                    <h3 className="text-xl font-semibold mb-4">আপনার আগের প্রেসক্রিপশনসমূহ</h3>
-                    {patientPrescriptions.length === 0 ? (
-                        <p className="text-gray-600">কোনো প্রেসক্রিপশন পাওয়া যায়নি।</p>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {patientPrescriptions.map((p) => (
-                                <div
-                                    key={p._id}
-                                    className="p-4 border rounded-md bg-white flex justify-between items-center shadow-sm hover:shadow-md transition-all duration-200"
-                                >
-                                    <div>
-                                        <p className="font-semibold">{p.diagnosis || "প্রেসক্রিপশন"}</p>
-                                        <p className="text-sm text-gray-500">
-                                            {new Date(p.updatedAt || p.createdAt).toLocaleString()}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <button
-                                            onClick={() =>
-                                                window.open(
-                                                    `http://localhost:8000/api/prescription/${p.appointmentID}/pdf`,
-                                                    "_blank"
-                                                )
-                                            }
-                                            className="bg-indigo-500 text-white px-3 py-2 rounded-md hover:bg-indigo-600 transition-all duration-200"
-                                        >
-                                            ডাউনলোড
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+           
 
             </div>
             <div className=" mx-auto mt-10 bg-white p-6 rounded-xl shadow border">
@@ -286,6 +300,7 @@ const AppointmentDetailsPatient = () => {
               
             </div>
 
+        </div>
         </div>
     );
 };
