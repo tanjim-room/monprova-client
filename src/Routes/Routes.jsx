@@ -68,6 +68,7 @@ import Contact from "../pages/contact/Contact";
 import Complaints from "../pages/admin/Complaints";
 import UpdatePassword from "../pages/UpdatePassword";
 import PrescriptionDetailsPrint from "../pages/prescription/PrescriptionDetailsPrint";
+import PaymentSuccess from "../PaymentSuccess";
 
 export const router = createBrowserRouter([
   {
@@ -79,13 +80,14 @@ export const router = createBrowserRouter([
         element: <Home></Home>,
       },
      
+     
       {
         path: "admin",
         element: <AdminLogin></AdminLogin>
       },
         {
         path: "prescription-details/:appointmentId",
-        element: <PrivateRoute><PrescriptionDetailsPrint></PrescriptionDetailsPrint></PrivateRoute>
+        element: <PrescriptionDetailsPrint></PrescriptionDetailsPrint>
       },
       {
         path: "/dashboardAdmin",
@@ -211,6 +213,10 @@ export const router = createBrowserRouter([
       {
         path: "/dashboardPatient",
         element: <PatientHome></PatientHome>
+      },
+       {
+        path: "payment-success",
+        element: <PaymentSuccess></PaymentSuccess>
       },
       {
         path: "prescription",
