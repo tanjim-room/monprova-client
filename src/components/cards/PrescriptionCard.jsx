@@ -4,6 +4,7 @@ import useDoctor from '../../hooks/useDoctor';
 import usePatient from '../../hooks/usePatient';
 import axios from 'axios';
 import pdfService from '../../pdfService';
+import Swal from 'sweetalert2';
 
 const PrescriptionCard = ({ prescription }) => {
 
@@ -14,23 +15,54 @@ const PrescriptionCard = ({ prescription }) => {
   const patient = patients.find((p) => p._id === prescription.patientID);
   const appointmentId = prescription.appointmentID;
 
- const downloadPdfFile = async () => {
-    try {
-      // Pass the appointmentId to the service method
-      const response = await pdfService.downloadPDF(appointmentId);
-      
-      // Create a Blob from the response data
-      const blob = new Blob([response.data], { type: 'application/pdf' });
+const downloadPdfFile = async () => {
+  try {
+    // Show loading alert
+    Swal.fire({
+      title: 'প্রেসক্রিপশন ডাউনলোড হচ্ছে...',
+      text: 'অনুগ্রহ করে অপেক্ষা করুন',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
 
-      // Create a link to trigger the download
-      const link = document.createElement('a');
-      link.href = window.URL.createObjectURL(blob);
-      link.download = 'prescription.pdf'; // Filename for the downloaded PDF
-      link.click(); // Trigger the download
-    } catch (error) {
-      console.error("Error downloading PDF:", error);
-    }
-  };
+    // API call
+    const response = await pdfService.downloadPDF(appointmentId);
+
+    // Create PDF blob
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+
+    // Trigger download
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = 'prescription.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Close loading & show success
+    Swal.fire({
+      icon: 'success',
+      title: 'ডাউনলোড সম্পন্ন',
+      text: 'প্রেসক্রিপশন সফলভাবে ডাউনলোড হয়েছে',
+      timer: 2000,
+      showConfirmButton: false
+    });
+
+  } catch (error) {
+    console.error("Error downloading PDF:", error);
+
+    // Show error alert
+    Swal.fire({
+      icon: 'error',
+      title: 'ডাউনলোড ব্যর্থ',
+      text: 'প্রেসক্রিপশন ডাউনলোড করা যায়নি'
+    });
+  }
+};
+
 
   return (
     <div className="card shadow-md p-4 rounded-xl border-2 border-gray-200 hover:shadow-lg transition">

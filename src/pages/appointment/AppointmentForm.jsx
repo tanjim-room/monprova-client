@@ -64,25 +64,37 @@ const AppointmentForm = () => {
     return filteredSlots;
   };
 
-  const handlePayment = async (appointmentId) => {
-    const payment = {
-      appointmentID: appointmentId,
-      email: user?.email,
-      doctorID: doctor?._id,
-      patientID: patient?._id,
-      amount: doctor?.consultationFee || 0,
-      transactionId: "",
-      date: new Date(),
-      status: "pending",
-    };
+ const handlePayment = async () => {
+  const pendingAppointment = JSON.parse(localStorage.getItem("pendingAppointment"));
 
-    const response = await axiosPublic.post('/api/sslpayment', payment);
-    console.log(response);
+  const payment = {
+    email: user?.email,
+    doctorID: doctor?._id,
+    patientID: patient?._id,
+    amount: doctor?.consultationFee || 0,
   };
+
+  try {
+    const response = await axiosPublic.post('/api/sslpayment', {
+      payment,
+      appointment: pendingAppointment
+    });
+
+    if (response.data?.gatewayUrl) {
+      window.open(response.data.gatewayUrl, "_blank");
+    } else {
+      Swal.fire("Error", "Payment failed", "error");
+    }
+  } catch (error) {
+    console.error('Payment error:', error);
+  }
+};
+
 
 const handleSubmit = async (event) => {
   event.preventDefault();
   const form = event.target;
+
   const patientName = form.patientName.value;
   const phone = form.phone.value;
   const patientEmail = form.patientEmail.value;
@@ -103,10 +115,9 @@ const handleSubmit = async (event) => {
   if (!profession) newErrors.profession = "** পেশা আবশ্যক **";
   if (!emergencyContact) newErrors.emergencyContact = "** জরুরি যোগাযোগ আবশ্যক **";
   if (!problem) newErrors.problem = "** সমস্যা/রোগের বিবরণ আবশ্যক **";
-  if (!selectedSlot) newErrors.selectedSlot = "** সময় নির্বাচন করুন **"; // Ensure slot is selected
+  if (!selectedSlot) newErrors.selectedSlot = "** সময় নির্বাচন করুন **";
 
   setErrors(newErrors);
-
   if (Object.keys(newErrors).length > 0) return;
 
   const appointmentInfo = {
@@ -129,57 +140,13 @@ const handleSubmit = async (event) => {
     sessionLink: "",
   };
 
-  try {
-    // First, book the appointment
-    const response = await axiosPublic.post("/api/appointment", appointmentInfo);
-    console.log("Appointment booked:", response.data);
+  // Save temporarily
+  localStorage.setItem("pendingAppointment", JSON.stringify(appointmentInfo));
 
-    // After successfully booking the appointment, update the schedule status
-    const day = new Date(selectedDate).toLocaleString("en-us", { weekday: "long" }).toLowerCase(); // Get the day name, e.g., "sunday"
-    const time = selectedSlot; // Selected time slot like "09:00 AM - 09:30 AM"
-    const status = "booked"; // Set status to "booked"
-
-    // Update the schedule for the doctor on the selected date and slot
-    const updateResponse = await axiosPublic.patch(`/api/schedule/${schedule._id}`, {
-      day,
-      time,
-      status,
-    });
-
-    if (updateResponse.status === 200) {
-      Swal.fire({
-        title: "আপনি কি নিশ্চিত?",
-        text: "আপনি কি এই অ্যাপয়েন্টমেন্ট বুক করতে চান?",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: "হ্যাঁ, বুক করুন",
-        cancelButtonText: "না",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire({
-            title: "অ্যাপয়েন্টমেন্ট সফল!",
-            text: "আপনার অ্যাপয়েন্টমেন্ট সফলভাবে বুক করা হয়েছে।",
-            icon: "success",
-            confirmButtonText: "ঠিক আছে",
-          }).then(() => {
-            navigate("/dashboardPatient/bookings");
-          });
-        }
-      });
-    }
-
-    // Reset form after success
-    form.reset();
-  } catch (error) {
-    console.error(error);
-    Swal.fire({
-      title: "ত্রুটি!",
-      text: "অ্যাপয়েন্টমেন্ট বুক করা যায়নি। আবার চেষ্টা করুন।",
-      icon: "error",
-      confirmButtonText: "ঠিক আছে",
-    });
-  }
+  // Start payment
+  handlePayment();
 };
+
 
 
   // Date change handler
