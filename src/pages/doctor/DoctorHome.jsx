@@ -33,8 +33,7 @@ const DoctorHome = () => {
         upcomingCount: 0
     });
 
-    const [pdfFile, setPdfFile] = useState(null);
-    const [pdfUrl, setPdfUrl] = useState("");
+   
 
 
 
@@ -45,23 +44,7 @@ const DoctorHome = () => {
         }
     }, [user?.email, doctor?._id]);
 
-    const handleFileChange = (e) => {
-        setPdfFile(e.target.files[0]);
-    };
-
-    const handleUpload = async () => {
-        const formData = new FormData();
-        formData.append("pdf", pdfFile);
-
-        const res = await fetch("http://localhost:8000/api/upload-pdf", {
-            method: "POST",
-            body: formData,
-        });
-
-        const data = await res.json();
-        setPdfUrl(data.url);   // 👈 THIS IS THE PDF
-    };
-
+  
 
 
     const fetchAllData = async () => {
@@ -590,30 +573,7 @@ const DoctorHome = () => {
                     </div>
                 )}
             </div>
-            <div>
-                <input
-                    type="file"
-                    accept="application/pdf"
-                    onChange={handleFileChange}
-                />
-
-                <button
-                    onClick={handleUpload}
-                    disabled={loading}
-                    style={{ marginLeft: "10px" }}
-                >
-                    {loading ? "Uploading..." : "Upload PDF"}
-                </button>
-
-                <div>
-                    {pdfUrl && (
-                        <a href={pdfUrl} download>
-                            Download PDF
-                        </a>
-                    )}
-
-                </div>
-            </div>
+        
         </div>
     );
 };

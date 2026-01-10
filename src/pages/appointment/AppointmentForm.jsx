@@ -160,7 +160,7 @@ const handleSubmit = async (event) => {
   };
 
   return (
-    <div className="min-h-[850px] p-8 bg-[#E1ECFF] rounded-lg mt-2 border">
+    <div className="min-h-[850px] p-8 bg-purple-50 rounded-lg mt-2 border border-purple-200 shadow-sm ">
       <h2 className="text-xl font-bold pb-6 text-center">{doctor?.name || ''} এর অ্যাপয়েন্টমেন্ট বুক করুন</h2>
       <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl mx-auto">
         {/* Patient Info */}
@@ -336,8 +336,8 @@ const handleSubmit = async (event) => {
                       type="button"
                       onClick={() => handleSlotSelection(slot)}
                       className={`
-                px-4 py-2 mt-2 rounded text-white font-medium transition
-                ${isSelected ? "bg-red-500" : "bg-green-500"}
+                px-4 py-2 mt-2 rounded font-medium transition text-gray-800
+                ${isSelected ? "bg-red-400" : "bg-green-400"}
                 hover:opacity-90
               `}
                     >
@@ -363,7 +363,7 @@ const handleSubmit = async (event) => {
         {/* Submit Button */}
         <input
           type="submit"
-          className="w-full p-3 text-white bg-primary-color hover:bg-secondary-color rounded-md shadow-sm focus:outline-none"
+          className="w-full p-3 text-white bg-purple-400 hover:bg-secondary-color rounded-md shadow-sm focus:outline-none hover:cursor-pointer"
           value="অ্যাপয়েন্টমেন্ট বুক করুন"
         />
       </form>
