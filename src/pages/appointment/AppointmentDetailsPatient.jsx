@@ -1,7 +1,11 @@
+import React, { useState, useCallback, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import useAppointment from "../../hooks/useAppointment";
 import useDoctor from "../../hooks/useDoctor";
+import usePrescription from "../../hooks/usePrescription";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 import { IoMdDownload } from "react-icons/io";
+import { FaSpinner } from "react-icons/fa";
 import usePrescription from "../../hooks/usePrescription";
 import { FaSpinner } from "react-icons/fa"; // Make sure to import the FaSpinner icon
 import pdfService from "../../pdfService";
@@ -10,21 +14,31 @@ import Swal from "sweetalert2";
 const AppointmentDetailsPatient = () => {
     const [appointments] = useAppointment();
     const [doctors] = useDoctor();
+    const [prescriptions] = usePrescription();
+    const axiosPublic = useAxiosPublic();
     const { appointmentId } = useParams();
     const [prescriptions] = usePrescription();
     const prescription = prescriptions?.find(prescription => prescription.appointmentID === appointmentId);
 
+    const [files, setFiles] = useState([]);
+    const [uploading, setUploading] = useState(false);
+    const [uploadMessage, setUploadMessage] = useState("");
+    const [shareWithDoctor, setShareWithDoctor] = useState(false);
+
     if (!appointments || !doctors) {
         return (
-            <div className="flex justify-center items-center min-h-screen">
-                <FaSpinner className="animate-spin text-3xl text-blue-600" />
+            <div className="flex justify-center items-center min-h-screen bg-gray-50">
+                <FaSpinner className="animate-spin text-4xl text-indigo-500" />
             </div>
         );
     }
 
-    const appointment = appointments.find((appointment) => appointment._id === appointmentId);
-   
-    const doctor = doctors.find((doctor) => doctor._id === appointment?.doctorID);
+    const appointment = appointments.find((a) => a._id === appointmentId);
+    const doctor = doctors.find((d) => d._id === appointment?.doctorID);
+
+    useEffect(() => {
+        setUploadMessage("");
+    }, [appointmentId]);
 
     if (!appointment || !doctor) {
         return (
@@ -34,186 +48,301 @@ const AppointmentDetailsPatient = () => {
         );
     }
 
-    // Handle download for prescription
-  const downloadPdfFile = async () => {
-  try {
-    // Show loading alert
-    Swal.fire({
-      title: 'প্রেসক্রিপশন ডাউনলোড হচ্ছে...',
-      text: 'অনুগ্রহ করে অপেক্ষা করুন',
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
+    const patientPrescriptions = prescriptions?.filter(
+        (p) => p.patientID === appointment.patientID
+    ) || [];
 
-    // API call
-    const response = await pdfService.downloadPDF(appointmentId);
+    const onDrop = useCallback((e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const dropped = Array.from(e.dataTransfer.files || []);
+        const pdfs = dropped.filter(
+            (f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf")
+        );
+        setFiles((prev) => [...prev, ...pdfs]);
+    }, []);
 
-    // Create PDF blob
-    const blob = new Blob([response.data], { type: 'application/pdf' });
+    const onDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
 
-    // Trigger download
-    const link = document.createElement('a');
-    link.href = window.URL.createObjectURL(blob);
-    link.download = 'prescription.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const handleFileChange = (e) => {
+        const selected = Array.from(e.target.files || []);
+        const pdfs = selected.filter(
+            (f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf")
+        );
+        setFiles((prev) => [...prev, ...pdfs]);
+    };
 
-    // Close loading & show success
-    Swal.fire({
-      icon: 'success',
-      title: 'ডাউনলোড সম্পন্ন',
-      text: 'প্রেসক্রিপশন সফলভাবে ডাউনলোড হয়েছে',
-      timer: 2000,
-      showConfirmButton: false
-    });
+    const removeFile = (index) =>
+        setFiles((prev) => prev.filter((_, i) => i !== index));
 
-  } catch (error) {
-    console.error("Error downloading PDF:", error);
+    const handleUpload = async () => {
+        if (files.length === 0) {
+            setUploadMessage("কোনো ফাইল নির্বাচন করা হয়নি");
+            return;
+        }
+        setUploading(true);
+        setUploadMessage("");
+        try {
+            const formData = new FormData();
+            files.forEach((file) => formData.append("files", file));
+            formData.append("patientID", appointment.patientID);
+            formData.append("doctorID", appointment.doctorID);
+            formData.append("appointmentID", appointment._id);
+            formData.append("sharedWithDoctor", shareWithDoctor ? "true" : "false");
 
-    // Show error alert
-    Swal.fire({
-      icon: 'error',
-      title: 'ডাউনলোড ব্যর্থ',
-      text: 'প্রেসক্রিপশন ডাউনলোড করা যায়নি'
-    });
-  }
-};
+            await axiosPublic.post("/api/prescriptions/upload", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            setUploadMessage("ফাইল আপলোড সফল হয়েছে");
+            setFiles([]);
+        } catch (err) {
+            console.error(err);
+            setUploadMessage("আপলোডে ত্রুটি হয়েছে, পরে আবার চেষ্টা করুন");
+        } finally {
+            setUploading(false);
+        }
+    };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-6 px-4">
-            <div className="max-w-7xl mx-auto">
-                <div className="bg-white p-8 rounded-lg shadow-lg">
-                    {/* Section 1: Appointment Information */}
-                    <div className="bg-blue-100 p-6 mb-8 card bg-base-100 shadow-md border rounded-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
-                        <h2 className="text-xl font-semibold text-gray-800 mb-4">অ্যাপয়েন্টমেন্ট সম্পর্কিত তথ্যসমূহঃ</h2>
-                        <div className="space-y-4 text-gray-700">
-                            <p><strong>মাধ্যমঃ</strong> <span className='bg-secondary-color text-white px-2 py-1 rounded-md text-sm'>{appointment.mode === 'online' ? "অনলাইন" : appointment.mode === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</span></p>
-                            <p><strong>তারিখঃ</strong> {appointment.appointmentDate ? new Date(appointment.appointmentDate).toLocaleDateString("en-BD", { day: "2-digit", month: "long", year: "numeric" }) : "Not available"}</p>
-                            <p><strong>সময়ঃ</strong> {appointment.slot || "Not available"}</p>
-                            <p><strong>ফিঃ</strong> {doctor.consultationFee} টাকা</p>
-                            <p><strong>স্ট্যাটাসঃ</strong> <span className={`font-semibold ${appointment.state === "completed" ? "text-green-600" : "text-yellow-600"}`}>{appointment.state || "upcoming"}</span></p>
-                            
-                            {/* Prescription Download Button */}
-                            {prescription && (
-                                <div className="mt-8">
+        <div className="min-h-screen py-8 px-4 bg-gray-50">
+            <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-lg p-6 space-y-8">
+                {/* Appointment Info */}
+                <div className="bg-indigo-50 p-6 rounded-lg shadow hover:shadow-lg transition-all duration-200">
+                    <h2 className="text-2xl font-semibold text-indigo-700 mb-4">
+                        অ্যাপয়েন্টমেন্ট সম্পর্কিত তথ্য
+                    </h2>
+                    <div className="space-y-2 text-gray-700">
+                        <p>
+                            <strong>মাধ্যমঃ</strong>{" "}
+                            <span className="bg-indigo-500 text-white px-2 py-1 rounded">
+                                {appointment.mode === "online"
+                                    ? "অনলাইন"
+                                    : appointment.mode === "offline"
+                                    ? "অফলাইন"
+                                    : "অনলাইন/অফলাইন"}
+                            </span>
+                        </p>
+                        <p>
+                            <strong>তারিখঃ</strong>{" "}
+                            {appointment.appointmentDate
+                                ? new Date(appointment.appointmentDate).toLocaleDateString(
+                                      "en-BD",
+                                      { day: "2-digit", month: "long", year: "numeric" }
+                                  )
+                                : "Not available"}
+                        </p>
+                        <p>
+                            <strong>সময়ঃ</strong> {appointment.slot || "Not available"}
+                        </p>
+                        <p>
+                            <strong>ফিঃ</strong> {doctor.consultationFee} টাকা
+                        </p>
+                        <p>
+                            <strong>স্ট্যাটাসঃ</strong>{" "}
+                            <span
+                                className={`font-semibold ${
+                                    appointment.state === "completed"
+                                        ? "text-green-600"
+                                        : "text-yellow-600"
+                                }`}
+                            >
+                                {appointment.state || "upcoming"}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                {/* Patient & Doctor Info */}
+                <div className="flex flex-col md:flex-row gap-8">
+                    {/* Patient Info */}
+                    <div className="bg-green-50 p-6 rounded-lg shadow flex-1 hover:shadow-lg transition-all duration-200">
+                        <h2 className="text-xl font-semibold text-green-700 mb-4">
+                            রোগীর তথ্য
+                        </h2>
+                        <div className="space-y-2 text-gray-700">
+                            <p>
+                                <strong>নামঃ</strong> {appointment.patientName}
+                            </p>
+                            <p>
+                                <strong>মোবাইলঃ</strong> {appointment.phone}
+                            </p>
+                            <p>
+                                <strong>ইমেইলঃ</strong> {appointment.patientEmail}
+                            </p>
+                            <p>
+                                <strong>বয়সঃ</strong> {appointment.age} বছর
+                            </p>
+                            <p>
+                                <strong>জেন্ডারঃ</strong>{" "}
+                                {appointment.gender === "male"
+                                    ? "পুরুষ"
+                                    : appointment.gender === "female"
+                                    ? "মহিলা"
+                                    : "অন্যান্য"}
+                            </p>
+                            <p>
+                                <strong>ব্লাড গ্রুপঃ</strong> {appointment.bloodGroup}
+                            </p>
+                            <p>
+                                <strong>পেশাঃ</strong> {appointment.profession}
+                            </p>
+                            <p>
+                                <strong>সমস্যা/রোগের বিবরণঃ</strong>{" "}
+                                {appointment.problem}
+                            </p>
+                        </div>
+
+                        {/* Upload Prescription */}
+                        <div className="mt-6">
+                            <h3 className="font-semibold mb-2">পূর্বের প্রেসক্রিপশন আপলোড করুন (PDF)</h3>
+                            <div
+                                onDrop={onDrop}
+                                onDragOver={onDragOver}
+                                className="border-2 border-dashed rounded-md p-6 text-center bg-white"
+                            >
+                                <p className="mb-2">
+                                    ফাইল এখানে টেনে আনুন অথবা নিচের বাটন ব্যবহার করুন
+                                </p>
+                                <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    multiple
+                                    onChange={handleFileChange}
+                                    className="mb-3"
+                                />
+                                {files.length > 0 && (
+                                    <div className="text-left space-y-2">
+                                        {files.map((f, idx) => (
+                                            <div
+                                                key={idx}
+                                                className="flex justify-between items-center bg-gray-100 p-2 rounded-md"
+                                            >
+                                                <span className="truncate">{f.name}</span>
+                                                <button
+                                                    onClick={() => removeFile(idx)}
+                                                    className="text-red-500"
+                                                >
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                                <div className="flex items-center gap-3 mt-4">
+                                    <label className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            checked={shareWithDoctor}
+                                            onChange={(e) => setShareWithDoctor(e.target.checked)}
+                                        />
+                                        <span>ডাক্তারের সাথে একসাথে শেয়ার করুন</span>
+                                    </label>
                                     <button
-                                        onClick={downloadPdfFile}
-                                        className="w-full flex justify-center items-center bg-red-500 text-white py-3 rounded-md shadow-md hover:bg-red-600 transition-all duration-200"
+                                        onClick={handleUpload}
+                                        className="ml-auto bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all duration-200"
+                                        disabled={uploading}
                                     >
-                                        <IoMdDownload className="text-xl mr-3" />
-                                        <span className="text-lg font-semibold">প্রেসক্রিপশন ডাউনলোড করুন</span>
+                                        {uploading ? "Uploading..." : "আপলোড করুন"}
                                     </button>
                                 </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Sections: Patient and Doctor Information in a Row */}
-                    <div className="grid md:grid-cols-2 gap-8 mb-8">
-                        {/* Patient Information */}
-                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-lg shadow-md border border-green-200">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                                <span className="w-1 h-8 bg-green-600 rounded"></span>
-                                রোগীর তথ্যসমূহ
-                            </h2>
-                            <div className="space-y-4 text-gray-700">
-                                <div className="bg-white p-3 rounded-lg">
-                                    <p className="text-sm text-gray-500">রোগীর নাম</p>
-                                    <p className="font-semibold text-lg">{appointment.patientName}</p>
-                                </div>
-                                <div className="bg-white p-3 rounded-lg">
-                                    <p className="text-sm text-gray-500">মোবাইল</p>
-                                    <p className="font-semibold">{appointment.phone}</p>
-                                </div>
-                                <div className="bg-white p-3 rounded-lg">
-                                    <p className="text-sm text-gray-500">ইমেইল</p>
-                                    <p className="font-semibold text-sm">{appointment.patientEmail}</p>
-                                </div>
-                                <div className="grid grid-cols-3 gap-3">
-                                    <div className="bg-white p-3 rounded-lg">
-                                        <p className="text-sm text-gray-500">বয়স</p>
-                                        <p className="font-semibold">{appointment.age} বছর</p>
-                                    </div>
-                                    <div className="bg-white p-3 rounded-lg">
-                                        <p className="text-sm text-gray-500">জেন্ডার</p>
-                                        <p className="font-semibold">{appointment.gender === "male" ? "পুরুষ" : appointment.gender === "female" ? "মহিলা" : "অন্যান্য"}</p>
-                                    </div>
-                                    <div className="bg-white p-3 rounded-lg">
-                                        <p className="text-sm text-gray-500">ব্লাড গ্রুপ</p>
-                                        <p className="font-semibold">{appointment.bloodGroup}</p>
-                                    </div>
-                                </div>
-                                <div className="bg-white p-3 rounded-lg">
-                                    <p className="text-sm text-gray-500">পেশা</p>
-                                    <p className="font-semibold">{appointment.profession}</p>
-                                </div>
-                                <div className="bg-white p-4 rounded-lg">
-                                    <p className="text-sm text-gray-500 mb-2">সমস্যা/রোগের বিবরণ</p>
-                                    <p className="text-gray-800">{appointment.problem}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Doctor Information */}
-                        <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-lg shadow-md border border-purple-200">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                                <span className="w-1 h-8 bg-purple-600 rounded"></span>
-                                ডাক্তার এর তথ্যসমূহ
-                            </h2>
-                            <div className="flex items-center gap-6 mb-6 bg-white p-4 rounded-lg">
-                                <img
-                                    src={doctor?.image || "https://i.ibb.co/ym2wsZXY/avater-Grey-User-Circles-Set.png"}
-                                    alt="Doctor"
-                                    className="w-28 h-28 object-cover rounded-full shadow-lg border-4 border-purple-200"
-                                />
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-800">{doctor.name}</h3>
-                                    <p className="text-md text-gray-600 font-semibold">{doctor.designation}</p>
-                                    <p className="text-sm text-gray-600">{doctor.institute}</p>
-                                    <p className="text-sm text-blue-600 mt-1">{doctor.degrees}</p>
-                                    <p className="text-xs text-gray-500 mt-1">BMDC Reg No: {doctor.regNo}</p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="bg-white p-3 rounded-lg">
-                                    <h3 className="text-sm text-gray-500 mb-1">অভিজ্ঞতা</h3>
-                                    <p className="font-semibold text-lg">{doctor.yearsOfExperience} বছর</p>
-                                </div>
-
-                                <div className="bg-white p-3 rounded-lg">
-                                    <h3 className="text-sm text-gray-500 mb-1">দক্ষতাসমূহ</h3>
-                                    <p className="font-semibold">{doctor.expertise}</p>
-                                </div>
-
-                                <div className="bg-white p-3 rounded-lg">
-                                    <h3 className="text-sm text-gray-500 mb-1">সংক্ষিপ্ত পরিচয়</h3>
-                                    <p className="text-sm text-gray-700">{doctor.shortBio}</p>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div className="bg-white p-3 rounded-lg">
-                                        <h3 className="text-sm text-gray-500 mb-2">রোগী দেখার মাধ্যম</h3>
-                                        <span className='inline-block bg-purple-600 text-white px-3 py-1 rounded-lg text-sm font-semibold'>{doctor.medium === 'online' ? "অনলাইন" : doctor.medium === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</span>
-                                    </div>
-
-                                    <div className="bg-white p-3 rounded-lg">
-                                        <h3 className="text-sm text-gray-500 mb-2">পরামর্শ ফি</h3>
-                                        <p className="font-semibold text-green-600 text-lg">৳ {doctor.consultationFee}</p>
-                                    </div>
-                                </div>
+                                {uploadMessage && (
+                                    <p className="mt-2 text-sm text-green-700">{uploadMessage}</p>
+                                )}
                             </div>
                         </div>
                     </div>
 
+                    {/* Doctor Info */}
+                    <div className="bg-purple-50 p-6 rounded-lg shadow flex-1 hover:shadow-lg transition-all duration-200">
+                        <h2 className="text-xl font-semibold text-purple-700 mb-4">
+                            ডাক্তার এর তথ্য
+                        </h2>
+                        <div className="flex items-center gap-6 mb-6">
+                            <img
+                                src={
+                                    doctor?.image ||
+                                    "https://i.ibb.co/ym2wsZXY/avater-Grey-User-Circles-Set.png"
+                                }
+                                alt="Doctor"
+                                className="w-32 h-32 object-cover rounded-full shadow-md"
+                            />
+                            <div className="space-y-1">
+                                <h3 className="text-lg font-bold">{doctor.name}</h3>
+                                <p>{doctor.designation}</p>
+                                <p>{doctor.institute}</p>
+                                <p>{doctor.degrees}</p>
+                                <p className="text-sm text-gray-500">BMDC Reg No: {doctor.regNo}</p>
+                            </div>
+                        </div>
+                        <div className="space-y-2 text-gray-700">
+                            <p>
+                                <strong>অভিজ্ঞতা:</strong> {doctor.yearsOfExperience} বছর
+                            </p>
+                            <p>
+                                <strong>দক্ষতাসমূহ:</strong> {doctor.expertise}
+                            </p>
+                            <p>
+                                <strong>সংক্ষিপ্ত পরিচয়:</strong> {doctor.shortBio}
+                            </p>
+                            <p>
+                                <strong>রোগী দেখার মাধ্যম:</strong>{" "}
+                                <span className="bg-purple-500 text-white px-2 py-1 rounded">
+                                    {doctor.medium === "online"
+                                        ? "অনলাইন"
+                                        : doctor.medium === "offline"
+                                        ? "অফলাইন"
+                                        : "অনলাইন/অফলাইন"}
+                                </span>
+                            </p>
+                            <p>
+                                <strong>পরামর্শ ফি:</strong> {doctor.consultationFee} টাকা
+                            </p>
+                        </div>
+                    </div>
+
+                {/* Prescriptions List */}
+                <div>
+                    <h3 className="text-xl font-semibold mb-4">আপনার আগের প্রেসক্রিপশনসমূহ</h3>
+                    {patientPrescriptions.length === 0 ? (
+                        <p className="text-gray-600">কোনো প্রেসক্রিপশন পাওয়া যায়নি।</p>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {patientPrescriptions.map((p) => (
+                                <div
+                                    key={p._id}
+                                    className="p-4 border rounded-md bg-white flex justify-between items-center shadow-sm hover:shadow-md transition-all duration-200"
+                                >
+                                    <div>
+                                        <p className="font-semibold">{p.diagnosis || "প্রেসক্রিপশন"}</p>
+                                        <p className="text-sm text-gray-500">
+                                            {new Date(p.updatedAt || p.createdAt).toLocaleString()}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <button
+                                            onClick={() =>
+                                                window.open(
+                                                    `http://localhost:8000/api/prescription/${p.appointmentID}/pdf`,
+                                                    "_blank"
+                                                )
+                                            }
+                                            className="bg-indigo-500 text-white px-3 py-2 rounded-md hover:bg-indigo-600 transition-all duration-200"
+                                        >
+                                            ডাউনলোড
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
     );
-}
+};
 
 export default AppointmentDetailsPatient;

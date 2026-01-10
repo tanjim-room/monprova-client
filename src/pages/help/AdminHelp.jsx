@@ -22,7 +22,7 @@ const Avatar = ({ name = "", image, size = 40 }) => {
   return (
     <div
       style={{ width: size, height: size }}
-      className="rounded-full bg-gradient-to-r from-indigo-500 to-purple-500
+      className="rounded-full bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400
                  flex items-center justify-center text-white font-bold text-lg"
     >
       {firstLetter}
@@ -92,31 +92,48 @@ const AdminHelp = () => {
     }
   };
 
+  // Array of pastel background colors for cards
+  const cardColors = [
+    "bg-pink-50",
+    "bg-purple-50",
+    "bg-blue-50",
+    "bg-green-50",
+    "bg-yellow-50",
+  ];
+
   return (
-    <div className="max-w-4xl mx-auto p-4 min-h-screen">
-      <h2 className="text-2xl font-bold mb-4 text-center">🛡 Admin Help Center</h2>
+    <div className="max-w-5xl mx-auto p-4 min-h-screen bg-gradient-to-b from-indigo-50 via-purple-50 to-pink-50">
+      <h2 className="text-3xl font-bold mb-6 text-center text-indigo-700">
+        🛡 Admin Help Center
+      </h2>
 
       {/* ===== Filter Buttons ===== */}
-      <div className="flex justify-center gap-4 mb-6">
+      <div className="flex justify-center gap-4 mb-6 flex-wrap">
         <button
-          className={`px-4 py-2 rounded-full font-medium ${
-            filterStatus === "pending" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+          className={`px-4 py-2 rounded-full font-medium shadow ${
+            filterStatus === "pending"
+              ? "bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 text-white"
+              : "bg-gray-200 text-gray-700"
           }`}
           onClick={() => setFilterStatus("pending")}
         >
           Pending
         </button>
         <button
-          className={`px-4 py-2 rounded-full font-medium ${
-            filterStatus === "approved" ? "bg-green-600 text-white" : "bg-gray-200 text-gray-700"
+          className={`px-4 py-2 rounded-full font-medium shadow ${
+            filterStatus === "approved"
+              ? "bg-green-400 text-white"
+              : "bg-gray-200 text-gray-700"
           }`}
           onClick={() => setFilterStatus("approved")}
         >
           Approved
         </button>
         <button
-          className={`px-4 py-2 rounded-full font-medium ${
-            filterStatus === "declined" ? "bg-red-600 text-white" : "bg-gray-200 text-gray-700"
+          className={`px-4 py-2 rounded-full font-medium shadow ${
+            filterStatus === "declined"
+              ? "bg-red-400 text-white"
+              : "bg-gray-200 text-gray-700"
           }`}
           onClick={() => setFilterStatus("declined")}
         >
@@ -126,7 +143,7 @@ const AdminHelp = () => {
 
       {/* ===== Select All & Bulk Approve/Decline ===== */}
       {filterStatus === "pending" && filteredQuestions.length > 0 && (
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -137,16 +154,16 @@ const AdminHelp = () => {
           </label>
 
           {selectedQuestions.length > 0 && (
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               <button
                 onClick={handleApprove}
-                className="px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition"
+                className="px-4 py-2 bg-gradient-to-r from-green-400 to-green-500 text-white rounded-full shadow"
               >
                 Approve Selected
               </button>
               <button
                 onClick={handleDecline}
-                className="px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition"
+                className="px-4 py-2 bg-gradient-to-r from-red-400 to-red-500 text-white rounded-full shadow"
               >
                 Decline Selected
               </button>
@@ -156,18 +173,23 @@ const AdminHelp = () => {
       )}
 
       {filteredQuestions.length === 0 && (
-        <p className="text-center text-gray-500 mt-10">
+        <p className="text-center text-gray-500 mt-10 text-lg">
           কোন {filterStatus} প্রশ্ন নেই।
         </p>
       )}
 
+      {/* ===== Question Cards ===== */}
       <div className="space-y-5">
-        {filteredQuestions.map(q => {
+        {filteredQuestions.map((q, idx) => {
           const patient = patients.find(p => p._id === q.patientID);
           const isSelected = selectedQuestions.includes(q._id);
+          const bgColor = cardColors[idx % cardColors.length];
 
           return (
-            <div key={q._id} className="bg-white shadow rounded-2xl p-4 flex gap-3 items-start">
+            <div
+              key={q._id}
+              className={`${bgColor} shadow-md rounded-2xl p-4 flex gap-3 items-start`}
+            >
               {/* Checkbox for pending questions */}
               {filterStatus === "pending" && (
                 <input
@@ -181,17 +203,21 @@ const AdminHelp = () => {
               <Avatar name={patient?.name} image={patient?.image} size={40} />
 
               <div className="flex-1">
-                <p className="font-semibold">{patient?.name || "Unknown Patient"}</p>
+                <p className="font-semibold text-indigo-700">{patient?.name || "Unknown Patient"}</p>
+
+                {/* Question content */}
                 <p className="text-gray-800 mt-1">{q.question}</p>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   {new Date(q.createdAt).toLocaleString()}
                 </p>
 
                 {/* Status badge for approved/declined */}
                 {filterStatus !== "pending" && (
                   <span
-                    className={`inline-block mt-2 px-3 py-1 rounded-full text-white font-semibold ${
-                      filterStatus === "approved" ? "bg-green-600" : "bg-red-600"
+                    className={`inline-block mt-2 px-3 py-1 rounded-full font-semibold text-white ${
+                      filterStatus === "approved"
+                        ? "bg-green-500"
+                        : "bg-red-500"
                     }`}
                   >
                     {filterStatus.toUpperCase()}
