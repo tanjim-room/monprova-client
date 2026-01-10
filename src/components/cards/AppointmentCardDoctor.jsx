@@ -88,44 +88,62 @@ const AppointmentCardDoctor = ({ appointment }) => {
     console.log("Appointment details:", appointment);
 
     return (
-        <div className="card bg-base-100 shadow-md border rounded-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
-            <div className="card-body">
-                <div className="flex gap-8 items-center">
-                    <div>
-                        <h2 className="card-title text-xl">রোগীর নামঃ {appointment?.patientName}</h2>
+        <div className="bg-white shadow-md border border-gray-200 rounded-lg overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-blue-200">
+            <div className="p-6">
+                <div className="mb-4">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                        <span className="w-1 h-6 bg-blue-500 mr-3 rounded"></span>
+                        {appointment?.patientName || 'নাম পাওয়া যায়নি'}
+                    </h2>
+                    <div className="space-y-3">
+                        <div className="flex items-center">
+                            <span className="font-semibold text-gray-700 w-20">মাধ্যমঃ</span>
+                            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                                appointment?.mode === 'online' ? 'bg-purple-50 text-purple-600 border border-purple-200' : 'bg-green-50 text-green-600 border border-green-200'
+                            }`}>
+                                {appointment?.mode === 'online' ? "অনলাইন" : appointment?.mode === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}
+                            </span>
+                        </div>
+                        <div className="flex items-center">
+                            <span className="font-semibold text-gray-700 w-20">তারিখঃ</span>
+                            <span className="text-gray-600">{appointment?.date || 'তারিখ নেই'}</span>
+                        </div>
+                        <div className="flex items-center">
+                            <span className="font-semibold text-gray-700 w-20">সময়ঃ</span>
+                            <span className="text-gray-600">{appointment?.slot || 'সময় নেই'}</span>
+                        </div>
                     </div>
                 </div>
-                <div className="text-start text-lg mt-4">
-                    <p>মাধ্যমঃ<span className='bg-secondary-color text-white px-2 py-1 rounded-md text-sm ml-2'>{appointment.mode === 'online' ? "অনলাইন" : appointment.mode === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</span></p>
-                    <p>তারিখঃ {appointment.date}</p>
-                    <p>সময়ঃ {appointment.slot}</p>
 
-                    <div className="mt-4 flex justify-between gap-8 items-center">
-                        {/* ✅ Start Session Button */}
-                        <div className="w-full">
-                            {appointment?.mode === 'online' && (
-                                <div onClick={handleStartSession}>
-                                    <Button btnName={"সেশন শুরু করুন"} bgColor={"bg-secondary-color"} />
-                                </div>
-                            )}
-                        </div>
+                <div className={`grid gap-3 mt-4 ${
+                    appointment?.mode === 'online' ? 'grid-cols-3' : 'grid-cols-1'
+                }`}>
+                    {/* ✅ Start Session Button */}
+                    {appointment?.mode === 'online' && (
+                        <button
+                            onClick={handleStartSession}
+                            className="bg-green-500 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-green-600 transition-all duration-200"
+                        >
+                            সেশন শুরু করুন
+                        </button>
+                    )}
 
-                        {/* ✅ Set Session Link */}
-                        <div className="w-full">
-                            {appointment?.mode === 'online' && (
-                                <div onClick={handleSetSessionLink}>
-                                    <Button btnName={"সেশন লিঙ্ক দিন"} bgColor={"bg-primary-color"}></Button>
-                                </div>
-                            )}
-                        </div>
+                    {/* ✅ Set Session Link */}
+                    {appointment?.mode === 'online' && (
+                        <button
+                            onClick={handleSetSessionLink}
+                            className="bg-purple-500 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-purple-600 transition-all duration-200"
+                        >
+                            সেশন লিঙ্ক দিন
+                        </button>
+                    )}
 
-                        {/* ✅ Details Button */}
-                        <div className="w-full">
-                            <Link to={`/dashboardDoctor/appointmentDetailsDoctor/${appointment?._id}`}>
-                                <Button btnName={"বিস্তারিত দেখুন"} bgColor={"bg-primary-color"}></Button>
-                            </Link>
-                        </div>
-                    </div>
+                    {/* ✅ Details Button */}
+                    <Link to={`/dashboardDoctor/appointmentDetailsDoctor/${appointment?._id}`}>
+                        <button className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-blue-600 transition-all duration-200">
+                            বিস্তারিত দেখুন
+                        </button>
+                    </Link>
                 </div>
             </div>
         </div>
