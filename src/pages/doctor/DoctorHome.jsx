@@ -3,13 +3,17 @@ import { Link, useNavigate } from 'react-router-dom';
 import useDoctor from '../../hooks/useDoctor';
 import useAuth from '../../hooks/useAuth';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
-import { FaCalendarAlt, FaUserInjured, FaFilePrescription, FaMoneyBillWave, FaClock, FaCheckCircle, FaExclamationTriangle, FaArrowRight, FaCalendarCheck, FaUsers, FaChartLine, FaUserCog, FaVideo, FaMapMarkerAlt, FaQuestionCircle } from 'react-icons/fa';
+import { FaCalendarAlt, FaUserInjured, FaFilePrescription, FaMoneyBillWave, FaClock, FaCheckCircle, FaExclamationTriangle, FaArrowRight, FaCalendarCheck, FaUsers, FaChartLine, FaUserCog, FaVideo, FaMapMarkerAlt, FaQuestionCircle, FaBell } from 'react-icons/fa';
+import useNotifications from '../../hooks/useNotifications';
+import NotificationDropdown from '../../components/NotificationDropdown';
 
 const DoctorHome = () => {
     const [doctors] = useDoctor();
     const { user } = useAuth();
     const navigate = useNavigate();
     const axiosSecure = useAxiosSecure();
+    const { unreadCount } = useNotifications();
+    const [showNotifications, setShowNotifications] = useState(false);
 
     const doctor = doctors?.find(d => d.email === user?.email);
 
@@ -146,37 +150,47 @@ const DoctorHome = () => {
             console.log('Total payments in database:', allPayments.length);
             console.log('Doctor ID:', doctor._id);
             
-            // Filter successful payments for this doctor this month
-            const myPayments = allPayments.filter(payment => 
-                payment.doctorID === doctor._id && 
-                (payment.status === 'paid' || payment.status === 'success' || payment.status === 'completed')
-            );
+            // Filter successful payments for this doctor
+            const myPayments = allPayments.filter(payment => {
+                const isMyDoctor = payment.doctorID === doctor._id;
+                const isSuccessful = payment.status === 'paid' || payment.status === 'success' || payment.status === 'completed';
+                console.log('Payment:', payment._id, 'doctorID:', payment.doctorID, 'myID:', doctor._id, 'match:', isMyDoctor, 'status:', payment.status, 'successful:', isSuccessful);
+                return isMyDoctor && isSuccessful;
+            });
             
             console.log('My total payments:', myPayments.length);
+            console.log('My payments details:', myPayments);
             
             const monthlyPayments = myPayments.filter(payment => {
                 try {
                     const paymentDate = new Date(payment.paidAt || payment.date || payment.createdAt);
-                    if (isNaN(paymentDate.getTime())) return false;
-                    return paymentDate.getMonth() === currentMonth && 
+                    if (isNaN(paymentDate.getTime())) {
+                        console.log('Invalid date for payment:', payment._id);
+                        return false;
+                    }
+                    const isCurrentMonth = paymentDate.getMonth() === currentMonth && 
                            paymentDate.getFullYear() === currentYear;
+                    console.log('Payment date:', paymentDate, 'Current month:', currentMonth, 'Match:', isCurrentMonth);
+                    return isCurrentMonth;
                 } catch (error) {
                     console.error('Invalid payment date:', payment, error);
                     return false;
                 }
             });
             
+            console.log('Monthly payments count:', monthlyPayments.length);
             console.log('Monthly payments:', monthlyPayments);
             
             // Calculate 80% of payment amounts (doctor's share)
             const monthlyIncome = monthlyPayments.reduce((sum, payment) => {
                 const amount = Number(payment.amount) || 0;
                 const doctorShare = amount * 0.8; // 80% to doctor
-                console.log(`Payment amount: ${amount}, Doctor share (80%): ${doctorShare}`);
+                console.log(`Payment ID: ${payment._id}, Amount: ${amount}, Doctor share (80%): ${doctorShare}`);
                 return sum + doctorShare;
             }, 0);
 
             console.log('Total monthly income (80% of payments):', monthlyIncome);
+            console.log('Total formatted:', formatCurrency(monthlyIncome));
             console.log('Today completed:', todayCompleted);
             console.log('Today upcoming:', todayUpcoming);
             console.log('Today total:', todayApts.length);
@@ -201,11 +215,22 @@ const DoctorHome = () => {
 
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
-        return new Date(dateString).toLocaleDateString('bn-BD', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return 'N/A';
+            
+            // Use English locale for reliable formatting
+            const formattedDate = date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            return formattedDate;
+        } catch (error) {
+            console.error('Date formatting error:', error);
+            return 'N/A';
+        }
     };
 
     const formatCurrency = (amount) => {
@@ -235,7 +260,26 @@ const DoctorHome = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#E6F0FF] p-8">
+        <div className="min-h-screen bg-[#E6F0FF] p-8 relative">
+            {/* Fixed Notification Button - Top Right Corner */}
+            <div className="fixed top-4 right-4 z-50">
+                <button
+                    onClick={() => setShowNotifications(!showNotifications)}
+                    className="relative bg-gradient-to-r from-blue-500 to-purple-600 text-white p-4 rounded-full shadow-xl hover:shadow-2xl transition-all hover:scale-110"
+                >
+                    <FaBell className="text-2xl" />
+                    {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center animate-pulse">
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                        </span>
+                    )}
+                </button>
+                <NotificationDropdown 
+                    isOpen={showNotifications} 
+                    onClose={() => setShowNotifications(false)} 
+                />
+            </div>
+
             <div className="max-w-7xl mx-auto">
                 <div className="relative">
                     <Link
@@ -429,7 +473,7 @@ const DoctorHome = () => {
                                                     {appointment.patientName || 'N/A'}
                                                 </p>
                                                 <p className="text-sm text-gray-500">
-                                                    {formatDate(appointment.appointmentDate)} - {formatTime(appointment.appointmentTime)}
+                                                    {formatDate(appointment.appointmentDate)} - {appointment.slot || 'N/A'}
                                                 </p>
                                             </div>
                                         </div>

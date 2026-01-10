@@ -178,31 +178,30 @@ const Payout = () => {
       console.log("Total appointments in database:", allAppointments.length);
       console.log("Sample appointment:", allAppointments[0]);
       
-      // Filter appointments by doctorID (matching the field name used in appointment creation)
+      // Filter by doctorID (matching the field name used in appointment creation)
       const doctorAppointments = allAppointments.filter(app => app.doctorID === doctorId);
       
       console.log("Doctor appointments found:", doctorAppointments.length);
       console.log("Doctor appointments:", doctorAppointments);
       
-      // Filter completed appointments (state field is used, not status)
-      const completedAppointments = doctorAppointments.filter(app => 
-        app.state === 'completed' || 
-        app.state === 'Completed'
+      // Filter paid appointments (all booked appointments, not just completed)
+      const paidAppointments = doctorAppointments.filter(app => 
+        app.paymentStatus === 'paid'
       );
       
-      console.log("Completed appointments found:", completedAppointments.length);
-      console.log("Completed appointments data:", completedAppointments);
+      console.log("Paid appointments found:", paidAppointments.length);
+      console.log("Paid appointments data:", paidAppointments);
       
-      setCompletedAppointments(completedAppointments);
+      setCompletedAppointments(paidAppointments);
 
       // Get doctor's consultation fee
       const doctorFee = Number(doctor?.consultationFee) || 0;
       console.log("Doctor's consultation fee from profile:", doctorFee);
 
       // Calculate total income (before charge) - use doctor's fee × number of appointments
-      const totalIncome = completedAppointments.length * doctorFee;
+      const totalIncome = paidAppointments.length * doctorFee;
 
-      console.log("Total income calculated:", totalIncome, "=", completedAppointments.length, "appointments ×", doctorFee);
+      console.log("Total income calculated:", totalIncome, "=", paidAppointments.length, "appointments ×", doctorFee);
 
       // Calculate net income (after 20% charge)
       const netIncome = totalIncome * 0.8;
@@ -229,7 +228,7 @@ const Payout = () => {
         netIncome,
         totalReceived,
         pending,
-        completedCount: completedAppointments.length
+        completedCount: paidAppointments.length
       });
     } catch (error) {
       console.error("Error calculating earnings:", error);
@@ -354,6 +353,24 @@ const Payout = () => {
       const response = await axiosSecure.post("/api/payouts", payoutData);
       
       if (response.data.insertedId) {
+        // Create notification for doctor about the payout
+        if (selectedDoctor?.email) {
+          try {
+            await axiosSecure.post("/api/notifications", {
+              userEmail: selectedDoctor.email,
+              type: 'payout',
+              message: `আপনার ৳${Number(form.amount).toFixed(2)} টাকার পেআউট প্রক্রিয়া সম্পন্ন হয়েছে। পেমেন্ট মাধ্যম: ${form.method}`,
+              relatedId: response.data.insertedId,
+              isRead: false,
+              createdAt: new Date()
+            });
+            console.log("Payout notification sent to doctor:", selectedDoctor.email);
+          } catch (notificationError) {
+            console.error("Error creating payout notification:", notificationError);
+            // Don't fail the payout if notification fails
+          }
+        }
+
         Swal.fire({
           icon: "success",
           title: "সফল!",
