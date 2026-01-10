@@ -33,20 +33,20 @@ const AppointmentCard = ({ appointment }) => {
     };
 
     return (
-        <div className="card bg-base-100 shadow-md border rounded-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
-            <div className="card-body">
-                <div className="flex gap-8 items-center">
+        <div className="card bg-base-100 shadow-md border rounded-lg overflow-hidden transform transition-transform hover:shadow-lg">
+            <div className="card-body p-5">
+                <div className="flex gap-4 items-center">
                     <div>
-                        <img src={doctor?.image || "https://i.ibb.co.com/ym2wsZXY/avater-Grey-User-Circles-Set.png"} alt="Doctor" className="w-24 h-24 object-cover rounded-full" />
+                        <img src={doctor?.image || "https://i.ibb.co.com/ym2wsZXY/avater-Grey-User-Circles-Set.png"} alt="Doctor" className="w-16 h-16 object-cover rounded-full" />
                     </div>
                     <div>
-                        <h2 className="card-title text-xl font-semibold">{doctor?.name}</h2>
-                        <p className="text-lg text-left text-gray-800">{doctor?.designation || ""}</p>
+                        <h2 className="card-title text-lg font-semibold">{doctor?.name}</h2>
+                        <p className="text-sm text-left text-gray-600">{doctor?.designation || ""}</p>
                     </div>
                 </div>
-                <div className="text-start text-lg mt-4">
-                    <p className="mb-2">মাধ্যমঃ <span className='bg-secondary-color text-white px-2 py-1 rounded-md text-sm'>{appointment?.mode === 'online' ? "অনলাইন" : appointment?.mode === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</span></p>
-                    <p>
+                <div className="text-start text-sm mt-3">
+                    <p className="mb-2">মাধ্যমঃ <span className='bg-secondary-color text-white px-2 py-1 rounded-md text-xs'>{appointment?.mode === 'online' ? "অনলাইন" : appointment?.mode === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</span></p>
+                    <p className="mb-1">
                         <strong>তারিখঃ</strong>{" "}
                         {appointment.appointmentDate
                             ? new Date(appointment.appointmentDate).toLocaleDateString("en-BD", {
@@ -56,8 +56,8 @@ const AppointmentCard = ({ appointment }) => {
                             })
                             : "Not available"}
                     </p>
-                    <p className="mb-4">সময়ঃ {appointment?.slot || "অনুপস্থিত"}</p>
-                    <div className="mt-4 flex justify-between gap-8">
+                    <p className="mb-3">সময়ঃ {appointment?.slot || "অনুপস্থিত"}</p>
+                    <div className="mt-3 flex justify-between gap-3">
                         {/* Join Session Button (Visible only for online appointments) */}
                         {appointment?.mode === 'online' && appointment?.state === "upcoming" && (
                             <div className="w-full" onClick={handleJoinSession}>

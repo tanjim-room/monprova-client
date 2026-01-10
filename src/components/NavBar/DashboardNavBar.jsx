@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { patientMenuItems, doctorMenuItems, adminMenuItems } from "../../dashboardMenus.jsx";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../../providers/AuthProvider.jsx";
 import Logo from "../Logo.jsx";
 import useAuth from "../../hooks/useAuth.jsx";

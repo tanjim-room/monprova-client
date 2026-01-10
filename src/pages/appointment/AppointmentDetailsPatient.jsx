@@ -47,8 +47,9 @@ const AppointmentDetailsPatient = () => {
     };
 
     return (
-        <div className="min-h-screen py-0 px-0">
-            <div className="bg-white p-0 rounded-lg">
+        <div className="min-h-screen bg-gray-50 py-6 px-4">
+            <div className="max-w-7xl mx-auto">
+                <div className="bg-white p-8 rounded-lg shadow-lg">
                 {/* Section 1: Appointment Information */}
                 <div className="bg-blue-100 p-6 mb-8 card bg-base-100 shadow-md border rounded-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">অ্যাপয়েন্টমেন্ট সম্পর্কিত তথ্যসমূহঃ</h2>
@@ -86,59 +87,99 @@ const AppointmentDetailsPatient = () => {
                 </div>
 
                 {/* Sections: Patient and Doctor Information in a Row */}
-                <div className="flex gap-12">
+                <div className="grid md:grid-cols-2 gap-8 mb-8">
                     {/* Patient Information */}
-                    <div className="bg-green-100 p-6 rounded-lg shadow-md w-1/2 overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
-                        <h2 className="text-xl font-semibold text-gray-800 mb-4">রোগীর তথ্যসমূহঃ</h2>
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-lg shadow-md border border-green-200">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                            <span className="w-1 h-8 bg-green-600 rounded"></span>
+                            রোগীর তথ্যসমূহ
+                        </h2>
                         <div className="space-y-4 text-gray-700">
-                            <p><strong>রোগীর নামঃ</strong> {appointment.patientName}</p>
-                            <p><strong>মোবাইলঃ</strong> {appointment.phone}</p>
-                            <p><strong>ইমেইলঃ</strong> {appointment.patientEmail}</p>
-                            <p><strong>বয়সঃ</strong> {appointment.age} বছর</p>
-                            <p><strong>জেন্ডারঃ</strong> {appointment.gender === "male" ? "পুরুষ" : appointment.gender === "female" ? "মহিলা" : "অন্যান্য"}</p>
-                            <p><strong>ব্লাড গ্রুপঃ</strong> {appointment.bloodGroup}</p>
-                            <p><strong>পেশাঃ</strong> {appointment.profession}</p>
-                            <p><strong>সমস্যা/রোগের বিবরণঃ</strong> </p>
-                            <p>{appointment.problem}</p>
+                            <div className="bg-white p-3 rounded-lg">
+                                <p className="text-sm text-gray-500">রোগীর নাম</p>
+                                <p className="font-semibold text-lg">{appointment.patientName}</p>
+                            </div>
+                            <div className="bg-white p-3 rounded-lg">
+                                <p className="text-sm text-gray-500">মোবাইল</p>
+                                <p className="font-semibold">{appointment.phone}</p>
+                            </div>
+                            <div className="bg-white p-3 rounded-lg">
+                                <p className="text-sm text-gray-500">ইমেইল</p>
+                                <p className="font-semibold text-sm">{appointment.patientEmail}</p>
+                            </div>
+                            <div className="grid grid-cols-3 gap-3">
+                                <div className="bg-white p-3 rounded-lg">
+                                    <p className="text-sm text-gray-500">বয়স</p>
+                                    <p className="font-semibold">{appointment.age} বছর</p>
+                                </div>
+                                <div className="bg-white p-3 rounded-lg">
+                                    <p className="text-sm text-gray-500">জেন্ডার</p>
+                                    <p className="font-semibold">{appointment.gender === "male" ? "পুরুষ" : appointment.gender === "female" ? "মহিলা" : "অন্যান্য"}</p>
+                                </div>
+                                <div className="bg-white p-3 rounded-lg">
+                                    <p className="text-sm text-gray-500">ব্লাড গ্রুপ</p>
+                                    <p className="font-semibold">{appointment.bloodGroup}</p>
+                                </div>
+                            </div>
+                            <div className="bg-white p-3 rounded-lg">
+                                <p className="text-sm text-gray-500">পেশা</p>
+                                <p className="font-semibold">{appointment.profession}</p>
+                            </div>
+                            <div className="bg-white p-4 rounded-lg">
+                                <p className="text-sm text-gray-500 mb-2">সমস্যা/রোগের বিবরণ</p>
+                                <p className="text-gray-800">{appointment.problem}</p>
+                            </div>
                         </div>
                     </div>
 
                     {/* Doctor Information */}
-                    <div className="bg-purple-100 p-6 rounded-lg shadow-md w-1/2 overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
-                        <h2 className="text-xl font-semibold text-gray-800 mb-4">ডাক্তার এর তথ্যসমূহঃ</h2>
-                        <div className="flex items-center gap-6 mb-8">
+                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-lg shadow-md border border-purple-200">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                            <span className="w-1 h-8 bg-purple-600 rounded"></span>
+                            ডাক্তার এর তথ্যসমূহ
+                        </h2>
+                        <div className="flex items-center gap-6 mb-6 bg-white p-4 rounded-lg">
                             <img
                                 src={doctor?.image || "https://i.ibb.co.com/ym2wsZXY/avater-Grey-User-Circles-Set.png"}
                                 alt="Doctor"
-                                className="w-36 h-36 object-cover rounded-full shadow-md"
+                                className="w-28 h-28 object-cover rounded-full shadow-lg border-4 border-purple-200"
                             />
                             <div>
-                                <h3 className="text-lg font-bold text-gray-800">{doctor.name}</h3>
-                                <p className="text-md text-gray-600">{doctor.designation}</p>
-                                <p>{doctor.institute}</p>
-                                <p className="mt-0">{doctor.degrees}</p>
-                                <p className="text-sm text-gray-500">BMDC Reg No: {doctor.regNo}</p>
+                                <h3 className="text-xl font-bold text-gray-800">{doctor.name}</h3>
+                                <p className="text-md text-gray-600 font-semibold">{doctor.designation}</p>
+                                <p className="text-sm text-gray-600">{doctor.institute}</p>
+                                <p className="text-sm text-blue-600 mt-1">{doctor.degrees}</p>
+                                <p className="text-xs text-gray-500 mt-1">BMDC Reg No: {doctor.regNo}</p>
                             </div>
                         </div>
 
-                        <div>
+                        <div className="space-y-4">
+                            <div className="bg-white p-3 rounded-lg">
+                                <h3 className="text-sm text-gray-500 mb-1">অভিজ্ঞতা</h3>
+                                <p className="font-semibold text-lg">{doctor.yearsOfExperience} বছর</p>
+                            </div>
 
+                            <div className="bg-white p-3 rounded-lg">
+                                <h3 className="text-sm text-gray-500 mb-1">দক্ষতাসমূহ</h3>
+                                <p className="font-semibold">{doctor.expertise}</p>
+                            </div>
 
+                            <div className="bg-white p-3 rounded-lg">
+                                <h3 className="text-sm text-gray-500 mb-1">সংক্ষিপ্ত পরিচয়</h3>
+                                <p className="text-sm text-gray-700">{doctor.shortBio}</p>
+                            </div>
 
-                            <h3 className="text-md font-semibold text-gray-700 mt-2">অভিজ্ঞতা</h3>
-                            <p>{doctor.yearsOfExperience} বছর</p>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-white p-3 rounded-lg">
+                                    <h3 className="text-sm text-gray-500 mb-2">রোগী দেখার মাধ্যম</h3>
+                                    <span className='inline-block bg-purple-600 text-white px-3 py-1 rounded-lg text-sm font-semibold'>{doctor.medium === 'online' ? "অনলাইন" : doctor.medium === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</span>
+                                </div>
 
-                            <h3 className="text-md font-semibold text-gray-700 mt-2">দক্ষতাসমূহ</h3>
-                            <p>{doctor.expertise}</p>
-
-                            <h3 className="text-md font-semibold text-gray-700 mt-2 text-justify">সংক্ষিপ্ত পরিচয়</h3>
-                            <p>{doctor.shortBio}</p>
-
-                            <h3 className="text-md font-semibold text-gray-700 mt-2">রোগী দেখার মাধ্যম</h3>
-                            <p><span className='bg-secondary-color text-white px-2 py-1 rounded-md text-sm'>{doctor.medium === 'online' ? "অনলাইন" : doctor.medium === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</span></p>
-
-                            <h3 className="text-md font-semibold text-gray-700 mt-2">পরামর্শ ফি</h3>
-                            <p>{doctor.consultationFee} টাকা</p>
+                                <div className="bg-white p-3 rounded-lg">
+                                    <h3 className="text-sm text-gray-500 mb-2">পরামর্শ ফি</h3>
+                                    <p className="font-semibold text-green-600 text-lg">৳ {doctor.consultationFee}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
