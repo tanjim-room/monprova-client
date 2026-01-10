@@ -33,11 +33,36 @@ const DoctorHome = () => {
         upcomingCount: 0
     });
 
+    const [pdfFile, setPdfFile] = useState(null);
+    const [pdfUrl, setPdfUrl] = useState("");
+
+
+
+
     useEffect(() => {
         if (user?.email && doctor?._id) {
             fetchAllData();
         }
     }, [user?.email, doctor?._id]);
+
+    const handleFileChange = (e) => {
+        setPdfFile(e.target.files[0]);
+    };
+
+    const handleUpload = async () => {
+        const formData = new FormData();
+        formData.append("pdf", pdfFile);
+
+        const res = await fetch("http://localhost:8000/api/upload-pdf", {
+            method: "POST",
+            body: formData,
+        });
+
+        const data = await res.json();
+        setPdfUrl(data.url);   // 👈 THIS IS THE PDF
+    };
+
+
 
     const fetchAllData = async () => {
         try {
@@ -142,14 +167,14 @@ const DoctorHome = () => {
             // Calculate monthly income from payments
             const currentMonth = new Date().getMonth();
             const currentYear = new Date().getFullYear();
-            
+
             // Fetch payments for this doctor
             const paymentsRes = await axiosSecure.get('/api/payments');
             const allPayments = paymentsRes.data;
-            
+
             console.log('Total payments in database:', allPayments.length);
             console.log('Doctor ID:', doctor._id);
-            
+
             // Filter successful payments for this doctor
             const myPayments = allPayments.filter(payment => {
                 const isMyDoctor = payment.doctorID === doctor._id;
@@ -157,10 +182,10 @@ const DoctorHome = () => {
                 console.log('Payment:', payment._id, 'doctorID:', payment.doctorID, 'myID:', doctor._id, 'match:', isMyDoctor, 'status:', payment.status, 'successful:', isSuccessful);
                 return isMyDoctor && isSuccessful;
             });
-            
+
             console.log('My total payments:', myPayments.length);
             console.log('My payments details:', myPayments);
-            
+
             const monthlyPayments = myPayments.filter(payment => {
                 try {
                     const paymentDate = new Date(payment.paidAt || payment.date || payment.createdAt);
@@ -168,8 +193,8 @@ const DoctorHome = () => {
                         console.log('Invalid date for payment:', payment._id);
                         return false;
                     }
-                    const isCurrentMonth = paymentDate.getMonth() === currentMonth && 
-                           paymentDate.getFullYear() === currentYear;
+                    const isCurrentMonth = paymentDate.getMonth() === currentMonth &&
+                        paymentDate.getFullYear() === currentYear;
                     console.log('Payment date:', paymentDate, 'Current month:', currentMonth, 'Match:', isCurrentMonth);
                     return isCurrentMonth;
                 } catch (error) {
@@ -177,10 +202,10 @@ const DoctorHome = () => {
                     return false;
                 }
             });
-            
+
             console.log('Monthly payments count:', monthlyPayments.length);
             console.log('Monthly payments:', monthlyPayments);
-            
+
             // Calculate 80% of payment amounts (doctor's share)
             const monthlyIncome = monthlyPayments.reduce((sum, payment) => {
                 const amount = Number(payment.amount) || 0;
@@ -218,14 +243,14 @@ const DoctorHome = () => {
         try {
             const date = new Date(dateString);
             if (isNaN(date.getTime())) return 'N/A';
-            
+
             // Use English locale for reliable formatting
             const formattedDate = date.toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
             });
-            
+
             return formattedDate;
         } catch (error) {
             console.error('Date formatting error:', error);
@@ -274,14 +299,14 @@ const DoctorHome = () => {
                         </span>
                     )}
                 </button>
-                <NotificationDropdown 
-                    isOpen={showNotifications} 
-                    onClose={() => setShowNotifications(false)} 
+                <NotificationDropdown
+                    isOpen={showNotifications}
+                    onClose={() => setShowNotifications(false)}
                 />
             </div>
 
             <div className="max-w-7xl mx-auto">
-                
+
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-gray-800 mb-2">
@@ -518,52 +543,76 @@ const DoctorHome = () => {
 
                 {/* FAQ Section */}
                 {showFAQ && (
-                <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                            <FaQuestionCircle className="text-blue-500" />
-                            সাধারণ জিজ্ঞাসা (FAQ)
-                        </h2>
-                        <button
-                            onClick={() => setShowFAQ(false)}
-                            className="text-gray-500 hover:text-gray-700 text-2xl"
-                        >
-                            ×
-                        </button>
+                    <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                                <FaQuestionCircle className="text-blue-500" />
+                                সাধারণ জিজ্ঞাসা (FAQ)
+                            </h2>
+                            <button
+                                onClick={() => setShowFAQ(false)}
+                                className="text-gray-500 hover:text-gray-700 text-2xl"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="border-l-4 border-teal-500 bg-teal-50 p-4 rounded">
+                                <h3 className="font-bold text-gray-800 mb-2">কিভাবে অ্যাপয়েন্টমেন্ট সম্পন্ন করবো?</h3>
+                                <p className="text-gray-700">অ্যাপয়েন্টমেন্ট তালিকা থেকে রোগীর অ্যাপয়েন্টমেন্ট নির্বাচন করুন এবং সেশন সম্পন্ন করার পর স্ট্যাটাস "সম্পন্ন" তে পরিবর্তন করুন। তারপর প্রেসক্রিপশন তৈরি করতে পারবেন।</p>
+                            </div>
+
+                            <div className="border-l-4 border-blue-500 bg-blue-50 p-4 rounded">
+                                <h3 className="font-bold text-gray-800 mb-2">প্রেসক্রিপশন কিভাবে তৈরি করবো?</h3>
+                                <p className="text-gray-700">সম্পন্ন অ্যাপয়েন্টমেন্টের বিস্তারিত পাতায় "প্রেসক্রিপশন তৈরি করুন" বাটনে ক্লিক করুন। ওষুধের নাম, ডোজ, সময়কাল এবং পরামর্শ লিখে সংরক্ষণ করুন।</p>
+                            </div>
+
+                            <div className="border-l-4 border-purple-500 bg-purple-50 p-4 rounded">
+                                <h3 className="font-bold text-gray-800 mb-2">আমার আয় কখন পাবো?</h3>
+                                <p className="text-gray-700">প্রতিটি সম্পন্ন অ্যাপয়েন্টমেন্টের ৮০% ফি আপনার আয় হিসেবে গণনা করা হয়। অ্যাডমিন নিয়মিত পেমেন্ট প্রসেস করে থাকেন। আয়ের বিস্তারিত দেখতে "আয় দেখুন" পাতায় যান।</p>
+                            </div>
+
+                            <div className="border-l-4 border-green-500 bg-green-50 p-4 rounded">
+                                <h3 className="font-bold text-gray-800 mb-2">সময়সূচী কিভাবে সেট করবো?</h3>
+                                <p className="text-gray-700">"সময়সূচী দেখুন" পাতায় গিয়ে সপ্তাহের প্রতিটি দিনের জন্য আপনার উপলব্ধ সময় নির্ধারণ করুন। রোগীরা শুধুমাত্র আপনার সেট করা সময়ে অ্যাপয়েন্টমেন্ট বুক করতে পারবেন।</p>
+                            </div>
+
+                            <div className="border-l-4 border-orange-500 bg-orange-50 p-4 rounded">
+                                <h3 className="font-bold text-gray-800 mb-2">প্রোফাইল আপডেট করার গুরুত্ব কি?</h3>
+                                <p className="text-gray-700">সম্পূর্ণ প্রোফাইল রোগীদের আস্থা বাড়ায়। আপনার ডিগ্রি, অভিজ্ঞতা, বিশেষত্ব এবং ছবি আপডেট করুন। ভেরিফাইড ডাক্তার হিসেবে বেশি রোগী পাবেন।</p>
+                            </div>
+
+                            <div className="border-l-4 border-red-500 bg-red-50 p-4 rounded">
+                                <h3 className="font-bold text-gray-800 mb-2">অনলাইন সেশন কিভাবে পরিচালনা করবো?</h3>
+                                <p className="text-gray-700">অনলাইন মোডের অ্যাপয়েন্টমেন্টে আপনার নির্ধারিত ভিডিও কল প্ল্যাটফর্ম (জুম/গুগল মিট) লিংক শেয়ার করুন। সময়মতো সেশনে যোগ দিন এবং রোগীর সমস্যা শুনে পরামর্শ দিন।</p>
+                            </div>
+                        </div>
                     </div>
-                    <div className="space-y-4">
-                        <div className="border-l-4 border-teal-500 bg-teal-50 p-4 rounded">
-                            <h3 className="font-bold text-gray-800 mb-2">কিভাবে অ্যাপয়েন্টমেন্ট সম্পন্ন করবো?</h3>
-                            <p className="text-gray-700">অ্যাপয়েন্টমেন্ট তালিকা থেকে রোগীর অ্যাপয়েন্টমেন্ট নির্বাচন করুন এবং সেশন সম্পন্ন করার পর স্ট্যাটাস "সম্পন্ন" তে পরিবর্তন করুন। তারপর প্রেসক্রিপশন তৈরি করতে পারবেন।</p>
-                        </div>
-                        
-                        <div className="border-l-4 border-blue-500 bg-blue-50 p-4 rounded">
-                            <h3 className="font-bold text-gray-800 mb-2">প্রেসক্রিপশন কিভাবে তৈরি করবো?</h3>
-                            <p className="text-gray-700">সম্পন্ন অ্যাপয়েন্টমেন্টের বিস্তারিত পাতায় "প্রেসক্রিপশন তৈরি করুন" বাটনে ক্লিক করুন। ওষুধের নাম, ডোজ, সময়কাল এবং পরামর্শ লিখে সংরক্ষণ করুন।</p>
-                        </div>
-                        
-                        <div className="border-l-4 border-purple-500 bg-purple-50 p-4 rounded">
-                            <h3 className="font-bold text-gray-800 mb-2">আমার আয় কখন পাবো?</h3>
-                            <p className="text-gray-700">প্রতিটি সম্পন্ন অ্যাপয়েন্টমেন্টের ৮০% ফি আপনার আয় হিসেবে গণনা করা হয়। অ্যাডমিন নিয়মিত পেমেন্ট প্রসেস করে থাকেন। আয়ের বিস্তারিত দেখতে "আয় দেখুন" পাতায় যান।</p>
-                        </div>
-                        
-                        <div className="border-l-4 border-green-500 bg-green-50 p-4 rounded">
-                            <h3 className="font-bold text-gray-800 mb-2">সময়সূচী কিভাবে সেট করবো?</h3>
-                            <p className="text-gray-700">"সময়সূচী দেখুন" পাতায় গিয়ে সপ্তাহের প্রতিটি দিনের জন্য আপনার উপলব্ধ সময় নির্ধারণ করুন। রোগীরা শুধুমাত্র আপনার সেট করা সময়ে অ্যাপয়েন্টমেন্ট বুক করতে পারবেন।</p>
-                        </div>
-                        
-                        <div className="border-l-4 border-orange-500 bg-orange-50 p-4 rounded">
-                            <h3 className="font-bold text-gray-800 mb-2">প্রোফাইল আপডেট করার গুরুত্ব কি?</h3>
-                            <p className="text-gray-700">সম্পূর্ণ প্রোফাইল রোগীদের আস্থা বাড়ায়। আপনার ডিগ্রি, অভিজ্ঞতা, বিশেষত্ব এবং ছবি আপডেট করুন। ভেরিফাইড ডাক্তার হিসেবে বেশি রোগী পাবেন।</p>
-                        </div>
-                        
-                        <div className="border-l-4 border-red-500 bg-red-50 p-4 rounded">
-                            <h3 className="font-bold text-gray-800 mb-2">অনলাইন সেশন কিভাবে পরিচালনা করবো?</h3>
-                            <p className="text-gray-700">অনলাইন মোডের অ্যাপয়েন্টমেন্টে আপনার নির্ধারিত ভিডিও কল প্ল্যাটফর্ম (জুম/গুগল মিট) লিংক শেয়ার করুন। সময়মতো সেশনে যোগ দিন এবং রোগীর সমস্যা শুনে পরামর্শ দিন।</p>
-                        </div>
-                    </div>
-                </div>
                 )}
+            </div>
+            <div>
+                <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={handleFileChange}
+                />
+
+                <button
+                    onClick={handleUpload}
+                    disabled={loading}
+                    style={{ marginLeft: "10px" }}
+                >
+                    {loading ? "Uploading..." : "Upload PDF"}
+                </button>
+
+                <div>
+                    {pdfUrl && (
+                        <a href={pdfUrl} download>
+                            Download PDF
+                        </a>
+                    )}
+
+                </div>
             </div>
         </div>
     );
