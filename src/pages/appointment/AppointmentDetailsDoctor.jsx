@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -18,6 +18,10 @@ const AppointmentDetailsDoctor = () => {
     const [appointments] = useAppointment(); // Hook to fetch appointments
     const [doctors] = useDoctor(); // Hook to fetch doctors
     const { appointmentId } = useParams(); // Get appointment ID from URL
+    
+    
+    // 🧾 Save session link
+  
 
     // Safe loading check
     const loading = !Array.isArray(appointments) || !Array.isArray(doctors) || appointments.length === 0 || doctors.length === 0;
@@ -29,6 +33,8 @@ const AppointmentDetailsDoctor = () => {
 
     // Find the specific appointment using appointmentId
     const appointment = appointments.find((a) => a._id === appointmentId);
+    const link = appointment?.sessionLink;
+    const [sessionLink, setSessionLink] = useState(link);
     if (!appointment) return <div className="text-center text-red-600">Appointment not found</div>;
 
     const gender = appointment?.gender === "male" ? "পুরুষ" : appointment?.gender === "female" ? "নারী" : "অন্যান্য";
@@ -36,6 +42,75 @@ const AppointmentDetailsDoctor = () => {
     // Find the corresponding doctor for the appointment
     const doctor = doctors.find((d) => d._id === appointment.doctorID);
     if (!doctor) return <div className="text-center text-red-600">Doctor not found</div>;
+
+
+    const handleStartSession = async () => {
+        // Check if session link is provided
+        if (!sessionLink) {
+            // If no session link, show a SweetAlert prompt asking the user to provide a link
+            await MySwal.fire({
+                icon: 'warning',
+                title: '⚠️ সেশন লিঙ্ক প্রয়োজন!',
+                text: 'দয়া করে সেশন লিঙ্ক দিন যেন আপনি সেশন শুরু করতে পারেন।',
+                confirmButtonText: 'ঠিক আছে',
+                confirmButtonColor: '#16a34a',
+            });
+            return;
+        }
+
+        // If session link is available, start the session by redirecting to the session link
+        window.open(sessionLink, '_blank');
+    };
+      const handleSetSessionLink = async () => {
+        // If sessionLink is not provided, show SweetAlert to ask for a link
+        const { value: link } = await MySwal.fire({
+            title: '🔗 সেশন লিঙ্ক দিন',
+            subTitle: "Google Meet Link দিন",
+            input: 'url',
+            inputPlaceholder: 'যেমনঃ https://meet.google.com/abc-defg-hij',
+            inputValue: sessionLink || "",
+            showCancelButton: true,
+            cancelButtonText: 'বাতিল',
+            confirmButtonText: 'সংরক্ষণ করুন',
+            confirmButtonColor: '#16a34a',
+            cancelButtonColor: '#6b7280',
+            inputValidator: (value) => {
+                if (!value) {
+                    return '⚠️ দয়া করে একটি লিঙ্ক দিন!';
+                }
+            },
+        });
+
+        // Log the link received from SweetAlert
+        console.log("Received session link from SweetAlert:", link);
+
+        if (link) {
+            setSessionLink(link);  // Save link to state
+
+            try {
+                // Send PATCH request to update the session link in the backend
+                const response = await axiosPublic.patch(`/api/sessionlink/${appointment._id}`, { sessionLink: link });
+
+                // Log API response
+                console.log("API response:", response);
+
+                await MySwal.fire({
+                    icon: 'success',
+                    title: '✅ লিঙ্ক সংরক্ষণ হয়েছে!',
+                    text: 'সেশন লিঙ্ক সফলভাবে সংরক্ষণ করা হয়েছে।',
+                    confirmButtonText: 'ঠিক আছে',
+                    confirmButtonColor: '#16a34a',
+                });
+            } catch (error) {
+                console.error('Error updating session link:', error);
+                MySwal.fire({
+                    icon: 'error',
+                    title: '❌ ত্রুটি!',
+                    text: 'সেশন লিঙ্ক সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।',
+                });
+            }
+        }
+    };
 
     // Handle finishing the appointment
     const handleFinishAppointment = async (event) => {
@@ -144,10 +219,32 @@ const AppointmentDetailsDoctor = () => {
             </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-                <Link to={`/dashboardDoctor/createPrescription/${appointment?._id}`}>
-                    <button className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-blue-600 transition-all duration-200">
-                        প্রেস্ক্রিপশন লিখুন
+            <div className="flex gap-6 mt-8">
+                 <div className="w-full">
+                            {appointment?.mode === 'online' && (
+                                <div onClick={handleStartSession}>
+                                    <Button btnName={"সেশন শুরু করুন"} bgColor={"bg-secondary-color"} />
+                                </div>
+                            )}
+                        </div>
+                        <div className="w-full">
+                            {appointment?.mode === 'online' && (
+                                <div onClick={handleSetSessionLink}>
+                                    <Button btnName={"সেশন লিঙ্ক দিন"} bgColor={"bg-primary-color"}></Button>
+                                </div>
+                            )}
+                        </div>
+
+                <div className="w-full" >
+
+
+                    <button
+                        onClick={handleFinishAppointment}
+                        className={`w-full rounded-md bg-secondary-color text-white py-3 transition ${appointment.state === "completed" ? "opacity-25 text-black cursor-not-allowed bg-gray-500 " : ""
+                            }`}
+                        disabled={appointment.state === "completed"}
+                    >
+                        {appointment.state === "completed" ? "অ্যাপয়েন্টমেন্ট সম্পন্ন" : "শেষ করুন"}
                     </button>
                 </Link>
 
@@ -164,11 +261,21 @@ const AppointmentDetailsDoctor = () => {
                 </button>
             </div>
 
-            <Link to={`/dashboardDoctor/prescriptionDetails/${appointmentId}`}>
-                <button className="w-full bg-purple-500 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-purple-600 transition-all duration-200">
-                    প্রেস্ক্রিপশন দেখুন
-                </button>
-            </Link>
+           
+            <div className="flex gap-6 mt-8">
+                <div className="w-full">
+                    <Link to={`/dashboardDoctor/createPrescription/${appointment._id}`}>
+                        <Button btnName="প্রেস্ক্রিপশন লিখুন" bgColor="bg-tertiary-color" />
+                    </Link>
+                </div>
+
+                <div className="w-full" >
+
+
+                 <Link to={`/dashboardDoctor/prescriptionDetails/${appointmentId}`}>
+                    <Button btnName="প্রেস্ক্রিপশন দেখুন" bgColor="bg-primary-color" className="w-full" />
+                </Link>
+                </div>
             </div>
         </div>
     );

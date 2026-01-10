@@ -72,17 +72,7 @@ const AppointmentDoctor = () => {
                         আপকামিং
                     </button>
 
-                    {/* Completed Button */}
-                    <button
-                        className={`px-4 py-3 rounded-lg font-semibold transition-all duration-200 whitespace-nowrap ${
-                            activeTab === "completed"
-                                ? "bg-green-500 text-white shadow-md"
-                                : "bg-green-50 text-green-700 hover:bg-green-100"
-                        }`}
-                        onClick={() => setActiveTab("completed")}
-                    >
-                        সম্পন্ন
-                    </button>
+                    
 
                     {/* Upcoming Online Button */}
                     <button
@@ -106,6 +96,17 @@ const AppointmentDoctor = () => {
                         onClick={() => setActiveTab("upcomingOffline")}
                     >
                         আপকামিং (অফলাইন)
+                    </button>
+
+                    {/* Completed Button */}
+                    <button
+                        className={`px-4 py-2 rounded-lg font-semibold ${activeTab === "completed"
+                            ? "bg-secondary-color text-white"
+                            : "bg-white text-secondary-color border border-secondary-color"}`
+                        }
+                        onClick={() => setActiveTab("completed")}
+                    >
+                        সম্পন্ন
                     </button>
 
                     {/* Completed Online Button */}

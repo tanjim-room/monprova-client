@@ -2,11 +2,14 @@ import { useParams } from "react-router-dom";
 import useAppointment from "../../hooks/useAppointment";
 import useDoctor from "../../hooks/useDoctor";
 import { IoMdDownload } from "react-icons/io";
+import usePrescription from "../../hooks/usePrescription";
 
 const AppointmentDetailsPatient = () => {
     const [appointments] = useAppointment();
     const [doctors] = useDoctor();
     const { appointmentId } = useParams();
+    const [prescriptions] = usePrescription();
+    const prescription = prescriptions?.find(prescription => prescription.appointmentID === appointmentId);
 
     if (!appointments || !doctors) {
         return (
@@ -48,40 +51,38 @@ const AppointmentDetailsPatient = () => {
             <div className="max-w-7xl mx-auto">
                 <div className="bg-white p-8 rounded-lg shadow-lg">
                 {/* Section 1: Appointment Information */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 mb-8 rounded-lg shadow-md border border-blue-200">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                        <span className="w-1 h-8 bg-blue-600 rounded"></span>
-                        অ্যাপয়েন্টমেন্ট সম্পর্কিত তথ্যসমূহ
-                    </h2>
-                    <div className="grid md:grid-cols-2 gap-6 text-gray-700">
-                        <div className="bg-white p-4 rounded-lg shadow-sm">
-                            <p className="text-sm text-gray-500 mb-1">মাধ্যম</p>
-                            <span className='inline-block bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold'>{appointment.mode === 'online' ? "অনলাইন" : appointment.mode === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</span>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow-sm">
-                            <p className="text-sm text-gray-500 mb-1">তারিখ</p>
-                            <p className="font-semibold text-lg">
-                                {appointment.appointmentDate
-                                    ? new Date(appointment.appointmentDate).toLocaleDateString("en-BD", {
-                                        day: "2-digit",
-                                        month: "long",
-                                        year: "numeric",
-                                    })
-                                    : "Not available"}
-                            </p>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow-sm">
-                            <p className="text-sm text-gray-500 mb-1">সময়</p>
-                            <p className="font-semibold text-lg">{appointment.slot || "Not available"}</p>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow-sm">
-                            <p className="text-sm text-gray-500 mb-1">ফি</p>
-                            <p className="font-semibold text-lg text-green-600">৳ {doctor.consultationFee}</p>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow-sm">
-                            <p className="text-sm text-gray-500 mb-1">স্ট্যাটাস</p>
-                            <span className={`inline-block px-4 py-2 rounded-lg font-semibold ${appointment.state === "completed" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>{appointment.state || "upcoming"}</span>
-                        </div>
+                <div className="bg-blue-100 p-6 mb-8 card bg-base-100 shadow-md border rounded-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-4">অ্যাপয়েন্টমেন্ট সম্পর্কিত তথ্যসমূহঃ</h2>
+                    <div className="space-y-4 text-gray-700">
+                        <p><strong>মাধ্যমঃ</strong> <span className='bg-secondary-color text-white px-2 py-1 rounded-md text-sm'>{appointment.mode === 'online' ? "অনলাইন" : appointment.mode === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}</span></p>
+                        <p>
+                            <strong>তারিখঃ</strong>{" "}
+                            {appointment.appointmentDate
+                                ? new Date(appointment.appointmentDate).toLocaleDateString("en-BD", {
+                                    day: "2-digit",
+                                    month: "long",
+                                    year: "numeric",
+                                })
+                                : "Not available"}
+                        </p>
+                        <p><strong>সময়ঃ</strong> {appointment.slot || "Not available"}</p>
+                        <p><strong>ফিঃ</strong> {doctor.consultationFee} টাকা</p>
+                        <p><strong>স্ট্যাটাসঃ</strong> <span className={`font-semibold ${appointment.state === "completed" ? "text-green-600" : "text-yellow-600"}`}>{appointment.state || "upcoming"}</span></p>
+                        {prescription && (
+                            <div className="mt-8">
+                                <button
+                                    onClick={() =>
+                                        window.open(
+                                            `http://localhost:8000/api/prescription/${prescription?.appointmentID}/pdf`,
+                                            "_blank"
+                                        )
+                                    } className="w-full flex justify-center items-center bg-red-500 text-white py-3 rounded-md shadow-md hover:bg-red-600 transition-all duration-200"
+                                >
+                                    <IoMdDownload className="text-xl mr-3" />
+                                    <span className="text-lg font-semibold">প্রেসক্রিপশন ডাউনলোড করুন</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -184,18 +185,7 @@ const AppointmentDetailsPatient = () => {
                 </div>
 
                 {/* Download Button */}
-                {appointment.sessionLink && (
-                    <div className="mt-8">
-                        <button
-                            onClick={handleDownload}
-                            className="w-full flex justify-center items-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-lg shadow-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 transform hover:scale-105"
-                        >
-                            <IoMdDownload className="text-2xl mr-3" />
-                            <span className="text-lg font-semibold">প্রেসক্রিপশন ডাউনলোড করুন</span>
-                        </button>
-                    </div>
-                )}
-                </div>
+
             </div>
         </div>
     );

@@ -6,7 +6,7 @@ import useAuth from "../../hooks/useAuth";
 import useAppointment from "../../hooks/useAppointment";
 import usePrescription from "../../hooks/usePrescription";
 
-const PrescriptionDetails = () => {
+const PrescriptionDetailsPrint = () => {
   const { appointmentId } = useParams();
   const [doctors] = useDoctor();
   const { user } = useAuth();
@@ -127,4 +127,4 @@ const PrescriptionDetails = () => {
   );
 };
 
-export default PrescriptionDetails;
+export default PrescriptionDetailsPrint;

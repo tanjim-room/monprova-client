@@ -6,6 +6,7 @@ import useAuth from '../../hooks/useAuth';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
 import useDoctor from '../../hooks/useDoctor';
 import SectionHeader from '../shared/SectionHeader';
+import { MdVerified } from "react-icons/md";
 
 const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_API_KEY;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
@@ -14,7 +15,7 @@ const DoctorProfile = () => {
     const axiosPublic = useAxiosPublic();
     const initialized = useRef(false); // Ref to track initialization
     const [users] = useUser();
-    const [doctors] = useDoctor();
+    const [doctors, refetch] = useDoctor();
     const { user } = useAuth(); // Get the current logged-in user from useAuth
     const [isEditable, setIsEditable] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -22,6 +23,7 @@ const DoctorProfile = () => {
     const [division, setDivision] = useState("")
     const [verificationStatus, setVerificationStatus] = useState("not-verified");
     const [isVerifying, setIsVerifying] = useState(false);
+    const [rejectionReason, setRejectionReason] = useState("");
 
     // Safely check if doctor data is available
     const doctor = users?.find(dbUser => dbUser.email === user?.email) || {};  // Default to empty object if undefined
@@ -41,6 +43,8 @@ const DoctorProfile = () => {
     useEffect(() => {
         if(doctorInfo){
              setVerificationStatus(doctorInfo.verificationStatus || "not-verified");
+             setRejectionReason(doctorInfo.rejectionReason || "");
+
         }
     }, [doctorInfo]);
     
@@ -51,6 +55,9 @@ const DoctorProfile = () => {
     const [nidBackPreview, setNidBackPreview] = useState("");
     const [deletedNidFront, setDeletedNidFront] = useState(false);
     const [deletedNidBack, setDeletedNidBack] = useState(false);
+    const [signImage, setSignImage] = useState(null);
+    const [signImagePreview, setSignImagePreview] = useState("");
+    const [deletedSignImage, setDeletedSignImage] = useState(false);
 
     // Certificates States
     const [certificateFields, setCertificateFields] = useState([{ id: 1, file: null, preview: "" }]);
@@ -83,6 +90,12 @@ const DoctorProfile = () => {
         setNidBackPreview(URL.createObjectURL(file));
     };
 
+     const handleSignImageChange = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setSignImage(file);
+        setSignImagePreview(URL.createObjectURL(file));
+    };
     // Certificate Image Handler
     const handleCertificateChange = (e, fieldId) => {
         const file = e.target.files?.[0];
@@ -187,6 +200,32 @@ const DoctorProfile = () => {
             }
         });
     };
+    const deleteSignImage = () => {
+        const confirmDelete = Swal.fire({
+            title: 'স্বাক্ষর মুছবেন?',
+            text: 'এটি মুছে দেওয়া হবে।',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'হ্যাঁ, মুছুন',
+            cancelButtonText: 'বাতিল',
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#6b7280',
+        });
+        confirmDelete.then((result) => {
+            if (result.isConfirmed) {
+                setDeletedSignImage(true);
+                setSignImagePreview("");
+                setSignImage(null);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'মুছা হয়েছে!',
+                    text: 'স্বাক্ষর মুছে দেওয়া হয়েছে।',
+                    confirmButtonText: 'ঠিক আছে',
+                    confirmButtonColor: '#2563eb',
+                });
+            }
+        });
+    };
 
     // Delete Certificate from existing
     const deleteExistingCertificate = (index) => {
@@ -224,6 +263,11 @@ const DoctorProfile = () => {
     const deleteNewNidBack = () => {
         setNidBackImage(null);
         setNidBackPreview("");
+    };
+
+     const deleteNewSignImage = () => {
+        setSignImage(null);
+        setSignImagePreview("");
     };
 
     // Delete new certificate field preview (before save)
@@ -293,6 +337,7 @@ const DoctorProfile = () => {
             let imageUrl = doctorInfo?.image || doctor?.image || "";
             let nidFrontUrl = deletedNidFront ? "" : (doctorInfo?.nidFront || "");
             let nidBackUrl = deletedNidBack ? "" : (doctorInfo?.nidBack || "");
+            let signUrl = deletedSignImage ? "" : (doctorInfo?.sign || "")
             let certificateUrls = [];
 
             // Handle deleted certificates
@@ -342,6 +387,18 @@ const DoctorProfile = () => {
                 nidBackUrl = imgbbRes?.data?.data?.display_url || nidBackUrl;
             }
 
+             if (signImage) {
+                const imageData = new FormData();
+                imageData.append("image", signImage);
+
+                const imgbbRes = await axiosPublic.post(image_hosting_api, imageData, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+
+                signUrl = imgbbRes?.data?.data?.display_url || signUrl;
+            }
+
+
             // Upload Certificates
             if (certificateFields.some(field => field.file)) {
                 const newCertUrls = [];
@@ -380,8 +437,10 @@ const DoctorProfile = () => {
                 nidNo,
                 nidFront: nidFrontUrl,
                 nidBack: nidBackUrl,
+                sign: signUrl,
                 certificates: certificateUrls,
                 shortBio,
+                verificationStatus: "not-verified"
                 // Don't send verificationStatus - preserve it in database
             };
 
@@ -394,6 +453,7 @@ const DoctorProfile = () => {
                 confirmButtonText: "ঠিক আছে",
                 confirmButtonColor: "#16a34a",
             });
+            refetch();
 
             setIsEditable(false);
 
@@ -404,6 +464,8 @@ const DoctorProfile = () => {
             setNidFrontPreview("");
             setNidBackImage(null);
             setNidBackPreview("");
+            setSignImage(null);
+            setSignImagePreview("")
             setDeletedNidFront(false);
             setDeletedNidBack(false);
             setCertificateFields([{ id: 1, file: null, preview: "" }]);
@@ -550,6 +612,11 @@ const DoctorProfile = () => {
                                 verificationStatus === 'pending' ? '⏳ ভেরিফিকেশন অপেক্ষমাণ' :
                                     verificationStatus === 'rejected' ? '✗ ভেরিফিকেশন প্রত্যাখ্যাত' :
                                         '○ প্রোফাইল ভেরিফাইড নয়। নিচে ভেরিফাই বাটন এ ক্লিক করুন।'}
+                                        {
+                                            verificationStatus === 'rejected' && rejectionReason ? (
+                                                <p className="mt-1 text-sm">কারণ: {rejectionReason}</p>
+                                            ) : ""
+                                        }
                         </div>
                     )}
 
@@ -862,6 +929,44 @@ const DoctorProfile = () => {
                             </div>
                         </div>
                     </div>
+
+                     <div>
+                                <label className="label-text font-semibold mb-2 block">স্বাক্ষর আপলোড করুন</label>
+                                {signImagePreview ? (
+                                    <div className="mb-2 relative">
+                                        <img src={signImagePreview} alt="Sign Preview" className="w-full h-40 object-cover rounded border-2" />
+                                        {isEditable && (
+                                            <button
+                                                type="button"
+                                                onClick={deleteNewSignImage}
+                                                className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                                            >
+                                                <X size={16} />
+                                            </button>
+                                        )}
+                                    </div>
+                                ) : doctorInfo?.sign && !deletedSignImage ? (
+                                    <div className="mb-2 relative">
+                                        <img src={doctorInfo?.sign} alt="Sign " className="w-full h-40 object-cover rounded border-2" />
+                                        {isEditable && (
+                                            <button
+                                                type="button"
+                                                onClick={deleteSignImage}
+                                                className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                                            >
+                                                <X size={16} />
+                                            </button>
+                                        )}
+                                    </div>
+                                ) : null}
+                                <input
+                                    type="file"
+                                    onChange={handleSignImageChange}
+                                    accept="image/*"
+                                    disabled={!isEditable}
+                                    className="file-input file-input-bordered w-full border-2"
+                                />
+                            </div>
 
                     {/* Certificates Upload Section */}
                     <div className="mb-6 border-t-2 pt-6">

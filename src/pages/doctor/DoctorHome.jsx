@@ -281,21 +281,11 @@ const DoctorHome = () => {
             </div>
 
             <div className="max-w-7xl mx-auto">
-                <div className="relative">
-                    <Link
-                        to="/dashboardDoctor/change-password"
-                        className="absolute top-2 right-0 inline-flex items-center gap-2
-                   bg-secondary-color hover:bg-primary-400
-                   text-white px-4 py-2 rounded-lg"
-                    >
-                        <p className="text-sm">পাসওয়ার্ড পরিবর্তন করুন</p>
-                    </Link>
-                </div>
-
+                
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-gray-800 mb-2">
-                        স্বাগতম, ডাঃ {doctor?.name || 'ডাক্তার'}!
+                        স্বাগতম,  {doctor?.name || 'ডাক্তার'}!
                     </h1>
                     <p className="text-lg text-gray-600">আপনার পেশাদার ড্যাশবোর্ড</p>
                 </div>
