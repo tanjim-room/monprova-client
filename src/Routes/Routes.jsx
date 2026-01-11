@@ -71,6 +71,7 @@ import PrescriptionDetailsPrint from "../pages/prescription/PrescriptionDetailsP
 import PaymentSuccess from "../PaymentSuccess";
 import AdminProfile from "../pages/profile/AdminProfile";
 import ErrorPage from "../ErrorPage";
+import PaymentError from "../PaymentError";
 
 export const router = createBrowserRouter([
   {
@@ -82,7 +83,10 @@ export const router = createBrowserRouter([
         path: "/",
         element: <Home></Home>,
       },
-
+      {
+        path: "payment-failed",
+        element: <PaymentError></PaymentError>
+      },
 
       {
         path: "admin",
@@ -97,7 +101,7 @@ export const router = createBrowserRouter([
         element: <PrivateRoute role="admin"> <AdminDashboardLayout></AdminDashboardLayout></PrivateRoute>,
         errorElement: <ErrorPage></ErrorPage>,
         children: [
-          
+
           {
             path: "/dashboardAdmin",
             element: <AdminHome></AdminHome>
@@ -230,7 +234,7 @@ export const router = createBrowserRouter([
         path: "/dashboardPatient",
         element: <PatientHome></PatientHome>
       },
-       {
+      {
         path: "prescriptionDetails/:appointmentId",
         element: <PrescriptionDetails></PrescriptionDetails>
       },
@@ -242,6 +246,7 @@ export const router = createBrowserRouter([
         path: "payment-success",
         element: <PaymentSuccess></PaymentSuccess>
       },
+     
       {
         path: "prescription",
         element: <Prescription></Prescription>
