@@ -30,6 +30,7 @@ const AppointmentForm = () => {
   const [medium, setMedium] = useState("");
   const [selectedDate, setSelectedDate] = useState(null); // Selected date state
   const [availableSlots, setAvailableSlots] = useState([]); // State for available slots
+  const [bookedSlots, setBookedSlots] = useState([]); // State for booked slots
   const [selectedSlot, setSelectedSlot] = useState(null); // State for selected slot
   const [mode, setMode] = useState(""); // Mode (online/offline)
 
@@ -46,24 +47,51 @@ const AppointmentForm = () => {
   useEffect(() => {
     if (doctor && selectedDate && mode) {
       // Fetch available slots based on the selected date and mode
-      const slots = getAvailableSlotsForDateAndMode(selectedDate, mode);
-      setAvailableSlots(slots);
-      console.log("Available slots:", slots);
+      fetchAvailableSlots(selectedDate, mode);
     }
   }, [selectedDate, mode, doctor]);
 
-  const getAvailableSlotsForDateAndMode = (date, mode) => {
-    // Get day of week using reliable method that matches backend
-    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const dayOfWeek = days[date.getDay()];
-    console.log('Selected date:', date.toISOString().split('T')[0], 'Day:', dayOfWeek);
-    const daySchedule = schedule?.availability?.[dayOfWeek] || []; // Access the day schedule dynamically
-
-    // Filter slots based on mode (online/offline)
-    const filteredSlots = daySchedule
-      .filter(slot => slot.type === mode && slot.status === "available") // Filter by mode (online/offline)
-      .map(slot => slot.time); // Map to the time
-    return filteredSlots;
+  const fetchAvailableSlots = async (date, mode) => {
+    try {
+      // Get day of week using reliable method that matches backend
+      const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const dayOfWeek = days[date.getDay()];
+      const dateStr = date.toISOString().split('T')[0];
+      console.log('Selected date:', dateStr, 'Day:', dayOfWeek);
+      
+      const daySchedule = schedule?.availability?.[dayOfWeek] || [];
+      
+      // Fetch booked appointments for this doctor on this date
+      const appointmentsRes = await axiosPublic.get('/api/appointments');
+      const allAppointments = appointmentsRes.data;
+      
+      // Filter appointments for this doctor, date, and paid status
+      const bookedSlotsForDate = allAppointments
+        .filter(apt => 
+          apt.doctorID === doctorID && 
+          apt.appointmentDate === dateStr && 
+          apt.paymentStatus === 'paid'
+        )
+        .map(apt => apt.slot);
+      
+      console.log('Booked slots for', dateStr, ':', bookedSlotsForDate);
+      setBookedSlots(bookedSlotsForDate);
+      
+      // Filter slots: must match mode AND not be booked
+      const filteredSlots = daySchedule
+        .filter(slot => 
+          slot.type === mode && 
+          slot.status === "available" &&
+          !bookedSlotsForDate.includes(slot.time)
+        )
+        .map(slot => slot.time);
+      
+      setAvailableSlots(filteredSlots);
+      console.log("Available slots after filtering booked:", filteredSlots);
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+      setAvailableSlots([]);
+    }
   };
 
  const handlePayment = async () => {

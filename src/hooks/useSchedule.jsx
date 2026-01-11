@@ -4,14 +4,14 @@ import { useQuery } from '@tanstack/react-query';
 
 const useSchedule = () => {
     const axiosSecure = useAxiosSecure();
-    const { data: schedules = [] } = useQuery({
+    const { data: schedules = [], refetch } = useQuery({
         queryKey: ['schedules'],
         queryFn: async () => {
             const res = await axiosSecure.get('/api/schedules')
             return res.data
         }
     })
-    return [schedules];
+    return [schedules, refetch];
 };
 
 export default useSchedule;

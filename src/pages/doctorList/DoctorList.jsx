@@ -25,8 +25,8 @@ const DoctorList = () => {
 
     // Specialist mapping English -> Bangla
     const specialistMapping = {
-        'Psychologist': 'সাইকোলজিস্ট',
-        'Psychiatrist': 'সাইকিয়াট্রিস্ট',
+        'psychologist': 'সাইকোলজিস্ট',
+        'psychiatrist': 'সাইকিয়াট্রিস্ট',
     };
 
     const divisions = Object.keys(divisionMapping);
@@ -52,15 +52,18 @@ const DoctorList = () => {
         }
 
         if (selectedSpecialist) {
-            results = results.filter(d =>
-                d.specialist?.toLowerCase() === selectedSpecialist.toLowerCase()
-            );
+            results = results.filter(d => {
+                const doctorSpecialist = d.specialist?.toLowerCase()?.trim();
+                const filterSpecialist = selectedSpecialist.toLowerCase().trim();
+                return doctorSpecialist === filterSpecialist;
+            });
         }
 
+        // Filter by medium: online shows 'online' and 'both', offline shows 'offline' and 'both'
         if (showStatus === 'online') {
-            results = results.filter(d => d.medium === 'online');
+            results = results.filter(d => d.medium === 'online' || d.medium === 'both');
         } else if (showStatus === 'offline') {
-            results = results.filter(d => d.medium === 'offline');
+            results = results.filter(d => d.medium === 'offline' || d.medium === 'both');
         }
 
         setFilteredDoctors(results);
