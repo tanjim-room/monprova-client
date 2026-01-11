@@ -53,8 +53,10 @@ const AppointmentForm = () => {
   }, [selectedDate, mode, doctor]);
 
   const getAvailableSlotsForDateAndMode = (date, mode) => {
-    // Example mock logic for available slots based on date and mode
-    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    // Get day of week using reliable method that matches backend
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayOfWeek = days[date.getDay()];
+    console.log('Selected date:', date.toISOString().split('T')[0], 'Day:', dayOfWeek);
     const daySchedule = schedule?.availability?.[dayOfWeek] || []; // Access the day schedule dynamically
 
     // Filter slots based on mode (online/offline)
