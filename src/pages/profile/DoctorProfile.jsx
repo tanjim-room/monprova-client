@@ -302,6 +302,7 @@ const DoctorProfile = () => {
         const divisionValue = division; // Use state value
         const yearsOfExperience = form.yearsOfExperience.value;
         const mediumValue = medium; // Use state value
+        const specialistValue = specialist
         const mobileNo = form.mobileNo.value.trim();
         const nidNo = form.nidNo.value.trim();
         const bkashAccount = form.bkashAccount.value.trim();
@@ -436,6 +437,7 @@ const DoctorProfile = () => {
                 division: divisionValue,
                 yearsOfExperience,
                 medium: mediumValue,
+                specialist: specialistValue,
                 mobileNo,
                 bkashAccount,
                 nidNo,
