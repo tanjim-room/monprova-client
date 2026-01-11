@@ -12,9 +12,11 @@ const Prescription = () => {
   const [patients] = usePatient();
   const {user} = useAuth();
   const patient = patients?.find(patient => patient.email === user?.email);
-  const prescription = prescriptions?.filter(prescription => prescription.patientID === patient?._id)
-  console.log(prescription);
-
+ 
+  
+  const prescription = prescriptions
+  ?.filter(p => p.patientID === patient?._id)
+  ?.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
   
 
   return (
@@ -29,7 +31,7 @@ const Prescription = () => {
             এখনো কোনো প্রেসক্রিপশন পাওয়া যায়নি।
           </p>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-3 lg:grid-cols-3 gap-6">
             {prescription.map((prescription, index) => (
               <PrescriptionCard key={index} prescription={prescription} patient ={patient} /> // Use PrescriptionCard to render each item
             ))}

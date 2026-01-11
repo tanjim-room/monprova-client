@@ -65,41 +65,70 @@ const downloadPdfFile = async () => {
 
 
   return (
-    <div className="card shadow-md p-4 rounded-xl border-2 border-gray-200 hover:shadow-lg transition">
-      <div className="card-body text-left">
-        <div className='flex items-center gap-4 mb-4'>
-          <img src={doctor?.image} alt="" className='w-12 h-12 object-cover rounded-full' />
-          <div>
-            <h2 className="text-lg font-semibold">
-              {doctor?.name}
-            </h2>
-            <p className='text-black'>{doctor?.designation}</p>
-          </div>
-        </div>
-        <p><strong>রোগীঃ</strong> {patient?.name || "N/A"}</p>
-        <p><strong>তারিখঃ {new Date(prescription?.updatedAt || prescription?.createdAt).toLocaleString('default', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit'
-        })}</strong></p>
-
-        <div className="mt-4">
-          {/* Fix the event handler to prevent immediate invocation */}
-          <button onClick={downloadPdfFile} className="w-full border-2 rounded-md flex justify-center items-center bg-secondary-color text-white">
-            <div className="flex items-center gap-6 px-4 py-2 font-semibold text-xl rounded-md">
-              <div className="flex gap-4 items-center bg-secondary-color">
-                <span className="text-xl"><IoMdDownload /></span>
-                <span className="text-center text-lg">প্রেসক্রিপশন ডাউনলোড করুন</span>
-              </div>
-            </div>
-          </button>
-        </div>
-      </div>
+   <div className="group relative bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl transition-all duration-300 p-6">
+  
+  {/* Doctor Info */}
+  <div className="flex items-center gap-4 mb-5">
+    <div className="relative">
+      <img
+        src={doctor?.image}
+        alt={doctor?.name}
+        className="w-14 h-14 object-cover rounded-full ring-2 ring-secondary-color"
+      />
+      <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
     </div>
+
+    <div>
+      <h2 className="text-lg font-bold text-gray-800">
+        {doctor?.name}
+      </h2>
+      <p className="text-sm text-secondary-color font-medium">
+        {doctor?.designation}
+      </p>
+    </div>
+  </div>
+
+  {/* Divider */}
+  <div className="border-t border-dashed border-gray-200 my-4"></div>
+
+  {/* Patient & Date */}
+  <div className="space-y-2 text-gray-700">
+    <p className="flex items-center gap-2">
+      <span className="font-semibold">রোগীঃ</span>
+      <span className="text-gray-600">{patient?.name || "N/A"}</span>
+    </p>
+
+    <p className="text-sm text-gray-500">
+      <span className="font-semibold text-gray-700">তারিখঃ </span>
+      {new Date(
+        prescription?.updatedAt || prescription?.createdAt
+      ).toLocaleString("default", {
+        weekday: "long",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })}
+    </p>
+  </div>
+
+  {/* Download Button */}
+  <div className="mt-6">
+    <button
+      onClick={downloadPdfFile}
+      className="w-full flex items-center justify-center gap-3 py-3 rounded-xl font-semibold bg-blue-400 text-white
+                 bg-gradient-to-r from-secondary-color to-blue-600
+                 hover:from-blue-600 hover:bg-secondary-color
+                 transition-all duration-300 shadow-md hover:shadow-lg"
+    >
+      <IoMdDownload className="text-2xl" />
+      প্রেসক্রিপশন ডাউনলোড করুন
+    </button>
+  </div>
+
+</div>
+
   );
 };
 

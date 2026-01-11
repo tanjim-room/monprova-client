@@ -42,13 +42,14 @@ const DoctorHelp = () => {
     .filter(q => q.status === "approved")
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
+
   return (
     <div className="max-w-4xl mx-auto min-h-screen p-4">
 
       {/* Header */}
       <div className="mb-4 rounded-xl p-4 text-center text-white
         bg-gradient-to-r from-blue-600 to-teal-500 shadow">
-        <h1 className="text-2xl font-semibold">🩺 Doctors Help Center</h1>
+        <h1 className="text-2xl font-semibold">রোগীদের প্রশ্ন দেখুন</h1>
       </div>
 
       {/* Toggle */}
@@ -58,7 +59,7 @@ const DoctorHelp = () => {
           className={`px-6 py-2 rounded-full text-white font-medium
             ${showHelp ? "bg-red-500" : "bg-green-600"}`}
         >
-          {showHelp ? "Hide Help Section" : "Show Help Section"}
+          {showHelp ? "বন্ধ করুন" : "দেখুন"}
         </button>
       </div>
 
@@ -110,7 +111,17 @@ const DoctorHelp = () => {
                       {q.question}
                     </p>
                     <p className="text-xs text-gray-400">
-                      {new Date(q.createdAt).toLocaleString()}
+                      {new Date(q?.updatedAt || q?.createdAt)
+                        .toLocaleString("en-GB", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })
+                        .replace(/ (\d{4}),/, ", $1")}
+
                     </p>
                   </div>
                 </div>
@@ -143,7 +154,17 @@ const DoctorHelp = () => {
                           </p>
                           <p className="text-sm text-gray-800">{r.reply}</p>
                           <p className="text-xs text-gray-400 mt-1">
-                            {new Date(r.createdAt).toLocaleString()}
+                            {new Date(r?.updatedAt || r?.createdAt)
+                              .toLocaleString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit",
+                                hour12: true,
+                              })
+                              .replace(/ (\d{4}),/, ", $1")}
+
                           </p>
                         </div>
                       </div>
@@ -182,7 +203,7 @@ const DoctorHelp = () => {
                   <input
                     name="reply"
                     required
-                    placeholder="Write a reply..."
+                    placeholder="উত্তর লিখুন..."
                     className="flex-1 px-4 py-2 rounded-full border
                     focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
@@ -190,7 +211,7 @@ const DoctorHelp = () => {
                     className="px-5 py-2 rounded-full bg-blue-600
                     text-white hover:bg-blue-700 transition"
                   >
-                    Reply
+                    উত্তর দিন
                   </button>
                 </form>
               </div>
@@ -200,6 +221,9 @@ const DoctorHelp = () => {
       )}
     </div>
   );
+
+
+
 };
 
 export default DoctorHelp;

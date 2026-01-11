@@ -682,6 +682,7 @@ const DoctorProfile = () => {
                          <div>
         <label className="label-text font-semibold mb-1">বিশেষজ্ঞ</label>
         <select
+            name="specialist"
             value={specialist}
             onChange={(e) => setSpecialist(e.target.value)}
             disabled={!isEditable}
@@ -707,7 +708,7 @@ const DoctorProfile = () => {
                         </div>
 
                         <div>
-                            <label className="label-text font-semibold mb-1">রেজিস্ট্রেশন নাম্বার</label>
+                            <label className="label-text font-semibold mb-1">BMDC রেজিস্ট্রেশন নাম্বার</label>
                             <input
                                 type="text"
                                 name="regNo"
@@ -720,7 +721,7 @@ const DoctorProfile = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label className="label-text font-semibold mb-1">প্রতিষ্ঠান</label>
+                            <label className="label-text font-semibold mb-1">কর্মরত প্রতিষ্ঠান</label>
                             <input
                                 type="text"
                                 name="institute"
@@ -1098,7 +1099,7 @@ const DoctorProfile = () => {
                                 <button
                                     type="button"
                                     onClick={handleEdit}
-                                    className="btn btn-outline w-full flex gap-2 bg-secondary-color text-white py-4"
+                                    className="btn btn-outline w-full flex gap-2 bg-blue-500 text-white py-4"
                                 >
                                     প্রোফাইল এডিট করুন
                                 </button>

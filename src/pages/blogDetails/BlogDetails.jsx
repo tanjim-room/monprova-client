@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useContext } from 'react';
 import { AuthContext } from '../../providers/AuthProvider';
 import useBlogs from "../../hooks/useBlogs";
+import BackButton from "../../components/BackButton";
 
 // blog data
 
@@ -37,17 +38,13 @@ const BlogDetails = () => {
 
             <div className="min-h-[850px] p-8 bg-white rounded-md mx-auto">
                 <div className="my-4">
-                    <Link
-                        to={user ? "/dashboardPatient/resources" : "/"}
-                        className="border-2 rounded-md inline-flex items-center hover:bg-[#E8594A] hover:text-white transition px-4 py-2 font-semibold text-lg"
-                    >
-                        <span className='text-center'>ফিরে যান</span>
-                    </Link>
+                  <BackButton destination ={user ? "/dashboardPatient/resources" : "/"}></BackButton>
+                   
                 </div>
                 <div className="mb-8 ">
                     <img src={blog.thumbnail || ""} alt="" className="h-[480px] w-full object-cover rounded-md" />
                 </div>
-                <h1 className="text-3xl font-bold mb-6 primary-color text-left">{blog.title}</h1>
+                <h1 className="text-3xl font-bold mb-6 text-blue-500 text-left">{blog.title}</h1>
                 <div className="badge badge-error text-white bg-tertiary-color my-0">{blog.category}</div>
                 <p className="font-semibold text-lg mb-4 text-left">Author: {blog.author}</p>
                 

@@ -11,7 +11,7 @@ const MySwal = withReactContent(Swal);
 const AppointmentCardDoctor = ({ appointment }) => {
     const link = appointment?.sessionLink;
     const [sessionLink, setSessionLink] = useState(link);
-    
+
     // 🧾 Save session link
     const axiosPublic = useAxiosPublic();
 
@@ -98,15 +98,20 @@ const AppointmentCardDoctor = ({ appointment }) => {
                     <div className="space-y-3">
                         <div className="flex items-center">
                             <span className="font-semibold text-gray-700 w-20">মাধ্যমঃ</span>
-                            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                                appointment?.mode === 'online' ? 'bg-purple-50 text-purple-600 border border-purple-200' : 'bg-green-50 text-green-600 border border-green-200'
-                            }`}>
+                            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${appointment?.mode === 'online' ? 'bg-purple-50 text-purple-600 border border-purple-200' : 'bg-green-50 text-green-600 border border-green-200'
+                                }`}>
                                 {appointment?.mode === 'online' ? "অনলাইন" : appointment?.mode === 'offline' ? "অফলাইন" : "অনলাইন/অফলাইন"}
                             </span>
                         </div>
                         <div className="flex items-center">
                             <span className="font-semibold text-gray-700 w-20">তারিখঃ</span>
-                            <span className="text-gray-600">{appointment?.date || 'তারিখ নেই'}</span>
+                            <span className="text-gray-600">{appointment.appointmentDate
+                                ? new Date(appointment.appointmentDate).toLocaleDateString("en-BD", {
+                                    day: "2-digit",
+                                    month: "long",
+                                    year: "numeric",
+                                })
+                                : "Not available"}</span>
                         </div>
                         <div className="flex items-center">
                             <span className="font-semibold text-gray-700 w-20">সময়ঃ</span>
@@ -115,14 +120,13 @@ const AppointmentCardDoctor = ({ appointment }) => {
                     </div>
                 </div>
 
-                <div className={`grid gap-3 mt-4 ${
-                    appointment?.mode === 'online' ? 'grid-cols-3' : 'grid-cols-1'
-                }`}>
+                <div className={`grid gap-3 mt-4 ${appointment?.mode === 'online' ? 'grid-cols-3' : 'grid-cols-1'
+                    }`}>
                     {/* ✅ Start Session Button */}
                     {appointment?.mode === 'online' && (
                         <button
                             onClick={handleStartSession}
-                            className="bg-green-500 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-green-600 transition-all duration-200"
+                            className="bg-green-500 text-white py-3 text-sm px-4 rounded-lg font-semibold shadow-md hover:bg-green-600 transition-all duration-200"
                         >
                             সেশন শুরু করুন
                         </button>
@@ -132,7 +136,7 @@ const AppointmentCardDoctor = ({ appointment }) => {
                     {appointment?.mode === 'online' && (
                         <button
                             onClick={handleSetSessionLink}
-                            className="bg-purple-500 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-purple-600 transition-all duration-200"
+                            className="bg-purple-500 text-white py-3 text-sm px-4 rounded-lg font-semibold shadow-md hover:bg-purple-600 transition-all duration-200"
                         >
                             সেশন লিঙ্ক দিন
                         </button>
@@ -140,7 +144,7 @@ const AppointmentCardDoctor = ({ appointment }) => {
 
                     {/* ✅ Details Button */}
                     <Link to={`/dashboardDoctor/appointmentDetailsDoctor/${appointment?._id}`}>
-                        <button className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-blue-600 transition-all duration-200">
+                        <button className="w-full bg-blue-500 text-white text-sm py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-blue-600 transition-all duration-200">
                             বিস্তারিত দেখুন
                         </button>
                     </Link>

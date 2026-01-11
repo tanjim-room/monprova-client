@@ -218,7 +218,7 @@ const Register = () => {
                                         value="patient"
                                         checked={role === "patient"}
                                         onChange={() => { setRole("patient"); setRoleError(""); }}
-                                        className="radio text-green-500 border-2"
+                                        className="radio text-blue-500 border-2"
                                     />
                                     <span className="ml-2">রোগী</span>
                                 </label>
@@ -229,7 +229,7 @@ const Register = () => {
                                         value="doctor"
                                         checked={role === "doctor"}
                                         onChange={() => { setRole("doctor"); setRoleError(""); }}
-                                        className="radio text-green-500 border-2"
+                                        className="radio text-blue-500 border-2"
                                     />
                                     <span className="ml-2">ডাক্তার</span>
                                 </label>
@@ -255,7 +255,7 @@ const Register = () => {
 
                     <div className="divider">অথবা</div>
 
-                    <button onClick={handleGoogleLogin} className="btn btn-outline w-full flex gap-2 border-2 border-primary-color text-gray-700 py-4">
+                    <button onClick={handleGoogleLogin} className="btn btn-outline w-full flex gap-2 border-2 border-blue-400 text-gray-700 py-4">
                         <img
                             src="https://www.svgrepo.com/show/475656/google-color.svg"
                             alt="Google"
@@ -266,7 +266,7 @@ const Register = () => {
 
                     <p className="text-sm text-center mt-6">
                         আপনার কি কোনো অ্যাকাউন্ট আছে?{" "}
-                        <Link to={"/login"} className="tertiary-color font-bold">
+                        <Link to={"/login"} className="text-blue-600 font-bold">
                             লগইন করুন
                         </Link>
                     </p>

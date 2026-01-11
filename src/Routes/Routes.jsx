@@ -69,6 +69,7 @@ import Complaints from "../pages/admin/Complaints";
 import UpdatePassword from "../pages/UpdatePassword";
 import PrescriptionDetailsPrint from "../pages/prescription/PrescriptionDetailsPrint";
 import PaymentSuccess from "../PaymentSuccess";
+import AdminProfile from "../pages/profile/AdminProfile";
 
 export const router = createBrowserRouter([
   {
@@ -79,13 +80,13 @@ export const router = createBrowserRouter([
         path: "/",
         element: <Home></Home>,
       },
-     
-     
+
+
       {
         path: "admin",
         element: <AdminLogin></AdminLogin>
       },
-        {
+      {
         path: "prescription-details/:appointmentId",
         element: <PrescriptionDetailsPrint></PrescriptionDetailsPrint>
       },
@@ -97,6 +98,12 @@ export const router = createBrowserRouter([
             path: "/dashboardAdmin",
             element: <AdminHome></AdminHome>
           },
+
+          {
+            path: "change-password",
+            element: <UpdatePassword></UpdatePassword>
+          },
+
           {
             path: "users",
             element: <UserManagement></UserManagement>
@@ -144,6 +151,10 @@ export const router = createBrowserRouter([
           {
             path: "complaints",
             element: <Complaints></Complaints>
+          },
+          {
+            path: "adminProfile",
+            element: <AdminProfile></AdminProfile>
           }
         ]
       },
@@ -207,14 +218,18 @@ export const router = createBrowserRouter([
 
   {
     path: "/dashboardPatient",
-    element: <PrivateRoute ><PatientDashboardLayout></PatientDashboardLayout></PrivateRoute>,
+    element: <PrivateRoute role="patient"><PatientDashboardLayout></PatientDashboardLayout></PrivateRoute>,
     children: [
       // Dashboard routes can be added here
       {
         path: "/dashboardPatient",
         element: <PatientHome></PatientHome>
       },
-       {
+      {
+        path: "change-password",
+        element: <UpdatePassword></UpdatePassword>
+      },
+      {
         path: "payment-success",
         element: <PaymentSuccess></PaymentSuccess>
       },
@@ -222,7 +237,7 @@ export const router = createBrowserRouter([
         path: "prescription",
         element: <Prescription></Prescription>
       },
-     
+
       {
         path: "patientHelp",
         element: <PatientHelp></PatientHelp>

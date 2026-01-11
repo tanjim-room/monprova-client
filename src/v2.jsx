@@ -202,3 +202,16 @@ const CreatePrescription = () => {
 };
 
 export default CreatePrescription;
+ <div className="bg-green-100 p-6 rounded-lg shadow hover:shadow-lg transition-all duration-200">
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">রোগীর তথ্যসমূহ</h2>
+                    <div className="space-y-2 text-gray-700">
+                        <p><span className="font-bold">রোগীর নামঃ</span> {appointment.patientName}</p>
+                        <p><span className="font-bold">মোবাইলঃ</span> {appointment.phone}</p>
+                        <p><span className="font-bold">ইমেইলঃ</span> {appointment.patientEmail}</p>
+                        <p><span className="font-bold">বয়সঃ</span> {appointment.age} বছর</p>
+                        <p><span className="font-bold">জেন্ডারঃ</span> {gender}</p>
+                        <p><span className="font-bold">ব্লাড গ্রুপঃ</span> {appointment.bloodGroup}</p>
+                        <p><span className="font-bold">পেশাঃ</span> {appointment.profession}</p>
+                        <p><span className="font-bold">সমস্যা/রোগের বিবরণঃ</span> {appointment.problem}</p>
+                    </div>
+                </div>
