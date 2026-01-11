@@ -22,7 +22,7 @@ const Home = () => {
     return (
         <div className="relative">
             {/* Fixed Notification Button - Top Right Corner */}
-            {user && (
+            {/* {user && (
                 <div className="fixed top-4 right-4 z-[60]">
                     <button
                         onClick={toggleNotifications}
@@ -40,7 +40,7 @@ const Home = () => {
                         onClose={() => setIsNotificationOpen(false)} 
                     />
                 </div>
-            )}
+            )} */}
             
             <Hero></Hero>
             <div id="doctors" >
