@@ -76,31 +76,24 @@ const DoctorHome = () => {
 
             setAppointments(myAppointments);
 
-            // Get today's date
+            // Get today's date in YYYY-MM-DD format
             const today = new Date().toISOString().split('T')[0];
             console.log('Today date:', today);
 
-            // Filter today's appointments
+            // Filter today's appointments using appointmentDate field
             const todayApts = myAppointments.filter(apt => {
-                const dateField = apt.appointmentDate || apt.date;
-                if (!dateField) {
-                    console.log('Appointment missing date:', apt._id);
+                // Use appointmentDate (the booked date), not createdAt
+                if (!apt.appointmentDate) {
+                    console.log('Appointment missing appointmentDate:', apt._id);
                     return false;
                 }
-                try {
-                    const aptDate = new Date(dateField);
-                    if (isNaN(aptDate.getTime())) {
-                        console.log('Invalid date for appointment:', apt._id, dateField);
-                        return false;
-                    }
-                    const aptDateString = aptDate.toISOString().split('T')[0];
-                    console.log('Comparing:', aptDateString, 'vs', today, 'for appointment:', apt._id);
-                    return aptDateString === today;
-                } catch (error) {
-                    console.error('Date parsing error for appointment:', apt._id, dateField, error);
-                    return false;
-                }
+                
+                // Direct string comparison since appointmentDate is in YYYY-MM-DD format
+                const isToday = apt.appointmentDate === today;
+                console.log('Appointment:', apt._id, 'Date:', apt.appointmentDate, 'Is Today:', isToday);
+                return isToday;
             });
+            console.log('Today appointments count:', todayApts.length);
             console.log('Today appointments:', todayApts);
             setTodayAppointments(todayApts);
 
@@ -316,27 +309,6 @@ const DoctorHome = () => {
                         <button
                             onClick={() => navigate('/dashboardDoctor/appointment')}
                             className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold flex items-center gap-2 transition"
-                        >
-                            দেখুন <FaArrowRight />
-                        </button>
-                    </div>
-                )}
-
-                {/* Pending Prescriptions Alert */}
-                {stats.pendingPrescriptions > 0 && (
-                    <div className="bg-red-50 border-2 border-red-400 rounded-lg p-4 mb-6 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <FaFilePrescription className="text-3xl text-red-600" />
-                            <div>
-                                <p className="font-semibold text-gray-800">প্রেসক্রিপশন অপেক্ষমান</p>
-                                <p className="text-gray-700">
-                                    {stats.pendingPrescriptions}টি সম্পন্ন অ্যাপয়েন্টমেন্টের প্রেসক্রিপশন তৈরি করুন
-                                </p>
-                            </div>
-                        </div>
-                        <button
-                            onClick={() => navigate('/dashboardDoctor/appointment')}
-                            className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-semibold flex items-center gap-2 transition"
                         >
                             দেখুন <FaArrowRight />
                         </button>

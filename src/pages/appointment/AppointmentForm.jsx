@@ -133,7 +133,7 @@ const handleSubmit = async (event) => {
     profession,
     problem,
     mode,
-    appointmentDate: selectedDate,
+    appointmentDate: selectedDate.toISOString().split('T')[0], // Store as "YYYY-MM-DD"
     slot: selectedSlot,
     state: "upcoming",
     paymentStatus: "unpaid",
