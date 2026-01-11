@@ -19,11 +19,7 @@ const AppointmentDetailsDoctor = () => {
     const [doctors] = useDoctor(); // Hook to fetch doctors
     const { appointmentId } = useParams(); // Get appointment ID from URL
     
-    
-    // 🧾 Save session link
-  
-
-    // Safe loading check
+    // 🧾 Safe loading check
     const loading = !Array.isArray(appointments) || !Array.isArray(doctors) || appointments.length === 0 || doctors.length === 0;
     if (loading) return (
         <div className="flex justify-center items-center h-screen">
@@ -35,6 +31,7 @@ const AppointmentDetailsDoctor = () => {
     const appointment = appointments.find((a) => a._id === appointmentId);
     const link = appointment?.sessionLink;
     const [sessionLink, setSessionLink] = useState(link);
+
     if (!appointment) return <div className="text-center text-red-600">Appointment not found</div>;
 
     const gender = appointment?.gender === "male" ? "পুরুষ" : appointment?.gender === "female" ? "নারী" : "অন্যান্য";
@@ -42,7 +39,6 @@ const AppointmentDetailsDoctor = () => {
     // Find the corresponding doctor for the appointment
     const doctor = doctors.find((d) => d._id === appointment.doctorID);
     if (!doctor) return <div className="text-center text-red-600">Doctor not found</div>;
-
 
     const handleStartSession = async () => {
         // Check if session link is provided
@@ -61,7 +57,8 @@ const AppointmentDetailsDoctor = () => {
         // If session link is available, start the session by redirecting to the session link
         window.open(sessionLink, '_blank');
     };
-      const handleSetSessionLink = async () => {
+
+    const handleSetSessionLink = async () => {
         // If sessionLink is not provided, show SweetAlert to ask for a link
         const { value: link } = await MySwal.fire({
             title: '🔗 সেশন লিঙ্ক দিন',
@@ -81,18 +78,12 @@ const AppointmentDetailsDoctor = () => {
             },
         });
 
-        // Log the link received from SweetAlert
-        console.log("Received session link from SweetAlert:", link);
-
         if (link) {
             setSessionLink(link);  // Save link to state
 
             try {
                 // Send PATCH request to update the session link in the backend
                 const response = await axiosPublic.patch(`/api/sessionlink/${appointment._id}`, { sessionLink: link });
-
-                // Log API response
-                console.log("API response:", response);
 
                 await MySwal.fire({
                     icon: 'success',
@@ -129,10 +120,7 @@ const AppointmentDetailsDoctor = () => {
         if (!result.isConfirmed) return;
 
         try {
-            console.log("Finishing appointment with ID:", appointmentId);  // Log the appointmentId
             const response = await axiosPublic.patch(`/api/appointments/${appointmentId}`);
-
-            console.log("API Response:", response); // Log the API response
 
             // Show success message
             await MySwal.fire({
@@ -158,123 +146,106 @@ const AppointmentDetailsDoctor = () => {
     return (
         <div className="min-h-screen bg-gray-50 py-6 px-4">
             <div className="max-w-7xl mx-auto">
-            <BackButton destination="/dashboardDoctor/appointment" />
-            <div className="bg-white p-6 rounded-lg shadow-md mb-4">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* Appointment Information */}
-                <div className="bg-blue-100 p-6 mb-8 card bg-base-100 shadow-md border rounded-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">অ্যাপয়েন্টমেন্ট এর তথ্যসমূহ</h2>
-                    <div className="space-y-4">
-                        <p><span className="font-bold">মাধ্যমঃ</span> {appointment.mode || "Not available"}</p>
-                        <p><span className="font-bold">তারিখঃ</span> {appointment.date || "Not available"}</p>
-                        <p><span className="font-bold">সময়ঃ</span> {appointment.slot || "Not available"}</p>
-                        <p><span className="font-bold">ফিঃ</span> {doctor.consultationFee} টাকা</p>
-                        <p><span className="font-bold">স্ট্যাটাসঃ</span> <span className={`font-semibold ${appointment.state === "completed" ? "text-green-600" : "text-yellow-600"}`}>{appointment.state || "Pending"}</span></p>
+                <BackButton destination="/dashboardDoctor/appointment" />
+                <div className="bg-white p-6 rounded-lg shadow-md mb-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        {/* Appointment Information */}
+                        <div className="bg-blue-100 p-6 mb-8 card bg-base-100 shadow-md border rounded-lg overflow-hidden transform transition-transform hover:scale-105 hover:shadow-lg">
+                            <h2 className="text-2xl font-semibold text-gray-800 mb-4">অ্যাপয়েন্টমেন্ট এর তথ্যসমূহ</h2>
+                            <div className="space-y-4">
+                                <p><span className="font-bold">মাধ্যমঃ</span> {appointment.mode || "Not available"}</p>
+                                <p><span className="font-bold">তারিখঃ</span> {appointment.date || "Not available"}</p>
+                                <p><span className="font-bold">সময়ঃ</span> {appointment.slot || "Not available"}</p>
+                                <p><span className="font-bold">ফিঃ</span> {doctor.consultationFee} টাকা</p>
+                                <p><span className="font-bold">স্ট্যাটাসঃ</span> <span className={`font-semibold ${appointment.state === "completed" ? "text-green-600" : "text-yellow-600"}`}>{appointment.state || "Pending"}</span></p>
+                            </div>
+                        </div>
+
+                        {/* Patient Information */}
+                        <div className="bg-green-50 p-5 rounded-lg border border-green-200 shadow-sm">
+                            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                                <span className="w-1 h-6 bg-green-500 mr-3 rounded"></span>
+                                রোগীর তথ্যসমূহ
+                            </h2>
+                            <div className="space-y-2.5">
+                                <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                                    <span className="font-semibold text-gray-700">রোগীর নামঃ</span>
+                                    <span className="ml-2 text-gray-600">{appointment?.patientName || 'নাম নেই'}</span>
+                                </div>
+                                <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                                    <span className="font-semibold text-gray-700">মোবাইলঃ</span>
+                                    <span className="ml-2 text-gray-600">{appointment?.phone || 'ফোন নেই'}</span>
+                                </div>
+                                <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                                    <span className="font-semibold text-gray-700">ইমেইলঃ</span>
+                                    <span className="ml-2 text-gray-600">{appointment?.patientEmail || 'ইমেইল নেই'}</span>
+                                </div>
+                                <div className="grid grid-cols-3 gap-2.5">
+                                    <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                                        <span className="font-semibold text-gray-700 block text-sm">বয়স</span>
+                                        <span className="text-gray-600">{appointment?.age || 0} বছর</span>
+                                    </div>
+                                    <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                                        <span className="font-semibold text-gray-700 block text-sm">জেন্ডার</span>
+                                        <span className="text-gray-600">{gender}</span>
+                                    </div>
+                                    <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                                        <span className="font-semibold text-gray-700 block text-sm">ব্লাড</span>
+                                        <span className="text-gray-600">{appointment?.bloodGroup || 'N/A'}</span>
+                                    </div>
+                                </div>
+                                <div className="bg-white p-2.5 rounded-lg border border-gray-100">
+                                    <span className="font-semibold text-gray-700">পেশাঃ</span>
+                                    <span className="ml-2 text-gray-600">{appointment?.profession || 'পেশা নেই'}</span>
+                                </div>
+                                <div className="bg-white p-3 rounded-lg border border-gray-100">
+                                    <span className="font-semibold text-gray-700 block mb-2">সমস্যা/রোগের বিবরণঃ</span>
+                                    <p className="text-gray-600 leading-relaxed">{appointment?.problem || 'বিবরণ নেই'}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {/* Patient Information */}
-                <div className="bg-green-50 p-5 rounded-lg border border-green-200 shadow-sm">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
-                        <span className="w-1 h-6 bg-green-500 mr-3 rounded"></span>
-                        রোগীর তথ্যসমূহ
-                    </h2>
-                    <div className="space-y-2.5">
-                        <div className="bg-white p-2.5 rounded-lg border border-gray-100">
-                            <span className="font-semibold text-gray-700">রোগীর নামঃ</span>
-                            <span className="ml-2 text-gray-600">{appointment?.patientName || 'নাম নেই'}</span>
-                        </div>
-                        <div className="bg-white p-2.5 rounded-lg border border-gray-100">
-                            <span className="font-semibold text-gray-700">মোবাইলঃ</span>
-                            <span className="ml-2 text-gray-600">{appointment?.phone || 'ফোন নেই'}</span>
-                        </div>
-                        <div className="bg-white p-2.5 rounded-lg border border-gray-100">
-                            <span className="font-semibold text-gray-700">ইমেইলঃ</span>
-                            <span className="ml-2 text-gray-600">{appointment?.patientEmail || 'ইমেইল নেই'}</span>
-                        </div>
-                        <div className="grid grid-cols-3 gap-2.5">
-                            <div className="bg-white p-2.5 rounded-lg border border-gray-100">
-                                <span className="font-semibold text-gray-700 block text-sm">বয়স</span>
-                                <span className="text-gray-600">{appointment?.age || 0} বছর</span>
+                <div className="flex gap-6 mt-8">
+                    <div className="w-full">
+                        {appointment?.mode === 'online' && (
+                            <div onClick={handleStartSession}>
+                                <Button btnName={"সেশন শুরু করুন"} bgColor={"bg-secondary-color"} />
                             </div>
-                            <div className="bg-white p-2.5 rounded-lg border border-gray-100">
-                                <span className="font-semibold text-gray-700 block text-sm">জেন্ডার</span>
-                                <span className="text-gray-600">{gender}</span>
+                        )}
+                    </div>
+                    <div className="w-full">
+                        {appointment?.mode === 'online' && (
+                            <div onClick={handleSetSessionLink}>
+                                <Button btnName={"সেশন লিঙ্ক দিন"} bgColor={"bg-primary-color"}></Button>
                             </div>
-                            <div className="bg-white p-2.5 rounded-lg border border-gray-100">
-                                <span className="font-semibold text-gray-700 block text-sm">ব্লাড</span>
-                                <span className="text-gray-600">{appointment?.bloodGroup || 'N/A'}</span>
-                            </div>
-                        </div>
-                        <div className="bg-white p-2.5 rounded-lg border border-gray-100">
-                            <span className="font-semibold text-gray-700">পেশাঃ</span>
-                            <span className="ml-2 text-gray-600">{appointment?.profession || 'পেশা নেই'}</span>
-                        </div>
-                        <div className="bg-white p-3 rounded-lg border border-gray-100">
-                            <span className="font-semibold text-gray-700 block mb-2">সমস্যা/রোগের বিবরণঃ</span>
-                            <p className="text-gray-600 leading-relaxed">{appointment?.problem || 'বিবরণ নেই'}</p>
-                        </div>
+                        )}
                     </div>
                 </div>
-            </div>
-            </div>
-
-            <div className="flex gap-6 mt-8">
-                 <div className="w-full">
-                            {appointment?.mode === 'online' && (
-                                <div onClick={handleStartSession}>
-                                    <Button btnName={"সেশন শুরু করুন"} bgColor={"bg-secondary-color"} />
-                                </div>
-                            )}
-                        </div>
-                        <div className="w-full">
-                            {appointment?.mode === 'online' && (
-                                <div onClick={handleSetSessionLink}>
-                                    <Button btnName={"সেশন লিঙ্ক দিন"} bgColor={"bg-primary-color"}></Button>
-                                </div>
-                            )}
-                        </div>
 
                 <div className="w-full" >
-
-
                     <button
                         onClick={handleFinishAppointment}
-                        className={`w-full rounded-md bg-secondary-color text-white py-3 transition ${appointment.state === "completed" ? "opacity-25 text-black cursor-not-allowed bg-gray-500 " : ""
-                            }`}
+                        className={`w-full rounded-md bg-secondary-color text-white py-3 transition ${appointment.state === "completed" ? "opacity-25 text-black cursor-not-allowed bg-gray-500 " : ""}`}
                         disabled={appointment.state === "completed"}
                     >
                         {appointment.state === "completed" ? "অ্যাপয়েন্টমেন্ট সম্পন্ন" : "শেষ করুন"}
                     </button>
-                </Link>
-
-                <button
-                    onClick={handleFinishAppointment}
-                    className={`w-full rounded-lg font-semibold py-3 px-4 shadow-md transition-all duration-200 ${
-                        appointment?.state === "completed"
-                            ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-                            : "bg-green-500 text-white hover:bg-green-600"
-                    }`}
-                    disabled={appointment?.state === "completed"}
-                >
-                    {appointment?.state === "completed" ? "অ্যাপয়েন্টমেন্ট সম্পন্ন" : "শেষ করুন"}
-                </button>
-            </div>
-
-           
-            <div className="flex gap-6 mt-8">
-                <div className="w-full">
-                    <Link to={`/dashboardDoctor/createPrescription/${appointment._id}`}>
-                        <Button btnName="প্রেস্ক্রিপশন লিখুন" bgColor="bg-tertiary-color" />
-                    </Link>
                 </div>
 
-                <div className="w-full" >
+                <div className="flex gap-6 mt-8">
+                    <div className="w-full">
+                        <Link to={`/dashboardDoctor/createPrescription/${appointment._id}`}>
+                            <Button btnName="প্রেস্ক্রিপশন লিখুন" bgColor="bg-tertiary-color" />
+                        </Link>
+                    </div>
 
-
-                 <Link to={`/dashboardDoctor/prescriptionDetails/${appointmentId}`}>
-                    <Button btnName="প্রেস্ক্রিপশন দেখুন" bgColor="bg-primary-color" className="w-full" />
-                </Link>
+                    <div className="w-full">
+                        <Link to={`/dashboardDoctor/prescriptionDetails/${appointmentId}`}>
+                            <Button btnName="প্রেস্ক্রিপশন দেখুন" bgColor="bg-primary-color" className="w-full" />
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>
