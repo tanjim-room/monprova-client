@@ -170,7 +170,7 @@ const Login = () => {
             <Helmet>
                 <title>Login</title>
             </Helmet>
-            <div className="w-full max-w-6xl bg-base-100 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-2 overflow-hidden">
+            <div className="w-full max-w-6xl bg-base-100 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-2 overflow-hidden mt-8">
                 {/* Left Section */}
                 <div className="p-8 md:p-12 flex flex-col justify-center">
                     <h2 className="text-3xl font-bold mb-2">মনপ্রভায় স্বাগতম</h2>
@@ -207,7 +207,7 @@ const Login = () => {
                                         value="patient"
                                         checked={role === "patient"}
                                         onChange={() => { setRole("patient"); setRoleError(""); }}
-                                        className="radio text-green-500 border-2"
+                                        className="radio text-blue-500 border-2"
                                     />
                                     <span className="ml-2">রোগী</span>
                                 </label>
@@ -218,7 +218,7 @@ const Login = () => {
                                         value="doctor"
                                         checked={role === "doctor"}
                                         onChange={() => { setRole("doctor"); setRoleError(""); }}
-                                        className="radio text-green-500 border-2"
+                                        className="radio text-blue-500 border-2"
                                     />
                                     <span className="ml-2">ডাক্তার</span>
                                 </label>
@@ -249,7 +249,7 @@ const Login = () => {
 
                     <div className="divider">অথবা</div>
 
-                    <button onClick={handleGoogleLogin} className="btn btn-outline w-full flex gap-2 border-2 border-primary-color text-gray-700 py-4">
+                    <button onClick={handleGoogleLogin} className="btn btn-outline w-full flex gap-2 border-2 border-blue-400 text-gray-700 py-4">
                         <img
                             src="https://www.svgrepo.com/show/475656/google-color.svg"
                             alt="Google"
@@ -260,7 +260,7 @@ const Login = () => {
 
                     <p className="text-sm text-center mt-6">
                         আপনার কি কোনো আকাউন্ট নেই?{" "}
-                        <Link to={"/signup"} className="tertiary-color font-bold">
+                        <Link to={"/signup"} className="text-blue-600 font-bold">
                             সাইন আপ করুন
                         </Link>
                     </p>

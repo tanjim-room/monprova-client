@@ -160,7 +160,7 @@ const handleSubmit = async (event) => {
   };
 
   return (
-    <div className="min-h-[850px] p-8 bg-purple-50 rounded-lg mt-2 border border-purple-200 shadow-sm ">
+    <div className="min-h-[850px] p-8 bg-blue-50 rounded-lg mt-2 border border-blue-200 shadow-sm ">
       <h2 className="text-xl font-bold pb-6 text-center">{doctor?.name || ''} এর অ্যাপয়েন্টমেন্ট বুক করুন</h2>
       <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl mx-auto">
         {/* Patient Info */}
@@ -363,7 +363,7 @@ const handleSubmit = async (event) => {
         {/* Submit Button */}
         <input
           type="submit"
-          className="w-full p-3 text-white bg-purple-400 hover:bg-secondary-color rounded-md shadow-sm focus:outline-none hover:cursor-pointer"
+          className="w-full p-3 text-white bg-blue-500 hover:bg-secondary-color rounded-md shadow-sm focus:outline-none hover:cursor-pointer"
           value="অ্যাপয়েন্টমেন্ট বুক করুন"
         />
       </form>

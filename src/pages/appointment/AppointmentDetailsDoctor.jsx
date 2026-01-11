@@ -230,7 +230,7 @@ const AppointmentDetailsDoctor = () => {
                                 {appointment?.mode === 'online' && (
                                     <button
                                         onClick={handleStartSession}
-                                        className="bg-green-500 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-green-600 transition-all duration-200"
+                                        className="bg-green-500 text-white py-3 text-sm px-4 rounded-lg  shadow-md hover:bg-green-600 transition-all duration-200"
                                     >
                                         সেশন শুরু করুন
                                     </button>
@@ -240,7 +240,7 @@ const AppointmentDetailsDoctor = () => {
                                 {appointment?.mode === 'online' && (
                                     <button
                                         onClick={handleSetSessionLink}
-                                        className="bg-purple-500 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-purple-600 transition-all duration-200"
+                                        className="bg-purple-500 text-white py-3 text-sm px-4 rounded-lg  shadow-md hover:bg-purple-600 transition-all duration-200"
                                     >
                                         সেশন লিঙ্ক দিন
                                     </button>

@@ -82,7 +82,7 @@ const PatientHelp = () => {
       {/* Header + Form */}
       <div className="sticky top-0 bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100 z-10 shadow p-4 rounded-b-2xl">
         <h1 className="text-2xl font-bold text-center mb-3 text-indigo-800">
-          🩺 Patient Help Center
+          ডাক্তারদের কাছে প্রশ্ন করুন
         </h1>
 
         <form onSubmit={handleQuestionSubmit} className="space-y-3">
@@ -116,7 +116,7 @@ const PatientHelp = () => {
       </div>
 
       {/* Questions */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-5 bg-indigo-50">
+      <div className="flex-1 overflow-y-auto p-4 space-y-5 bg-indigo-50 mt-4">
         {patientQuestions.map((q, idx) => {
 
           const questionReplies = replies
@@ -150,7 +150,17 @@ const PatientHelp = () => {
                   <p className="text-gray-800 text-lg mt-1">{q.question}</p>
 
                   <p className="text-xs text-gray-400 mt-1">
-                    {new Date(q.createdAt).toLocaleString()}
+                    {new Date(q?.updatedAt || q?.createdAt)
+                      .toLocaleString("en-GB", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      })
+                      .replace(/ (\d{4}),/, ", $1")}
+
                   </p>
                 </div>
               </div>
@@ -178,7 +188,17 @@ const PatientHelp = () => {
                           <p className="text-gray-700 mt-1">{r.reply}</p>
 
                           <p className="text-xs text-gray-400 mt-1">
-                            {new Date(r.createdAt).toLocaleString()}
+                            {new Date(q?.updatedAt || q?.createdAt)
+                              .toLocaleString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                                hour: "numeric",
+                                minute: "2-digit",
+                                hour12: true,
+                              })
+                              .replace(/ (\d{4}),/, ", $1")}
+
                           </p>
                         </div>
                       </div>
