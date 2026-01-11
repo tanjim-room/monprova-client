@@ -171,7 +171,7 @@ const handleSubmit = async (event) => {
             <label className="block mb-2 text-md font-medium text-gray-700">নাম</label>
             <input
               name="patientName"
-              defaultValue={user.name || patient?.name || ''}
+              defaultValue={ patient?.name || user.name || ''}
               className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="নাম লিখুন"
             />
