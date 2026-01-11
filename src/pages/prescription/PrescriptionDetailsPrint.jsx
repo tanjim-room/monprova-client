@@ -5,6 +5,8 @@ import { useParams } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import useAppointment from "../../hooks/useAppointment";
 import usePrescription from "../../hooks/usePrescription";
+import Logo from "../../components/Logo";
+
 
 const PrescriptionDetailsPrint = () => {
     const { appointmentId } = useParams();
@@ -65,10 +67,12 @@ const PrescriptionDetailsPrint = () => {
                 {/* Main Content */}
                 <div className="grid grid-cols-3 gap-6 mt-8">
 
-                    {/* Chief Complaints */}
+                    {/* Chief Complaints and Tests */}
                     <div>
                         <h2 className="font-semibold mb-2">রোগ নির্ণয়:</h2>
                         <p>{prescription?.chiefComplaints || "N/A"}</p>
+                        <h2 className="font-semibold mb-2 mt-4">টেস্টসমূহ:</h2>
+                        <p>{prescription?.tests || "N/A"}</p>
                     </div>
 
                     {/* Rx Section */}
@@ -100,12 +104,12 @@ const PrescriptionDetailsPrint = () => {
 
                         <div className="mt-24">
                             <div className="mt-8 text-sm font-semibold">
-                                Follow-up within: <span className="font-normal">{prescription?.followUp || "N/A"}</span>
+                                ফলোআপের সময়: <span className="font-normal">{prescription?.followUp || "N/A"}</span>
                             </div>
 
                             {/* Advice */}
                             <div className="mt-4">
-                                <h2 className="font-semibold mb-2">Advice:</h2>
+                                <h2 className="font-semibold mb-2">পরামর্শ::</h2>
 
                                 <p className="text-sm">{prescription?.advice || "N/A"}</p>
 
@@ -123,7 +127,9 @@ const PrescriptionDetailsPrint = () => {
                 </div>
 
                 {/* Follow Up */}
-
+                 <div className="mt-16 opacity-50">
+                <Logo></Logo>
+               </div>
             </div>
         );
     }
