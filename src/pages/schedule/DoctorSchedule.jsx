@@ -13,6 +13,9 @@ const DoctorSchedule = () => {
   const doctor = doctors.find(doc => doc.email === user?.email);
   const doctorID = doctor?._id;
 
+  // 🔥 DEFAULT MEDIUM FIX
+  const medium = doctor?.medium || 'both';
+
   const [schedules] = useSchedule();
   const schedule = schedules.find(sch => sch.doctorID === doctorID);
 
@@ -71,8 +74,8 @@ const DoctorSchedule = () => {
     if (!selectedDay) return;
 
     // Medium restriction
-    if (doctor.medium === 'online' && onlineOffline !== 'online') return;
-    if (doctor.medium === 'offline' && onlineOffline !== 'offline') return;
+    if (medium === 'online' && onlineOffline !== 'online') return;
+    if (medium === 'offline' && onlineOffline !== 'offline') return;
 
     setAvailability(prev => {
       const updated = [...prev[selectedDay]];
@@ -145,7 +148,7 @@ const DoctorSchedule = () => {
         <>
           {/* Mode buttons */}
           <div className="flex gap-4 mb-4">
-            {(doctor.medium === 'online' || doctor.medium === 'both') && (
+            {(medium === 'online' || medium === 'both') && (
               <button
                 onClick={() => setOnlineOffline('online')}
                 className={`px-4 py-2 rounded ${
@@ -158,7 +161,7 @@ const DoctorSchedule = () => {
               </button>
             )}
 
-            {(doctor.medium === 'offline' || doctor.medium === 'both') && (
+            {(medium === 'offline' || medium === 'both') && (
               <button
                 onClick={() => setOnlineOffline('offline')}
                 className={`px-4 py-2 rounded ${
@@ -172,7 +175,7 @@ const DoctorSchedule = () => {
             )}
           </div>
 
-          {/* 🔹 Indicators */}
+          {/* Indicators */}
           <div className="flex flex-wrap gap-6 items-center mb-6 text-sm">
             <div className="flex items-center gap-2">
               <span className="w-4 h-4 rounded bg-blue-500"></span>
@@ -186,18 +189,6 @@ const DoctorSchedule = () => {
               <span className="w-4 h-4 rounded bg-red-500"></span>
               <span>বুকড</span>
             </div>
-            {/* <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded bg-gray-400"></span>
-              <span>মিডিয়ামের জন্য অকার্যকর</span>
-            </div> */}
-            <div className="flex items-center gap-2">
-              <span
-                className={`w-4 h-4 rounded ${
-                  onlineOffline === 'online' ? 'bg-blue-500' : 'bg-green-500'
-                }`}
-              ></span>
-              <span>বর্তমান নির্বাচন: {onlineOffline === 'online' ? 'অনলাইন' : 'অফলাইন'}</span>
-            </div>
           </div>
 
           {/* Slots */}
@@ -206,8 +197,8 @@ const DoctorSchedule = () => {
               const slotData = availability[selectedDay].find(s => s.time === slot);
 
               const disabledByMedium =
-                (doctor.medium === 'online' && onlineOffline === 'offline') ||
-                (doctor.medium === 'offline' && onlineOffline === 'online');
+                (medium === 'online' && onlineOffline === 'offline') ||
+                (medium === 'offline' && onlineOffline === 'online');
 
               let style = 'bg-white hover:bg-gray-100';
               if (slotData?.status === 'booked') style = 'bg-red-500 text-white';
