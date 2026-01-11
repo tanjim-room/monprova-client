@@ -169,7 +169,7 @@ const handleSubmit = async (event) => {
             <label className="block mb-2 text-md font-medium text-gray-700">নাম</label>
             <input
               name="patientName"
-              defaultValue={patient?.name || ''}
+              defaultValue={user.name || patient?.name || ''}
               className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="নাম লিখুন"
             />
@@ -180,7 +180,7 @@ const handleSubmit = async (event) => {
             <label className="block mb-2 text-md font-medium text-gray-700">ইমেইল</label>
             <input
               name="patientEmail"
-              defaultValue={patient?.email || ''}
+              defaultValue={user.email || patient?.email || ''}
               className="w-full p-3 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="ইমেইল লিখুন"
             />
