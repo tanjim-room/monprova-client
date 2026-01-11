@@ -16,7 +16,7 @@ const DoctorSchedule = () => {
   // 🔥 DEFAULT MEDIUM FIX
   const medium = doctor?.medium || 'both';
 
-  const [schedules] = useSchedule();
+  const [schedules, refetch] = useSchedule();
   const schedule = schedules.find(sch => sch.doctorID === doctorID);
 
   const [availability, setAvailability] = useState({
@@ -31,6 +31,7 @@ const DoctorSchedule = () => {
 
   const [selectedDay, setSelectedDay] = useState(null);
   const [onlineOffline, setOnlineOffline] = useState('online');
+  const [appointments, setAppointments] = useState([]);
 
   // Auto select today
   useEffect(() => {
@@ -38,12 +39,55 @@ const DoctorSchedule = () => {
     setSelectedDay(days[new Date().getDay()]);
   }, []);
 
-  // Load saved schedule
+  // Fetch appointments to mark booked slots
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      if (!doctorID) return;
+      try {
+        const res = await axiosPublic.get('/api/appointments');
+        const myAppointments = res.data.filter(apt => 
+          apt.doctorID === doctorID && 
+          apt.paymentStatus === 'paid' &&
+          apt.state !== 'completed' &&
+          apt.state !== 'cancelled'
+        );
+        setAppointments(myAppointments);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      }
+    };
+    fetchAppointments();
+  }, [doctorID, axiosPublic]);
+
+  // Load saved schedule and sync with booked appointments
   useEffect(() => {
     if (schedule?.availability) {
-      setAvailability(schedule.availability);
+      const updatedAvailability = { ...schedule.availability };
+      
+      // Mark slots as booked based on actual appointments
+      appointments.forEach(apt => {
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        const appointmentDate = new Date(apt.appointmentDate);
+        const dayKey = days[appointmentDate.getDay()];
+        
+        if (updatedAvailability[dayKey]) {
+          const slotIndex = updatedAvailability[dayKey].findIndex(s => s.time === apt.slot);
+          if (slotIndex !== -1) {
+            updatedAvailability[dayKey][slotIndex].status = 'booked';
+          } else {
+            // If slot doesn't exist in schedule, add it as booked
+            updatedAvailability[dayKey].push({
+              time: apt.slot,
+              type: apt.mode || 'online',
+              status: 'booked'
+            });
+          }
+        }
+      });
+      
+      setAvailability(updatedAvailability);
     }
-  }, [schedule]);
+  }, [schedule, appointments]);
 
   const dayNamesInBangla = {
     sunday: 'রবিবার',

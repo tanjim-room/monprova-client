@@ -19,9 +19,9 @@ const PopTheBalloon = () => {
             left: Math.random() * 85 + '%',
             color: balloonColors[Math.floor(Math.random() * balloonColors.length)],
             face: balloonFaces[Math.floor(Math.random() * balloonFaces.length)],
-            size: Math.floor(Math.random() * 20) + 65,
-            speed: 6,
-            sway: Math.random() * 2 + 1.5,
+            size: Math.floor(Math.random() * 30) + 90,
+            speed: 10,
+            sway: Math.random() * 1.5 + 2.5,
         };
         return newBalloon;
     }, []);
@@ -155,7 +155,7 @@ const PopTheBalloon = () => {
                         <div
                             key={balloon.id}
                             onClick={() => handleBalloonPop(balloon.id)}
-                            className="absolute cursor-pointer transition-all duration-100 hover:scale-110"
+                            className="absolute cursor-pointer transition-all duration-300 hover:scale-110"
                             style={{
                                 left: balloon.left,
                                 bottom: '-120px',
@@ -164,6 +164,8 @@ const PopTheBalloon = () => {
                                 height: `${Math.round(balloon.size * 1.25)}px`,
                                 transformOrigin: 'center',
                                 filter: 'drop-shadow(0 12px 10px rgba(0,0,0,0.12))',
+                                padding: '25px',
+                                margin: '-25px',
                             }}
                         >
                             <div
@@ -219,9 +221,8 @@ const PopTheBalloon = () => {
                 }
 
                 @keyframes sway {
-                    0% { transform: translateX(0px); }
-                    50% { transform: translateX(18px); }
-                    100% { transform: translateX(-18px); }
+                    0%, 100% { transform: translateX(-12px); }
+                    50% { transform: translateX(12px); }
                 }
             `}</style>
         </div>

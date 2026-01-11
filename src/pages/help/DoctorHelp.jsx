@@ -196,28 +196,24 @@ const DoctorHelp = () => {
                 </div>
 
                 {/* Reply Input */}
-                {
-                  doctor?.verificationStatus && (
-                    <form
-                      onSubmit={(e) => handleReplySubmit(e, q._id)}
-                      className="flex gap-2 mt-4 ml-12"
-                    >
-                      <input
-                        name="reply"
-                        required
-                        placeholder="উত্তর লিখুন..."
-                        className="flex-1 px-4 py-2 rounded-full border
+                <form
+                  onSubmit={(e) => handleReplySubmit(e, q._id)}
+                  className="flex gap-2 mt-4 ml-12"
+                >
+                  <input
+                    name="reply"
+                    required
+                    placeholder="উত্তর লিখুন..."
+                    className="flex-1 px-4 py-2 rounded-full border
                     focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                      <button
-                        className="px-5 py-2 rounded-full bg-blue-600
+                  />
+                  <button
+                    className="px-5 py-2 rounded-full bg-blue-600
                     text-white hover:bg-blue-700 transition"
-                      >
-                        উত্তর দিন
-                      </button>
-                    </form>
-                  )
-                }
+                  >
+                    উত্তর দিন
+                  </button>
+                </form>
               </div>
             );
           })}

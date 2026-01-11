@@ -167,9 +167,7 @@ const Register = () => {
     return (
         <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
             <HomeNavbar></HomeNavbar>
-            <Helmet>
-                <title>Register</title>
-            </Helmet>
+           
             <div className="w-full max-w-6xl bg-base-100 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-2 overflow-hidden">
                 {/* Left Section */}
                 <div className="p-8 md:p-12 flex flex-col justify-center">
