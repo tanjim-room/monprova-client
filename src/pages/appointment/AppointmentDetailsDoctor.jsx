@@ -16,7 +16,7 @@ const AppointmentDetailsDoctor = () => {
     const [appointments, refetch] = useAppointment(); // Hook to fetch appointments
     const [doctors] = useDoctor(); // Hook to fetch doctors
     const { appointmentId } = useParams(); // Get appointment ID from URL
-
+    refetch();
     // 🧾 Safe loading check
     const loading = !Array.isArray(appointments) || !Array.isArray(doctors) || appointments.length === 0 || doctors.length === 0;
     if (loading) return (

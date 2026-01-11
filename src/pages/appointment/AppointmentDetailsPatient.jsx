@@ -77,14 +77,14 @@ const AppointmentDetailsPatient = () => {
         const slots = [];
         const now = new Date();
         const daysAhead = 14;
+        const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+        
         for (let i = 0; i < daysAhead; i++) {
             const date = new Date();
             date.setHours(0, 0, 0, 0);
             date.setDate(date.getDate() + i);
             const dateStr = date.toISOString().split("T")[0];
-            const dayKey = date
-                .toLocaleDateString("en-US", { weekday: "long" })
-                .toLowerCase();
+            const dayKey = days[date.getDay()];
             const daySlots = doctorSchedule?.availability?.[dayKey] || [];
             daySlots
                 .filter((slot) => slot.status === "available")

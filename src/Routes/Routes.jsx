@@ -70,11 +70,13 @@ import UpdatePassword from "../pages/UpdatePassword";
 import PrescriptionDetailsPrint from "../pages/prescription/PrescriptionDetailsPrint";
 import PaymentSuccess from "../PaymentSuccess";
 import AdminProfile from "../pages/profile/AdminProfile";
+import ErrorPage from "../ErrorPage";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout></MainLayout>,
+    errorElement: <ErrorPage></ErrorPage>,
     children: [
       {
         path: "/",
@@ -93,7 +95,9 @@ export const router = createBrowserRouter([
       {
         path: "/dashboardAdmin",
         element: <PrivateRoute role="admin"> <AdminDashboardLayout></AdminDashboardLayout></PrivateRoute>,
+        errorElement: <ErrorPage></ErrorPage>,
         children: [
+          
           {
             path: "/dashboardAdmin",
             element: <AdminHome></AdminHome>
@@ -219,6 +223,7 @@ export const router = createBrowserRouter([
   {
     path: "/dashboardPatient",
     element: <PrivateRoute role="patient"><PatientDashboardLayout></PatientDashboardLayout></PrivateRoute>,
+    errorElement: <ErrorPage></ErrorPage>,
     children: [
       // Dashboard routes can be added here
       {
@@ -343,11 +348,13 @@ export const router = createBrowserRouter([
   {
     path: "/dashboardDoctor",
     element: <PrivateRoute role="doctor"><DoctorDashboardLayout></DoctorDashboardLayout></PrivateRoute>,
+    errorElement: <ErrorPage></ErrorPage>,
     children: [
       // Dashboard routes can be added here
       {
         path: "/dashboardDoctor",
-        element: <DoctorHome></DoctorHome>
+        element: <DoctorHome></DoctorHome>,
+        errorElement: <ErrorPage></ErrorPage>
       },
       {
         path: "change-password",
