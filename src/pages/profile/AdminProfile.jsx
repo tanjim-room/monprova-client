@@ -1,20 +1,17 @@
 import { useState, useEffect } from "react";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
-import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useUser from "../../hooks/useUser";
 import useAuth from "../../hooks/useAuth";
 import Swal from "sweetalert2";
-import usePatient from "../../hooks/usePatient";
 import SectionHeader from '../shared/SectionHeader';
+import useAdmin from "../../hooks/useAdmin";
 
 const image_hosting_key = import.meta.env.VITE_IMAGE_HOSTING_API_KEY;
 const image_hosting_api = `https://api.imgbb.com/1/upload?key=${image_hosting_key}`;
 
-const PatientProfile = () => {
-  const axiosSecure = useAxiosSecure(); // (যদি ভবিষ্যতে secure লাগে)
+const AdminProfile = () => {
   const axiosPublic = useAxiosPublic();
-
-  const [patients, refetch] = usePatient();
+  const [admins, refetch] = useAdmin();
   const [users] = useUser();
   const { user } = useAuth();
 
@@ -29,16 +26,15 @@ const PatientProfile = () => {
   const [imagePreview, setImagePreview] = useState("");
 
   // logged-in user related data
-  const patient = users?.find((dbUser) => dbUser.email === user?.email);
-  const patientInfo = patients?.find((p) => p.email === user?.email);
+  const admin = admins?.find((admin) => admin.email === user?.email);
 
-  // update select values when patientInfo changes
+  // update select values when admin data changes
   useEffect(() => {
-    if (patientInfo) {
-      setGender(patientInfo.gender || "");
-      setBloodGroup(patientInfo.bloodGroup || "");
+    if (admin) {
+      setGender(admin.gender || "");
+      setBloodGroup(admin.bloodGroup || "");
     }
-  }, [patientInfo]);
+  }, [admin]);
 
   // ✅ file change handler
   const handleFileChange = (e) => {
@@ -56,14 +52,11 @@ const PatientProfile = () => {
     const form = event.target;
 
     const name = form.name.value;
-    const age = form.age.value;
-    const genderValue = form.gender.value;
     const phone = form.phone.value;
     const email = form.email.value;
+    const genderValue = form.gender.value;
     const bloodGroupValue = form.bloodGroup.value;
     const address = form.address.value;
-    const emergencyContact = form.emergencyContact.value;
-    const profession = form.profession.value;
 
     // Confirm before saving
     const confirmResult = await Swal.fire({
@@ -94,7 +87,7 @@ const PatientProfile = () => {
       setIsSaving(true);
 
       // ✅ 1) Upload image to imgbb if selected
-      let imageUrl = patientInfo?.image || "";
+      let imageUrl = admin?.image || "";
        Swal.fire({
             title: "সেভ হচ্ছে...",
             text: "অনুগ্রহ করে অপেক্ষা করুন",
@@ -114,23 +107,20 @@ const PatientProfile = () => {
       }
 
       // ✅ 2) send only URL to backend
-      const updatedPatientInfo = {
+      const updatedAdminInfo = {
         name,
         image: imageUrl,
-        age,
-        gender: genderValue,
         phone,
         email,
+        gender: genderValue,
         bloodGroup: bloodGroupValue,
         address,
-        emergencyContact,
-        profession,
       };
 
-      console.log("Updated Patient Info:", updatedPatientInfo);
+      console.log("Updated Admin Info:", updatedAdminInfo);
 
       // ✅ 3) backend save (আপনার API অনুযায়ী ঠিক করুন)
-      await axiosPublic.post("/api/patient", updatedPatientInfo);
+      await axiosPublic.post("/api/admin", updatedAdminInfo);
 
       Swal.fire({
         icon: "success",
@@ -139,7 +129,6 @@ const PatientProfile = () => {
         confirmButtonText: "ঠিক আছে",
         confirmButtonColor: "#2563eb",
       });
-      refetch();
 
       setIsEditable(false);
 
@@ -171,7 +160,7 @@ const PatientProfile = () => {
       <div className="mx-auto p-6 bg-white rounded-xl">
         <div className="pb-4">
           <SectionHeader
-            heading={"রোগীর প্রোফাইল"}
+            heading={"অ্যাডমিন প্রোফাইল"}
             subHeading={"আপনার প্রোফাইল দেখুন ও এডিট করুন"}
           ></SectionHeader>
         </div>
@@ -182,8 +171,7 @@ const PatientProfile = () => {
             <img
               src={
                 imagePreview ||
-                patientInfo?.image ||
-                patient?.image ||
+                admin?.image ||
                 "https://via.placeholder.com/150"
               }
               alt="Profile"
@@ -216,17 +204,17 @@ const PatientProfile = () => {
               <label className="label">নাম</label>
               <input
                 name="name"
-                defaultValue={patientInfo?.name || patient?.name || ""}
+                defaultValue={admin?.name || ""}
                 disabled={!isEditable}
                 className="input input-bordered w-full border-2 p-2"
               />
             </div>
 
             <div>
-              <label className="label">বয়স</label>
+              <label className="label">মোবাইল</label>
               <input
-                name="age"
-                defaultValue={patientInfo?.age || ""}
+                name="phone"
+                defaultValue={admin?.phone || ""}
                 disabled={!isEditable}
                 className="input input-bordered w-full border-2 p-2"
               />
@@ -249,21 +237,11 @@ const PatientProfile = () => {
             </div>
 
             <div>
-              <label className="label">মোবাইল</label>
-              <input
-                name="phone"
-                defaultValue={patientInfo?.phone || ""}
-                disabled={!isEditable}
-                className="input input-bordered w-full border-2 p-2"
-              />
-            </div>
-
-            <div>
               <label className="label">ইমেইল</label>
               <input
                 type="email"
                 name="email"
-                defaultValue={patientInfo?.email || patient?.email || ""}
+                defaultValue={admin?.email || ""}
                 className="input input-bordered w-full border-2 p-2"
                 disabled
               />
@@ -291,29 +269,9 @@ const PatientProfile = () => {
               <label className="label">ঠিকানা</label>
               <textarea
                 name="address"
-                defaultValue={patientInfo?.address || ""}
+                defaultValue={admin?.address || ""}
                 disabled={!isEditable}
                 className="textarea textarea-bordered w-full border-2 p-2"
-              />
-            </div>
-
-            <div>
-              <label className="label">জরুরি যোগাযোগ</label>
-              <input
-                name="emergencyContact"
-                defaultValue={patientInfo?.emergencyContact || ""}
-                disabled={!isEditable}
-                className="input input-bordered w-full border-2 p-2"
-              />
-            </div>
-
-            <div>
-              <label className="label">পেশা</label>
-              <input
-                name="profession"
-                defaultValue={patientInfo?.profession || ""}
-                disabled={!isEditable}
-                className="input input-bordered w-full border-2 p-2"
               />
             </div>
           </div>
@@ -345,8 +303,8 @@ const PatientProfile = () => {
                     setIsEditable(false);
                     setSelectedImage(null);
                     setImagePreview("");
-                    setGender(patientInfo?.gender || "");
-                    setBloodGroup(patientInfo?.bloodGroup || "");
+                    setGender(admin?.gender || "");
+                    setBloodGroup(admin?.bloodGroup || "");
                   }}
                   className="btn btn-outline w-1/2 flex gap-2 bg-secondary-color text-white py-4"
                 >
@@ -361,4 +319,4 @@ const PatientProfile = () => {
   );
 };
 
-export default PatientProfile;
+export default AdminProfile;

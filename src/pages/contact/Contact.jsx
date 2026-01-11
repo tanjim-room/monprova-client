@@ -183,7 +183,7 @@ const Contact = () => {
               <button 
                 type="submit"
                 disabled={loading}
-                className="bg-primary-color text-white py-3 px-6 rounded font-semibold hover:bg-opacity-90 transition disabled:bg-gray-400"
+                className="bg-blue-500 text-white py-3 px-6 rounded font-semibold hover:bg-opacity-90 transition disabled:bg-gray-400"
               >
                 {loading ? 'জমা দিচ্ছে...' : 'পাঠান'}
               </button>

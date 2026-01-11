@@ -8,15 +8,18 @@ import usePatient from "../../hooks/usePatient.jsx";
 import useDoctor from "../../hooks/useDoctor.jsx";
 import { GrUpdate } from "react-icons/gr";
 import { MdVerified } from "react-icons/md";
+import useAdmin from "../../hooks/useAdmin.jsx";
 
 const DashboardNavBar = ({ fullName, role }) => {
     const { user } = useAuth();
     const [patients] = usePatient();
     const [doctors] = useDoctor();
+    const [admins] = useAdmin();
+    const admin = admins?.find(admin => admin.email === user.email)
     const patient = patients.find(p => p.email === user?.email);
     const doctor = doctors.find(d => d.email === user?.email);
-    const displayNames = role === "patient" ? patient?.name : role === "doctor" ? doctor?.name : "Admin";
-    const displayImg = role === "patient" ? patient?.image : role === "doctor" ? doctor?.image : "";
+    const displayNames = role === "patient" ? patient?.name : role === "doctor" ? doctor?.name : admin?.name || "Admin";
+    const displayImg = role === "patient" ? patient?.image : role === "doctor" ? doctor?.image : admin?.image;
 
     const { logOut } = useContext(AuthContext)
     const location = useLocation();
@@ -34,6 +37,14 @@ const DashboardNavBar = ({ fullName, role }) => {
         }
     };
 
+    const getChangePasswordRoute = (role) => {
+        if (role === "admin") return "/dashboardAdmin/change-password";
+        if (role === "doctor") return "/dashboardDoctor/change-password";
+        if (role === "patient") return "/dashboardPatient/change-password";
+        return "/";
+    };
+
+
 
 
     const menuItems =
@@ -42,7 +53,7 @@ const DashboardNavBar = ({ fullName, role }) => {
                 : patientMenuItems;
 
     return (
-        <aside className="w-1/5 bg-white shadow-lg p-6 fixed h-full overflow-y-auto">
+        <aside className="w-1/5 bg-white xm:hidden sm:hidden md:block shadow-lg p-6 fixed h-full overflow-y-auto">
 
             <div className="flex flex-col items-center mb-4 ">
                 <div className="relative">
@@ -73,7 +84,7 @@ const DashboardNavBar = ({ fullName, role }) => {
                             <li key={index} className="border rounded-md">
                                 <button
                                     onClick={handleLogout}
-                                    className="flex w-full items-center gap-6 px-4 py-2 text-xl font-semibold
+                                    className="flex w-full items-center gap-6 px-4 py-2 text-md font-semibold
                         rounded-md text-red-600 hover:bg-red-600 hover:text-white transition"
                                 >
                                     <span>{item.icon}</span>
@@ -88,10 +99,10 @@ const DashboardNavBar = ({ fullName, role }) => {
                         <li key={index} className="border rounded-md">
                             <Link
                                 to={item.link}
-                                className={`flex items-center gap-6 px-4 py-2 text-xl font-semibold rounded-md transition
+                                className={`flex items-center gap-6 px-4 py-2 text-md font-semibold rounded-md transition
                     ${isActive
-                                        ? "bg-[#27b294] text-white"
-                                        : "hover:bg-[#27b294] hover:text-white"
+                                        ? "bg-blue-500 text-white"
+                                        : "hover:bg-blue-600 hover:text-white"
                                     }`}
                             >
                                 <span>{item.icon}</span>
@@ -104,7 +115,7 @@ const DashboardNavBar = ({ fullName, role }) => {
             {
                 <div className="flex justify-center mt-4">
                     <Link
-                        to="/dashboardDoctor/change-password"
+                        to={getChangePasswordRoute(role)}
                         className="inline-flex items-center gap-2
                    bg-gray-500 hover:bg-primary-400
                    text-white px-4 py-2 rounded-lg w-full"

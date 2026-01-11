@@ -7,6 +7,7 @@ import useUser from '../../hooks/useUser';
 import { FaCalendarAlt, FaCheckCircle, FaClock, FaUserMd, FaFilePrescription, FaExclamationTriangle, FaArrowRight, FaCalendarPlus, FaUser, FaList, FaBrain, FaBookOpen, FaVideo, FaQuestionCircle, FaGamepad, FaBell } from 'react-icons/fa';
 import useNotifications from '../../hooks/useNotifications';
 import NotificationDropdown from '../../components/NotificationDropdown';
+import Logo from '../../components/Logo';
 
 const PatientHome = () => {
     const [patients] = usePatient();
@@ -187,6 +188,9 @@ const PatientHome = () => {
 
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
+                <div className='py-2 mb-2'>
+                    <Logo></Logo>
+                </div>
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-gray-800 mb-2">
                         স্বাগতম, {patient?.name || userAccount?.name || 'রোগী'}!

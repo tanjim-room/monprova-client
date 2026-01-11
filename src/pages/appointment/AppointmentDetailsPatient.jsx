@@ -92,8 +92,8 @@ const AppointmentDetailsPatient = () => {
             Swal.fire({
                 icon: "success",
                 title: "আপলোড সফল",
-                text: "PDF সফলভাবে আপলোড হয়েছে",
-                timer: 2000,
+                text: "সফলভাবে আপলোড হয়েছে",
+                timer: 1000,
                 showConfirmButton: false,
             });
             refetch()
@@ -101,7 +101,7 @@ const AppointmentDetailsPatient = () => {
             Swal.fire({
                 icon: "error",
                 title: "আপলোড ব্যর্থ",
-                text: "PDF আপলোড করা যায়নি",
+                text: "আপলোড করা যায়নি",
             });
         } finally {
             setUploading(false);

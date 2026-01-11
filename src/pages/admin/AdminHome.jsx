@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAxiosSecure from '../../hooks/useAxiosSecure';
 import { FaUserMd, FaUsers, FaCalendarCheck, FaCheckCircle, FaClock, FaMoneyBillWave, FaExclamationCircle, FaArrowRight } from 'react-icons/fa';
+import Logo from '../../components/Logo';
 
 const AdminHome = () => {
   const navigate = useNavigate();
@@ -152,6 +153,9 @@ const AdminHome = () => {
     <div className="min-h-screen bg-[#E6F0FF] p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
+         <div className='py-2 mb-2'>
+                    <Logo></Logo>
+                </div>
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">অ্যাডমিন ড্যাশবোর্ড</h1>
           <p className="text-lg text-gray-600">সিস্টেম ওভারভিউ ও গুরুত্বপূর্ণ পরিসংখ্যান</p>

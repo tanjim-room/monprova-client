@@ -6,6 +6,7 @@ import useAxiosSecure from '../../hooks/useAxiosSecure';
 import { FaCalendarAlt, FaUserInjured, FaFilePrescription, FaMoneyBillWave, FaClock, FaCheckCircle, FaExclamationTriangle, FaArrowRight, FaCalendarCheck, FaUsers, FaChartLine, FaUserCog, FaVideo, FaMapMarkerAlt, FaQuestionCircle, FaBell } from 'react-icons/fa';
 import useNotifications from '../../hooks/useNotifications';
 import NotificationDropdown from '../../components/NotificationDropdown';
+import Logo from '../../components/Logo';
 
 const DoctorHome = () => {
     const [doctors] = useDoctor();
@@ -289,7 +290,9 @@ const DoctorHome = () => {
             </div>
 
             <div className="max-w-7xl mx-auto">
-
+                     <div className='py-2 mb-2'>
+                    <Logo></Logo>
+                </div>
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-gray-800 mb-2">

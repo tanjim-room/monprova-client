@@ -28,7 +28,7 @@ const DoctorCard = ({ doctor }) => {
             </div>
             <div className="mb-4 mx-4">
                 <Link to={`/doctorDetails/${_id}`}>
-                    <Button btnName={"বিস্তারিত দেখুন"} bgColor="bg-primary-color w-full py-2"></Button>
+                    <Button btnName={"বিস্তারিত দেখুন"} bgColor="bg-blue-500 w-full py-2"></Button>
                 </Link>
             </div>
         </div>

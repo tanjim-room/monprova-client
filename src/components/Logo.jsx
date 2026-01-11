@@ -8,7 +8,7 @@ const Logo = () => {
                     <img src={logoImage} alt="Logo" className='w-16 h-16 object-fit-cover' />
                 </div>
                 <div>
-                    <p className='text-4xl font-bold'>মনপ্রভা</p>
+                    <p className='text-4xl font-bold text-blue-500'>মনপ্রভা</p>
                 </div>
             </div>
         </div>
