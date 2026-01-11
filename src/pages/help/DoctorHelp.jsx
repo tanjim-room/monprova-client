@@ -188,7 +188,7 @@ const DoctorHelp = () => {
 
                 {/* Reply Input */}
                 {doctor ? (
-                  doctor.verificationStatus ? (
+                  doctor.verificationStatus === "verified" ? (
                     <form
                       onSubmit={(e) =>
                         handleReplySubmit(e, q._id)

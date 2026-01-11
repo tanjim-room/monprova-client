@@ -230,6 +230,10 @@ export const router = createBrowserRouter([
         path: "/dashboardPatient",
         element: <PatientHome></PatientHome>
       },
+       {
+        path: "prescriptionDetails/:appointmentId",
+        element: <PrescriptionDetails></PrescriptionDetails>
+      },
       {
         path: "change-password",
         element: <UpdatePassword></UpdatePassword>
