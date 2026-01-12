@@ -5,13 +5,15 @@ import withReactContent from 'sweetalert2-react-content';
 import Button from '../Button';
 import axios from 'axios';
 import useAxiosPublic from '../../hooks/useAxiosPublic';
+import usePatient from '../../hooks/usePatient';
 
 const MySwal = withReactContent(Swal);
 
 const AppointmentCardDoctor = ({ appointment }) => {
     const link = appointment?.sessionLink;
     const [sessionLink, setSessionLink] = useState(link);
-
+    const [patients] = usePatient();
+    const patient = patients?.find(patient => patient?._id === appointment?.patientID)
     // 🧾 Save session link
     const axiosPublic = useAxiosPublic();
 
