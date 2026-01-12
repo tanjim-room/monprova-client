@@ -260,7 +260,7 @@ const AppointmentDetailsPatient = () => {
                             <p><strong>স্ট্যাটাসঃ</strong> <span className={"font-semibold " + statusClass}>{appointment.state || "upcoming"}</span></p>
                             {
                                 appointment.mode === 'offline' && (
-                                    <p><strong>চেম্বারের ঠিকানা</strong> <span className={"font-semibold " + statusClass}>{doctor.chamber || "N/A"}</span></p>
+                                    <p><strong>চেম্বারের ঠিকানা</strong> <span className={"font-semibold " + statusClass}>{doctor.chamber || "N/Aa"}</span></p>
                                 )
                             }
 
