@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import Button from '../Button';
+import useAuth from '../../hooks/useAuth';
 
 const DoctorCard = ({ doctor }) => {
+    const {user} = useAuth()
     const { _id, name, designation, expertise, consultationFee, img, yearsOfExperience, degrees, regNo, institute, image } = doctor;
 
     return (
@@ -15,19 +17,23 @@ const DoctorCard = ({ doctor }) => {
                 </figure>
                 <div>
                     <h3 className="card-title font-bold text-lg text-primary-color">{name}</h3>
-                <p className='font-semibold text-tertiary-color text-sm'>{designation}</p>
-                <p className='text-xs text-gray-600'>{institute}</p>
+                    <p className='font-semibold text-tertiary-color text-sm'>{designation}</p>
+                    <p className='text-xs text-gray-600'>{institute}</p>
                 </div>
             </div>
             <div className="card-body p-4">
-                
-                
+
+
                 <p className='text-xs text-gray-600'>{degrees}</p>
                 <p className='text-xs text-gray-600'>{expertise}</p>
                 <div className="badge badge-error text-white bg-secondary-color text-sm mt-2">পরামর্শ ফি: {consultationFee} টাকা</div>
             </div>
             <div className="mb-4 mx-4">
-                <Link to={`/doctorDetails/${_id}`}>
+                <Link to={
+                    user
+                        ? `/dashboardPatient/doctorList/doctorDetails/${_id}`
+                        : `/doctorDetails/${_id}`
+                }>
                     <Button btnName={"বিস্তারিত দেখুন"} bgColor="bg-blue-500 w-full py-2"></Button>
                 </Link>
             </div>
