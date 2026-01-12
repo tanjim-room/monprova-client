@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import useDoctor from "../../hooks/useDoctor";
@@ -23,11 +24,11 @@ const DoctorHelp = () => {
   const doctorID = doctor?._id;
   const doctorName = doctor?.name;
 
-  // submit reply (only verified doctor)
+  // submit reply
   const handleReplySubmit = async (e, questionId) => {
     e.preventDefault();
 
-    if (!doctor?.verificationStatus) return;
+    if (doctor?.verificationStatus !== "verified") return;
 
     const replyText = e.target.reply.value;
 
@@ -47,14 +48,13 @@ const DoctorHelp = () => {
     refetchReplies();
   };
 
-  // only admin approved questions (latest first)
+  // approved questions (latest first)
   const approvedQuestions = questions
     ?.filter(q => q.status === "approved")
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
     <div className="max-w-4xl mx-auto min-h-screen p-4">
-
       {/* Header */}
       <div className="mb-4 rounded-xl p-4 text-center text-white
         bg-gradient-to-r from-blue-600 to-teal-500 shadow">
@@ -76,7 +76,6 @@ const DoctorHelp = () => {
 
       {showHelp && (
         <div className="space-y-6">
-
           {approvedQuestions?.length === 0 && (
             <p className="text-center text-gray-500 mt-10">
               এখনো কোনো অনুমোদিত প্রশ্ন নেই।
@@ -98,12 +97,11 @@ const DoctorHelp = () => {
 
             return (
               <div key={q._id} className="bg-white border rounded-xl p-5">
-
                 {/* Question */}
                 <div className="flex gap-3">
                   <div className="w-10 h-10 rounded-full overflow-hidden
                     bg-gray-400 flex items-center justify-center
-                    text-white font-semibold">
+                    text-white font-semibold shrink-0">
                     {patient?.image ? (
                       <img
                         src={patient.image}
@@ -111,7 +109,9 @@ const DoctorHelp = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      patient?.name?.charAt(0)
+                      <span className="uppercase">
+                        {patient?.name?.charAt(0)}
+                      </span>
                     )}
                   </div>
 
@@ -134,26 +134,35 @@ const DoctorHelp = () => {
                     );
 
                     return (
-                      <div key={i} className="flex gap-3">
-                        <div className="w-9 h-9 rounded-full overflow-hidden
-                          bg-blue-500 flex items-center justify-center
-                          text-white font-semibold">
+                      <div key={i} className="flex gap-3 items-start">
+                        {/* ✅ FIXED DOCTOR AVATAR */}
+                        <Link
+                          to={`/doctorDetails//${replyDoctor?._id}`}
+                          className="w-10 h-10 rounded-full overflow-hidden
+                          bg-gray-400 flex items-center justify-center
+                          text-white font-semibold shrink-0
+                          hover:ring-2 hover:ring-blue-500 transition"
+                        >
                           {replyDoctor?.image ? (
                             <img
                               src={replyDoctor.image}
-                              alt={replyDoctor.name}
+                              alt={replyDoctor?.name}
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            replyDoctor?.name?.charAt(0)
+                            <span className="uppercase">
+                              {replyDoctor?.name?.charAt(0)}
+                            </span>
                           )}
-                        </div>
+                        </Link>
 
-                        <div className="bg-gray-100 rounded-2xl px-4 py-2">
+                        <div className="bg-gray-100 rounded-2xl px-4 py-2 max-w-[85%]">
                           <p className="text-sm font-semibold text-blue-700">
                             {r.doctorName}
                           </p>
-                          <p className="text-sm text-gray-800">{r.reply}</p>
+                          <p className="text-sm text-gray-800">
+                            {r.reply}
+                          </p>
                           <p className="text-xs text-gray-400 mt-1">
                             {new Date(r.createdAt).toLocaleString("en-GB")}
                           </p>

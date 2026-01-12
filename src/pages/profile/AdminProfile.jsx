@@ -129,6 +129,7 @@ const AdminProfile = () => {
         confirmButtonText: "ঠিক আছে",
         confirmButtonColor: "#2563eb",
       });
+      refetch();
 
       setIsEditable(false);
 
@@ -241,7 +242,7 @@ const AdminProfile = () => {
               <input
                 type="email"
                 name="email"
-                defaultValue={admin?.email || ""}
+                defaultValue={admin?.email || user?.email || ""}
                 className="input input-bordered w-full border-2 p-2"
                 disabled
               />

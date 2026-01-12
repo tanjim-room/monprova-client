@@ -155,7 +155,7 @@ const AppointmentDetailsDoctor = () => {
                             </h2>
                             <div className="space-y-4">
                                 <p><span className="font-bold">মাধ্যমঃ</span> {appointment.mode || "Not available"}</p>
-                                <p><span className="font-bold">তারিখঃ</span> {appointment.date || "Not available"}</p>
+                                <p><span className="font-bold">তারিখঃ</span> {appointment.appointmentDate || "Not available"}</p>
                                 <p><span className="font-bold">সময়ঃ</span> {appointment.slot || "Not available"}</p>
                                 <p><span className="font-bold">ফিঃ</span> {doctor.consultationFee} টাকা</p>
                                 <p><span className="font-bold">স্ট্যাটাসঃ</span> <span className={`font-semibold ${appointment.state === "completed" ? "text-green-600" : "text-yellow-600"}`}>{appointment.state || "Pending"}</span></p>

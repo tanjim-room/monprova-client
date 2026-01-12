@@ -56,16 +56,25 @@ const AppointmentCard = ({ appointment }) => {
                             })
                             : "Not available"}
                     </p>
-                    <p className="mb-3">সময়ঃ {appointment?.slot || "অনুপস্থিত"}</p>
-                    <div className="mt-3 flex justify-between gap-3">
+                    <p className="mb-6">সময়ঃ {appointment?.slot || "অনুপস্থিত"}</p>
+                    <div>
+                        {
+                            appointment?.mode === "online" && appointment?.state === "upcoming" && (
+                                <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.tachyon&hl=en" target='_blank'>
+                                    <p className='text-red-500 text-xm'>ভিডিও সেশনের জন্য Google Meet ডাউনলোড করুন</p>
+                                </a>
+                            )
+                        }
+                    </div>
+                    <div className="mt-3 flex gap-4 justify-between">
                         {/* Join Session Button (Visible only for online appointments) */}
                         {appointment?.mode === 'online' && appointment?.state === "upcoming" && (
-                            <div className="w-full" onClick={handleJoinSession}>
-                                <Button btnName="ভিডিও সেশন এ জয়েন করুন" bgColor="bg-primary-color hover:bg-primary-400" />
+                            <div className="w-full">
+                                <Button btnName="ভিডিও সেশন এ জয়েন করুন" bgColor="bg-primary-color hover:bg-primary-400" onClick={handleJoinSession} />
                             </div>
                         )}
                         {/* View Appointment Details Button */}
-                        <div className="w-full">
+                        <div className={`w-full ${appointment?.mode === "offline"|| appointment?.state === "completed" ? "mt-8" : ""}`}>
                             <Link to={`/dashboardPatient/appointmentDetailsPatient/${appointment?._id}`}>
                                 <Button btnName="বিস্তারিত দেখুন" bgColor="bg-primary-color hover:bg-primary-400" />
                             </Link>

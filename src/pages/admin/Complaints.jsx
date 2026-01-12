@@ -77,7 +77,7 @@ const Complaints = () => {
 
                   <td className="border px-4 py-3">
                     <span
-                      className={`px-3 py-1 rounded text-white text-sm ${
+                      className={`px-3 py-1 rounded text-white text-sm] ${
                         complaint.status === 'pending'
                           ? 'bg-yellow-500'
                           : complaint.status === 'in-progress'
@@ -89,7 +89,7 @@ const Complaints = () => {
                         ? 'অপেক্ষমাণ'
                         : complaint.status === 'in-progress'
                         ? 'প্রক্রিয়াধীন'
-                        : 'সমাধান হয়েছে'}
+                        : 'সমাধানহয়েছে'}
                     </span>
                   </td>
 
