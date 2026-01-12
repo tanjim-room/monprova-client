@@ -9,6 +9,7 @@ import useAppointment from "../../hooks/useAppointment";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import useSchedule from "../../hooks/useSchedule";
+import { format } from 'date-fns';
 import { app } from "../../firebase/firebase.config";
 
 const AppointmentForm = () => {
@@ -28,7 +29,7 @@ const AppointmentForm = () => {
   const [gender, setGender] = useState("");
   const [bloodGroup, setBloodGroup] = useState("");
   const [medium, setMedium] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null); // Selected date state
+  const [selectedDate, setSelectedDate] = useState(new Date()); // Selected date state
   const [availableSlots, setAvailableSlots] = useState([]); // State for available slots
   const [bookedSlots, setBookedSlots] = useState([]); // State for booked slots
   const [selectedSlot, setSelectedSlot] = useState(null); // State for selected slot
