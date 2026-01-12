@@ -64,7 +64,7 @@ const DoctorDetails = () => {
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-6xl mx-auto">
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          
+
           {/* Back Button */}
           <div className='p-6 bg-gray-50 border-b'>
             <BackButton destination={user ? "/dashboardPatient/doctorList" : "/doctorList"}></BackButton>
@@ -74,10 +74,10 @@ const DoctorDetails = () => {
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-8">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
               <div className='flex-shrink-0'>
-                <img 
-                  src={image || "https://i.ibb.co.com/ym2wsZXY/avater-Grey-User-Circles-Set.png"} 
-                  alt={name} 
-                  className="w-40 h-40 object-cover rounded-full border-4 border-white shadow-lg" 
+                <img
+                  src={image || "https://i.ibb.co.com/ym2wsZXY/avater-Grey-User-Circles-Set.png"}
+                  alt={name}
+                  className="w-40 h-40 object-cover rounded-full border-4 border-white shadow-lg"
                 />
               </div>
               <div className="flex-1 text-center md:text-left space-y-3">
@@ -96,7 +96,7 @@ const DoctorDetails = () => {
           {/* Doctor Details */}
           <div className="p-8">
             <div className="grid md:grid-cols-2 gap-8">
-              
+
               {/* Left Column */}
               <div className='space-y-6'>
                 {/* Workplace */}
@@ -132,6 +132,20 @@ const DoctorDetails = () => {
                     <p className="font-semibold text-gray-800 text-lg">{yearsOfExperience} বছর</p>
                   </div>
                 </div>
+
+                {
+                  doctor?.chamber && (
+                    <div>
+                      <h3 className="text-xl font-bold text-blue-600 mb-3 flex items-center gap-2">
+                        <span className="w-1 h-6 bg-blue-600 rounded"></span>
+                        চেম্বারের ঠিকানা
+                      </h3>
+                      <div className="bg-gray-50 rounded-lg p-4">
+                        <p className="font-semibold text-gray-800 text-lg">{doctor.chamber} বছর</p>
+                      </div>
+                    </div>
+                  )
+                }
               </div>
 
               {/* Right Column */}
