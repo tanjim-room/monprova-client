@@ -835,7 +835,7 @@ const DoctorProfile = () => {
                             <input
                                 type="number"
                                 name="nidNo"
-                                defaultValue={doctor?.nidNo || ''} // Default to empty if undefined
+                                defaultValue={doctorInfo?.nidNo || ''} // Default to empty if undefined
                                 disabled={!isEditable}
                                 className="input input-bordered w-full border-2 p-2"
                             />
