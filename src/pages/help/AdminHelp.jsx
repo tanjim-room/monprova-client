@@ -92,141 +92,191 @@ const AdminHelp = () => {
     }
   };
 
-  // Array of pastel background colors for cards
-  const cardColors = [
-    "bg-pink-50",
-    "bg-purple-50",
-    "bg-blue-50",
-    "bg-green-50",
-    "bg-yellow-50",
-  ];
-
   return (
-    <div className="max-w-5xl mx-auto p-4 min-h-screen bg-gradient-to-b from-indigo-50 via-purple-50 to-pink-50">
-      <h2 className="text-3xl font-bold mb-6 text-center text-indigo-700">
-        🛡 Admin Help Center
-      </h2>
+    <div className="min-h-screen bg-[#E6F0FF] p-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
+          সহায়তা কেন্দ্র ম্যানেজমেন্ট
+        </h1>
 
-      {/* ===== Filter Buttons ===== */}
-      <div className="flex justify-center gap-4 mb-6 flex-wrap">
-        <button
-          className={`px-4 py-2 rounded-full font-medium shadow ${
-            filterStatus === "pending"
-              ? "bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 text-white"
-              : "bg-gray-200 text-gray-700"
-          }`}
-          onClick={() => setFilterStatus("pending")}
-        >
-          Pending
-        </button>
-        <button
-          className={`px-4 py-2 rounded-full font-medium shadow ${
-            filterStatus === "approved"
-              ? "bg-green-400 text-white"
-              : "bg-gray-200 text-gray-700"
-          }`}
-          onClick={() => setFilterStatus("approved")}
-        >
-          Approved
-        </button>
-        <button
-          className={`px-4 py-2 rounded-full font-medium shadow ${
-            filterStatus === "declined"
-              ? "bg-red-400 text-white"
-              : "bg-gray-200 text-gray-700"
-          }`}
-          onClick={() => setFilterStatus("declined")}
-        >
-          Declined
-        </button>
-      </div>
-
-      {/* ===== Select All & Bulk Approve/Decline ===== */}
-      {filterStatus === "pending" && filteredQuestions.length > 0 && (
-        <div className="flex items-center justify-between mb-4 flex-wrap gap-4">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={selectAll}
-              onChange={toggleSelectAll}
-            />
-            <span className="font-medium">Select All</span>
-          </label>
-
-          {selectedQuestions.length > 0 && (
-            <div className="flex gap-3 flex-wrap">
-              <button
-                onClick={handleApprove}
-                className="px-4 py-2 bg-gradient-to-r from-green-400 to-green-500 text-white rounded-full shadow"
-              >
-                Approve Selected
-              </button>
-              <button
-                onClick={handleDecline}
-                className="px-4 py-2 bg-gradient-to-r from-red-400 to-red-500 text-white rounded-full shadow"
-              >
-                Decline Selected
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {filteredQuestions.length === 0 && (
-        <p className="text-center text-gray-500 mt-10 text-lg">
-          কোন {filterStatus} প্রশ্ন নেই।
-        </p>
-      )}
-
-      {/* ===== Question Cards ===== */}
-      <div className="space-y-5">
-        {filteredQuestions.map((q, idx) => {
-          const patient = patients.find(p => p._id === q.patientID);
-          const isSelected = selectedQuestions.includes(q._id);
-          const bgColor = cardColors[idx % cardColors.length];
-
-          return (
-            <div
-              key={q._id}
-              className={`${bgColor} shadow-md rounded-2xl p-4 flex gap-3 items-start`}
-            >
-              {/* Checkbox for pending questions */}
-              {filterStatus === "pending" && (
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => toggleSelect(q._id)}
-                  className="mt-2"
-                />
-              )}
-
-              <Avatar name={patient?.name} image={patient?.image} size={40} />
-
-              <div className="flex-1">
-                <p className="font-semibold text-indigo-700">{patient?.name || "Unknown Patient"}</p>
-
-                {/* Question content */}
-                <p className="text-gray-800 mt-1">{q.question}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {new Date(q.createdAt).toLocaleString()}
-                </p>
-
-                {/* Status badge for approved/declined */}
-                {filterStatus !== "pending" && (
-                  <span
-                    className={`inline-block mt-2 px-3 py-1 rounded-full font-semibold text-white ${
-                      filterStatus === "approved"
-                        ? "bg-green-500"
-                        : "bg-red-500"
-                    }`}
-                  >
-                    {filterStatus.toUpperCase()}
-                  </span>
-                )}
+        {/* Filter Section */}
+        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+          <div className="grid grid-cols-1 gap-4">
+            {/* Filter Buttons */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                স্ট্যাটাস ফিল্টার
+              </label>
+              <div className="flex gap-4 flex-wrap">
+                <button
+                  className={`px-6 py-2 rounded-md font-medium transition ${
+                    filterStatus === "pending"
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                  onClick={() => setFilterStatus("pending")}
+                >
+                  অপেক্ষমান
+                </button>
+                <button
+                  className={`px-6 py-2 rounded-md font-medium transition ${
+                    filterStatus === "approved"
+                      ? "bg-green-500 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                  onClick={() => setFilterStatus("approved")}
+                >
+                  অনুমোদিত
+                </button>
+                <button
+                  className={`px-6 py-2 rounded-md font-medium transition ${
+                    filterStatus === "declined"
+                      ? "bg-red-500 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                  onClick={() => setFilterStatus("declined")}
+                >
+                  প্রত্যাখ্যাত
+                </button>
               </div>
             </div>
-          );
-        })}
+
+            {/* Select All & Bulk Actions */}
+            {filterStatus === "pending" && filteredQuestions.length > 0 && (
+              <div className="flex items-center justify-between flex-wrap gap-4 pt-4 border-t border-gray-200">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={toggleSelectAll}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <span className="font-medium text-gray-700">সব নির্বাচন করুন</span>
+                </label>
+
+                {selectedQuestions.length > 0 && (
+                  <div className="flex gap-3 flex-wrap">
+                    <button
+                      onClick={handleApprove}
+                      className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-md transition"
+                    >
+                      নির্বাচিত অনুমোদন করুন ({selectedQuestions.length})
+                    </button>
+                    <button
+                      onClick={handleDecline}
+                      className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition"
+                    >
+                      নির্বাচিত প্রত্যাখ্যান করুন ({selectedQuestions.length})
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+            <div className="bg-blue-50 p-4 rounded-lg text-center">
+              <p className="text-sm text-gray-600">অপেক্ষমান প্রশ্ন</p>
+              <p className="text-2xl font-bold text-blue-600">
+                {questions.filter(q => q.status === "pending").length}
+              </p>
+            </div>
+            <div className="bg-green-50 p-4 rounded-lg text-center">
+              <p className="text-sm text-gray-600">অনুমোদিত প্রশ্ন</p>
+              <p className="text-2xl font-bold text-green-600">
+                {questions.filter(q => q.status === "approved").length}
+              </p>
+            </div>
+            <div className="bg-red-50 p-4 rounded-lg text-center">
+              <p className="text-sm text-gray-600">প্রত্যাখ্যাত প্রশ্ন</p>
+              <p className="text-2xl font-bold text-red-600">
+                {questions.filter(q => q.status === "declined").length}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Questions List */}
+        {filteredQuestions.length === 0 ? (
+          <div className="bg-white shadow-md rounded-lg p-8 text-center">
+            <p className="text-gray-500 text-lg">
+              কোন {filterStatus === "pending" ? "অপেক্ষমান" : filterStatus === "approved" ? "অনুমোদিত" : "প্রত্যাখ্যাত"} প্রশ্ন নেই।
+            </p>
+          </div>
+        ) : (
+          <div className="bg-white shadow-md rounded-lg overflow-hidden">
+            <div className="divide-y divide-gray-200">
+              {filteredQuestions.map((q) => {
+                const patient = patients.find(p => p._id === q.patientID);
+                const isSelected = selectedQuestions.includes(q._id);
+
+                return (
+                  <div
+                    key={q._id}
+                    className={`p-6 hover:bg-gray-50 transition ${
+                      isSelected ? "bg-blue-50" : ""
+                    }`}
+                  >
+                    <div className="flex gap-4 items-start">
+                      {/* Checkbox for pending questions */}
+                      {filterStatus === "pending" && (
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleSelect(q._id)}
+                          className="mt-2 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                      )}
+
+                      {/* Avatar */}
+                      <div className="flex-shrink-0">
+                        <Avatar name={patient?.name} image={patient?.image} size={40} />
+                      </div>
+
+                      {/* Question Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-2">
+                          <p className="font-semibold text-gray-900">
+                            {patient?.name || "Unknown Patient"}
+                          </p>
+                          {filterStatus !== "pending" && (
+                            <span
+                              className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                                filterStatus === "approved"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-red-100 text-red-800"
+                              }`}
+                            >
+                              {filterStatus === "approved" ? "অনুমোদিত" : "প্রত্যাখ্যাত"}
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="text-gray-700 mb-2 break-words">{q.question}</p>
+
+                        <p className="text-xs text-gray-500">
+                          {new Date(q.createdAt).toLocaleDateString('bn-BD', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Results Count */}
+        <div className="mt-4 text-center text-gray-600">
+          দেখানো হচ্ছে {filteredQuestions.length} টি প্রশ্ন (মোট {questions.length} টি)
+        </div>
       </div>
     </div>
   );
