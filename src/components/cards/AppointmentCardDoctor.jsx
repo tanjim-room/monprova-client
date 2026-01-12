@@ -93,7 +93,7 @@ const AppointmentCardDoctor = ({ appointment }) => {
                 <div className="mb-4">
                     <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
                         <span className="w-1 h-6 bg-blue-500 mr-3 rounded"></span>
-                        {appointment?.patientName || 'নাম পাওয়া যায়নি'}
+                        {patient?.name || 'নাম পাওয়া যায়নি'}
                     </h2>
                     <div className="space-y-3">
                         <div className="flex items-center">
