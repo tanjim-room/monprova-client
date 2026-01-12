@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import useAxiosPublic from "../../hooks/useAxiosPublic";
 import useDoctor from "../../hooks/useDoctor";
@@ -161,12 +162,14 @@ const PatientHelp = () => {
 
                     return (
                       <div key={r._id || i} className="flex gap-3">
-                        <Avatar
-                          name={r.doctorName}
-                          image={doctor?.image}
-                          size={36}
-                        />
+                        <Link to={`/doctorDetails/${doctor._id}`}>
+                          <Avatar
+                            name={r.doctorName}
+                            image={doctor?.image}
+                            size={36}
+                          />
 
+                        </Link>
                         <div className={`${bg} p-3 rounded-xl flex-1`}>
                           <p className="text-sm font-semibold text-blue-600">
                             👨‍⚕️ {r.doctorName}
