@@ -30,10 +30,16 @@ const AppointmentDetails = () => {
         setDoctor(doctorRes.data);
       }
 
-      // Fetch patient details
+      // Fetch patient details (try users collection first as it is the primary auth record)
       if (appointmentData.patientID) {
-        const patientRes = await axiosSecure.get(`/api/patients/${appointmentData.patientID}`);
-        setPatient(patientRes.data);
+        try {
+            const patientRes = await axiosSecure.get(`/api/users/${appointmentData.patientID}`);
+            setPatient(patientRes.data);
+        } catch (e) {
+            // Fallback to patients collection if users fail
+             const patientRes = await axiosSecure.get(`/api/patients/${appointmentData.patientID}`);
+             setPatient(patientRes.data);
+        }
       }
 
       setLoading(false);
