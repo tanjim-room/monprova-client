@@ -69,12 +69,12 @@ const AppointmentCard = ({ appointment }) => {
                     <div className="mt-3 flex gap-4 justify-between">
                         {/* Join Session Button (Visible only for online appointments) */}
                         {appointment?.mode === 'online' && appointment?.state === "upcoming" && (
-                            <div className="w-full">
-                                <Button btnName="ভিডিও সেশন এ জয়েন করুন" bgColor="bg-primary-color hover:bg-primary-400" onClick={handleJoinSession} />
+                            <div className="w-full" onClick={handleJoinSession}>
+                                <Button btnName="ভিডিও সেশন এ জয়েন করুন" bgColor="bg-primary-color hover:bg-primary-400" />
                             </div>
                         )}
                         {/* View Appointment Details Button */}
-                        <div className={`w-full ${appointment?.mode === "offline"|| appointment?.state === "completed" ? "mt-8" : ""}`}>
+                        <div className={`w-full ${appointment?.mode === "offline"|| appointment?.state === "completed" ? "mt-8" : ""}`} >
                             <Link to={`/dashboardPatient/appointmentDetailsPatient/${appointment?._id}`}>
                                 <Button btnName="বিস্তারিত দেখুন" bgColor="bg-primary-color hover:bg-primary-400" />
                             </Link>
