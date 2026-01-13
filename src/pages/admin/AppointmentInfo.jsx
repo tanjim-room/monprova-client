@@ -30,7 +30,7 @@ const AppointmentInfo = () => {
       const [appointmentsRes, doctorsRes, patientsRes] = await Promise.all([
         axiosSecure.get("/api/appointments"),
         axiosSecure.get("/api/doctors"),
-        axiosSecure.get("/api/patients")
+        axiosSecure.get("/api/users")
       ]);
       
       setAppointments(appointmentsRes.data);
