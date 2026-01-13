@@ -141,7 +141,7 @@ const DoctorDetails = () => {
                         চেম্বারের ঠিকানা
                       </h3>
                       <div className="bg-gray-50 rounded-lg p-4">
-                        <p className="font-semibold text-gray-800 text-lg">{doctor.chamber} বছর</p>
+                        <p className="font-semibold text-gray-800 text-lg">{doctor.chamber} </p>
                       </div>
                     </div>
                   )
