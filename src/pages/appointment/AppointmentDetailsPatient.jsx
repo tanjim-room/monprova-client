@@ -129,7 +129,7 @@ const AppointmentDetailsPatient = () => {
                 didOpen: () => Swal.showLoading(),
             });
 
-            const res = await fetch(`http://localhost:8000/api/upload-prescription/${appointmentId}`, {
+            const res = await fetch(`https://monprova-server-b72d8846b-tanjim-rooms-projects.vercel.app//api/upload-prescription/${appointmentId}`, {
                 method: "POST",
                 body: formData,
             });
@@ -332,7 +332,7 @@ const AppointmentDetailsPatient = () => {
                                 {
                                     appointment.previousPrescription && (
                                         <div className="w-full">
-                                            <Link to={`http://localhost:8000/download-pdf`}>
+                                            <Link to={`https://monprova-server-b72d8846b-tanjim-rooms-projects.vercel.app//download-pdf`}>
                                                 <Button btnName="রোগীর দেওয়া প্রেস্ক্রিপশন" bgColor="bg-tertiary-color" />
                                             </Link>
                                         </div>
