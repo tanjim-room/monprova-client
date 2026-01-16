@@ -3,7 +3,7 @@ import http from "./httpservice";
 const pdfService = {
   downloadPDF: function(appointmentId) {
     // Dynamically insert appointmentId into the API URL
-    const apiURL = `http://localhost:8000/getpdf/${appointmentId}`;
+    const apiURL = `https://monprova-server-b72d8846b-tanjim-rooms-projects.vercel.app//getpdf/${appointmentId}`;
 
     return http.get(apiURL, {
       responseType: "blob", // The response type is a blob (binary data)

@@ -9,7 +9,7 @@ const port = process.env.PORT || 8000;
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
-  "http://localhost:8000/auth/google/callback"
+  "https://monprova-server-b72d8846b-tanjim-rooms-projects.vercel.app//auth/google/callback"
 );
 
 const SCOPES = ["https://www.googleapis.com/auth/calendar"];
@@ -17,7 +17,7 @@ const SCOPES = ["https://www.googleapis.com/auth/calendar"];
 const generatePrescriptionPDF = require("./utils/generatePrescriptionPDF");
 // Middlewares
 app.use(cors({
-  origin: ["http://localhost:5175","http://localhost:5173"], // React frontend
+  origin: ["https://monprova200.netlify.app/api","http://localhost:5173"], // React frontend
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -1299,10 +1299,10 @@ async function run() {
         total_amount: paymentData.amount,
         currency: 'BDT',
         tran_id: trxId, // use unique tran_id for each api call
-        success_url: 'http://localhost:8000/success-payment',
-        fail_url: 'http://localhost:5175/fail',
-        cancel_url: 'http://localhost:5175/cancel',
-        ipn_url: 'http://localhost:8000/ipn-success-payment',
+        success_url: 'https://monprova-server-b72d8846b-tanjim-rooms-projects.vercel.app//success-payment',
+        fail_url: 'https://monprova200.netlify.app/api/fail',
+        cancel_url: 'https://monprova200.netlify.app/api/cancel',
+        ipn_url: 'https://monprova-server-b72d8846b-tanjim-rooms-projects.vercel.app//ipn-success-payment',
         shipping_method: 'Courier',
         product_name: 'Computer.',
         product_category: 'Electronic',

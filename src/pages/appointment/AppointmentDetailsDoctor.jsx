@@ -206,7 +206,7 @@ const AppointmentDetailsDoctor = () => {
                                {
                                     appointment.previousPrescription && (
                                         <div className="w-full">
-                                            <Link to={`http://localhost:8000/download-pdf`}>
+                                            <Link to={`https://monprova-server-b72d8846b-tanjim-rooms-projects.vercel.app//download-pdf`}>
                                                 <Button btnName="রোগীর দেওয়া প্রেস্ক্রিপশন" bgColor="bg-tertiary-color" />
                                             </Link>
 
