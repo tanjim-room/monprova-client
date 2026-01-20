@@ -17,7 +17,7 @@ const SCOPES = ["https://www.googleapis.com/auth/calendar"];
 const generatePrescriptionPDF = require("./utils/generatePrescriptionPDF");
 // Middlewares
 app.use(cors({
-  origin: ["https://monprova200.netlify.app/api","http://localhost:5173"], // React frontend
+  origin: ["https://monprova-9037c.firebaseapp.com","http://localhost:5173"], // React frontend
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -1300,8 +1300,8 @@ async function run() {
         currency: 'BDT',
         tran_id: trxId, // use unique tran_id for each api call
         success_url: 'https://monprova-server-b72d8846b-tanjim-rooms-projects.vercel.app//success-payment',
-        fail_url: 'https://monprova200.netlify.app/api/fail',
-        cancel_url: 'https://monprova200.netlify.app/api/cancel',
+        fail_url: 'https://monprova-9037c.firebaseapp.com/fail',
+        cancel_url: 'https://monprova-9037c.firebaseapp.com/cancel',
         ipn_url: 'https://monprova-server-b72d8846b-tanjim-rooms-projects.vercel.app//ipn-success-payment',
         shipping_method: 'Courier',
         product_name: 'Computer.',

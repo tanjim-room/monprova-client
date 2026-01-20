@@ -11,5 +11,7 @@ axios.interceptors.response.use(null, error => {
 });
 
 export default {
-  get: axios.get
+  get: (url, options = {}) => {
+    return axios.get(url, options);
+  }
 };
