@@ -51,11 +51,11 @@ const AdminResources = () => {
         setLoading(true);
         try {
             if (viewType === 'blog') {
-                const response = await fetch('http://localhost:8000/api/blogs');
+                const response = await fetch('https://monprova-server.vercel.app/api/blogs');
                 const data = await response.json();
                 setBlogs(data);
             } else if (viewType === 'video') {
-                const response = await fetch('http://localhost:8000/api/videos');
+                const response = await fetch('https://monprova-server.vercel.app/api/videos');
                 const data = await response.json();
                 setVideos(data);
             }
@@ -73,7 +73,7 @@ const AdminResources = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8000/api/blogs/${blogId}`, {
+            const response = await fetch(`https://monprova-server.vercel.app/api/blogs/${blogId}`, {
                 method: 'DELETE'
             });
 
@@ -97,7 +97,7 @@ const AdminResources = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:8000/api/videos/${videoId}`, {
+            const response = await fetch(`https://monprova-server.vercel.app/api/videos/${videoId}`, {
                 method: 'DELETE'
             });
 
@@ -180,7 +180,7 @@ const AdminResources = () => {
                     console.log('Uploading image to backend...');
 
                     // Send to backend endpoint
-                    const response = await fetch('http://localhost:8000/api/upload-image', {
+                    const response = await fetch('https://monprova-server.vercel.app/api/upload-image', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -246,8 +246,8 @@ const AdminResources = () => {
 
             // Determine API endpoint and method based on edit mode
             const url = isEditing 
-                ? `http://localhost:8000/api/videos/${editingId}`
-                : 'http://localhost:8000/api/videos';
+                ? `https://monprova-server.vercel.app/api/videos/${editingId}`
+                : 'https://monprova-server.vercel.app/api/videos';
             
             const method = isEditing ? 'PUT' : 'POST';
 
@@ -319,8 +319,8 @@ const AdminResources = () => {
 
             // Determine API endpoint and method based on edit mode
             const url = isEditing 
-                ? `http://localhost:8000/api/blogs/${editingId}`
-                : 'http://localhost:8000/api/blogs';
+                ? `https://monprova-server.vercel.app/api/blogs/${editingId}`
+                : 'https://monprova-server.vercel.app/api/blogs';
             
             const method = isEditing ? 'PUT' : 'POST';
 

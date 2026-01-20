@@ -1,17 +1,26 @@
 import http from "./httpservice";
 
 const pdfService = {
-  downloadPDF: function(appointmentId) {
-    // Dynamically insert appointmentId into the API URL
-    const apiURL = `http://localhost:8000/getpdf/${appointmentId}`;
+  downloadPDF: async (appointmentId) => {
+    try {
+      const apiURL = `https://monprova-server.vercel.app/api/pdf/getpdf/${appointmentId}`;
 
-    return http.get(apiURL, {
-      responseType: "blob", // The response type is a blob (binary data)
-      headers: {
-        "Accept": "application/pdf" // Expecting a PDF in the response
-      }
-    });
-  }
+      const response = await http.get(apiURL, {
+        responseType: "blob",
+        headers: {
+          Accept: "application/pdf",
+        },
+        timeout: 60000,
+      });
+
+      return response;
+    } catch (error) {
+      console.error("PDF Service Error:", error);
+      throw error;
+    }
+  },
 };
+
+
 
 export default pdfService;
