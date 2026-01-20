@@ -129,7 +129,7 @@ const AppointmentDetailsPatient = () => {
                 didOpen: () => Swal.showLoading(),
             });
 
-            const res = await fetch(`https://monprova-server-b72d8846b-tanjim-rooms-projects.vercel.app//api/upload-prescription/${appointmentId}`, {
+            const res = await fetch(`https://monprova-server.vercel.app/api/upload-prescription/${appointmentId}`, {
                 method: "POST",
                 body: formData,
             });

@@ -9,7 +9,7 @@ const useVideos = () => {
        // Fetch from both static JSON and MongoDB
        Promise.all([
            fetch('/videos.json').then(res => res.json()),
-           fetch('https://monprova-server-b72d8846b-tanjim-rooms-projects.vercel.app//api/videos').then(res => res.json())
+           fetch('https://monprova-server.vercel.app/api/videos').then(res => res.json())
        ])
            .then(([staticVideos, dbVideos]) => {
                // Convert DB videos to match the card format

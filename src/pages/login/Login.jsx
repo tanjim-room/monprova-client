@@ -119,7 +119,7 @@ const Login = () => {
     }
 
     if (hasError) return;
-
+    console.log(users)
     // Check if the email exists in the user list
     const dbUser = users?.find(user => user.email === email);
 
