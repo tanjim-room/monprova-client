@@ -8,7 +8,7 @@ const useUser = () => {
    const {data: users=[]} = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-        const res = await axiosPublic.get('/api/users')
+        const res = await axiosPublic.get('/users')
         return res.data
     }
    })
