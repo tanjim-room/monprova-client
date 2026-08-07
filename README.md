@@ -13,7 +13,7 @@ dashboards.
 
 ## 🎯 Overview
 
-The Monprova client is a role-aware healthcare web app with three main user
+The Monprova client is a role-aware mental-healthcare web app with three main user
 surfaces:
 
 - **Patients** — register/login, find doctors, book appointments, complete
@@ -104,7 +104,7 @@ monprova-client/
 
 - **Node.js** v18 or higher
 - **npm** (bundled with Node)
-- A running instance of the [Monprova Server](../monprova-server/README.md)
+- A running instance of the [Monprova Server](https://github.com/tanjim-room/monprova-server).
 - A **Firebase** project (for authentication)
 
 ## 🚀 Installation
