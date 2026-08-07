@@ -6,7 +6,7 @@ appointments with doctors, complete health assessments, view prescriptions, make
 payments, and read educational resources — while doctors and admins manage their
 dashboards.
 
-> This app is the client for the [Monprova Server](../monprova-server/README.md).
+> This app is the client for the [Monprova Server](https://github.com/tanjim-room/monprova-server).
 > It talks to the backend REST API for all data and uses Firebase for
 > authentication.
 
