@@ -240,3 +240,10 @@ The `firebase.json` already maps the `dist` directory and rewrites all routes to
 ---
 
 For backend setup and API details, see the [Server README](https://github.com/tanjim-room/monprova-server/blob/main/README.md).
+
+## 📄 Documents
+
+- 📋 **Software Requirements Specification (SRS):** [SRS Document](https://drive.google.com/file/d/1m_at0VObKTAxERvY9WjajxwH0kMnLQsv/view?usp=sharing)
+- 🏗️ **System Architecture Analysis:** [Architecture Document](https://drive.google.com/file/d/1dQXI7A2t8wudt-x42jaUO-j2m87XESPz/view?usp=sharing)
+- 🎥 **Software Metrics Analysis:** [Metrics Document](https://drive.google.com/file/d/1_Qv54aDtYbUUT2tAdNEmBPnRH8CzCYZD/view?usp=sharing)
+- 🗄️ **User Manual:** [User Manual](https://drive.google.com/file/d/1m_at0VObKTAxERvY9WjajxwH0kMnLQsv/view?usp=sharing)
