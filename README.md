@@ -162,7 +162,7 @@ npm run preview
 
 ## 🔗 Connecting to the Backend
 
-1. Start the [Monprova Server](../monprova-server/README.md) (default port 5000).
+1. Start the [Monprova Server](https://github.com/tanjim-room/monprova-server) (default port 5000).
 2. Ensure `VITE_API_BASE_URL` points at the server (e.g. `http://localhost:5000`).
 3. In the server's `.env`, set `CORS_ORIGIN=http://localhost:5175` so requests
    from the client are accepted.
@@ -239,4 +239,4 @@ The `firebase.json` already maps the `dist` directory and rewrites all routes to
 
 ---
 
-For backend setup and API details, see the [Server README](../monprova-server/README.md).
+For backend setup and API details, see the [Server README](https://github.com/tanjim-room/monprova-server/blob/main/README.md).
