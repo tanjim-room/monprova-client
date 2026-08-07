@@ -243,7 +243,7 @@ For backend setup and API details, see the [Server README](https://github.com/ta
 
 ## 📄 Documents
 
-- 📋 **Software Requirements Specification (SRS):** [SRS Document](https://drive.google.com/file/d/1m_at0VObKTAxERvY9WjajxwH0kMnLQsv/view?usp=sharing)
+- 📋 **Software Requirements Specification (SRS):** [SRS Document](https://drive.google.com/file/d/1JKYyHTt7MNLfRSXdX14IeplCR5ajedmb/view?usp=sharing)
 - 🏗️ **System Architecture Analysis:** [Architecture Document](https://drive.google.com/file/d/1dQXI7A2t8wudt-x42jaUO-j2m87XESPz/view?usp=sharing)
 - 🎥 **Software Metrics Analysis:** [Metrics Document](https://drive.google.com/file/d/1_Qv54aDtYbUUT2tAdNEmBPnRH8CzCYZD/view?usp=sharing)
 - 🗄️ **User Manual:** [User Manual](https://drive.google.com/file/d/1m_at0VObKTAxERvY9WjajxwH0kMnLQsv/view?usp=sharing)
