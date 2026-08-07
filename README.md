@@ -1,4 +1,4 @@
-# Monprova Client - Healthcare Web Frontend
+# Monprova Client - Mental-Healthcare Web Frontend
 
 The official web frontend for **Monprova (মনপ্রভা)**, a mental-health and telemedicine
 healthcare platform. This React single-page application (SPA) lets patients book
