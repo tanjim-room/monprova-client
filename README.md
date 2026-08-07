@@ -10,22 +10,6 @@ dashboards.
 > It talks to the backend REST API for all data and uses Firebase for
 > authentication.
 
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Environment Variables](#environment-variables)
-- [Running the Client](#running-the-client)
-- [Building for Production](#building-for-production)
-- [Connecting to the Backend](#connecting-to-the-backend)
-- [Firebase Setup](#firebase-setup)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [Troubleshooting](#troubleshooting)
 
 ## 🎯 Overview
 
