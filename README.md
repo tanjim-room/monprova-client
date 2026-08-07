@@ -1,6 +1,14 @@
-# Monprova Client - Frontend Application
+# Monprova Client - Healthcare Web Frontend
 
-A modern, responsive React-based frontend for the Monprova healthcare management platform. Built with Vite for fast development and optimized production builds.
+The official web frontend for **Monprova (মনপ্রভা)**, a mental-health and telemedicine
+healthcare platform. This React single-page application (SPA) lets patients book
+appointments with doctors, complete health assessments, view prescriptions, make
+payments, and read educational resources — while doctors and admins manage their
+dashboards.
+
+> This app is the client for the [Monprova Server](../monprova-server/README.md).
+> It talks to the backend REST API for all data and uses Firebase for
+> authentication.
 
 ## 📋 Table of Contents
 
@@ -10,238 +18,201 @@ A modern, responsive React-based frontend for the Monprova healthcare management
 - [Project Structure](#project-structure)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Configuration](#configuration)
-- [Development](#development)
-- [Building](#building)
-- [Component Architecture](#component-architecture)
-- [Custom Hooks](#custom-hooks)
-- [Styling](#styling)
+- [Environment Variables](#environment-variables)
+- [Running the Client](#running-the-client)
+- [Building for Production](#building-for-production)
+- [Connecting to the Backend](#connecting-to-the-backend)
+- [Firebase Setup](#firebase-setup)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Troubleshooting](#troubleshooting)
 
 ## 🎯 Overview
 
-The Monprova client is a comprehensive healthcare management interface serving three main user types:
+The Monprova client is a role-aware healthcare web app with three main user
+surfaces:
 
-- **Patients**: Search doctors, book appointments, complete health assessments, manage prescriptions
-- **Doctors**: Manage schedules, view patient details, write prescriptions, track consultations
-- **Admins**: Manage users, monitor system activity, handle payments, manage content
+- **Patients** — register/login, find doctors, book appointments, complete
+  self-assessments, view prescriptions, pay for consultations, read blogs/videos,
+  and use relaxation games.
+- **Doctors** — manage profile, schedule, appointments, create prescriptions, and
+  track income/payouts.
+- **Admins** — verify doctors, manage users, handle complaints, oversee
+  appointments, and publish resources.
+
+Authentication is handled by **Firebase** (email/password and Google sign-in).
+After sign-in, the client exchanges the Firebase user for a backend JWT stored in
+`localStorage` as `access-token`, which is then sent to the Monprova API.
 
 ## ✨ Features
 
-### User Management
-- Secure registration and authentication with Firebase
-- Role-based access (Patient, Doctor, Admin)
-- User profile management
-- Password management
-
-### Appointment System
-- Doctor search and filtering
-- Real-time appointment availability
-- Appointment booking and management
-- Appointment status tracking
-
-### Health Assessments
-- Interactive questionnaires
-- Assessment result tracking
-- Health recommendations
-- Assessment history
-
-### Prescriptions & Health Records
-- Prescription viewing and downloading
-- PDF generation
-- Health record management
-- Prescription history
-
-### Payments & Billing
-- Secure payment processing
-- Invoice management
-- Payment history
-- Payout management (for doctors)
-
-### Content Management
-- Blog articles and health tips
-- Educational videos
-- Doctor profiles and reviews
-- Health resources
-
-### Dashboard & Analytics
-- Personalized dashboards
-- Statistics and charts
-- Activity tracking
-- Performance metrics
+- ✅ Firebase email/password and Google authentication
+- ✅ JWT-secured API calls via axios interceptors
+- ✅ Role-based routing (Patient / Doctor / Admin) with private routes
+- ✅ Patient appointment booking and doctor scheduling
+- ✅ Health assessments with charts (Recharts)
+- ✅ Prescription viewing and PDF generation/print
+- ✅ Payment success/error flows
+- ✅ Blogs, videos, and educational resources
+- ✅ Relaxation games (breathing exercise, coloring, etc.)
+- ✅ Responsive UI with Tailwind CSS + DaisyUI
+- ✅ Data fetching/caching with TanStack React Query
 
 ## 🛠 Tech Stack
 
 | Category | Technology |
 |----------|------------|
 | **Framework** | React 18 |
-| **Build Tool** | Vite 7 (with Rolldown) |
-| **Styling** | Tailwind CSS 3 + DaisyUI 5 |
-| **State Management** | React Query (TanStack Query) 5 |
-| **Routing** | React Router DOM 7 |
-| **HTTP Client** | Axios 1 |
-| **Authentication** | Firebase 12 |
-| **Form Handling** | React Hook Form 7 |
-| **Date Management** | date-fns 4, dayjs 1 |
-| **Data Visualization** | Recharts 3 |
-| **File Upload** | React Dropzone 14 |
-| **UI Components** | DaisyUI, Lucide React, React Icons |
-| **Alerts & Modals** | SweetAlert2 11 |
+| **Build Tool** | Vite (rolldown-vite) |
+| **Routing** | React Router 7 |
+| **Language** | JavaScript (JSX) |
+| **Styling** | Tailwind CSS 3, DaisyUI 5 |
+| **State / Data** | TanStack React Query 5 |
+| **Auth** | Firebase 12 |
+| **HTTP** | Axios |
+| **Forms** | React Hook Form |
+| **Charts** | Recharts |
+| **Dates** | Day.js, date-fns, react-datepicker |
+| **Icons** | lucide-react, react-icons |
+| **Notifications** | SweetAlert2 |
+| **Linting** | ESLint 9 |
 
 ## 📁 Project Structure
 
 ```
-src/
-├── components/              # Reusable components
-│   ├── ActionButton.jsx
-│   ├── BackButton.jsx
-│   ├── Button.jsx
-│   ├── Logo.jsx
-│   ├── NotificationDropdown.jsx
-│   ├── NavBar/             # Navigation components
-│   ├── assessment/         # Assessment components
-│   └── cards/              # Card components
+monprova-client/
+├── index.html                  # HTML shell (title: মনপ্রভা)
+├── vite.config.js              # Vite config (dev server port 5175)
+├── tailwind.config.js          # Tailwind + DaisyUI
+├── postcss.config.js
+├── eslint.config.js
+├── firebase.json               # Firebase Hosting config (serves /dist)
+├── package.json
 │
-├── pages/                  # Page components (routes)
-│   ├── home/
-│   ├── login/
-│   ├── profile/
-│   ├── doctor/
-│   ├── appointment/
-│   ├── assessment/
-│   ├── prescription/
-│   ├── admin/
-│   ├── patient/
-│   ├── blogList/ & blogDetails/
-│   └── ...
-│
-├── layouts/                # Layout components
-│   ├── MainLayout.jsx
-│   ├── AdminDashboardLayout.jsx
-│   ├── DoctorDashboardLayout.jsx
-│   └── PatientDashboardLayout.jsx
-│
-├── hooks/                  # Custom React hooks
-│   ├── useAuth.jsx
-│   ├── useAxiosPublic.jsx
-│   ├── useAxiosSecure.jsx
-│   ├── useAppointment.jsx
-│   ├── useAssessment.jsx
-│   ├── usePrescription.jsx
-│   └── ...
-│
-├── providers/              # Context providers
-├── firebase/               # Firebase configuration
-├── Routes/                 # Route configuration
-├── assets/                 # Static assets
-├── App.jsx                 # Main app component
-└── main.jsx                # Vite entry point
+└── src/
+    ├── main.jsx                # App entry: Auth + QueryClient + Router + Helmet
+    ├── App.jsx                 # Default Vite template (unused demo component)
+    ├── httpservice.js          # Axios response interceptor
+    │
+    ├── firebase/
+    │   └── firebase.config.js  # Firebase init from env vars
+    │
+    ├── providers/
+    │   └── AuthProvider.jsx    # Firebase auth context + JWT exchange
+    │
+    ├── hooks/                  # Custom data hooks + axios instances
+    │   ├── useAxiosPublic.jsx  # Public axios (VITE_API_BASE_URL)
+    │   ├── useAxiosSecure.jsx  # Secure axios (VITE_API_BASE_URL)
+    │   ├── useAuth.jsx         # Auth context consumer
+    │   ├── useUser.jsx, useDoctor.jsx, useAppointment.jsx, ...
+    │
+    ├── Routes/
+    │   ├── Routes.jsx          # All app routes
+    │   └── PrivateRoute.jsx    # Route guard
+    │
+    ├── layouts/                # MainLayout, Patient/Doctor/Admin dashboards
+    ├── pages/                  # Home, login, signup, dashboards, assessments...
+    ├── components/             # NavBar, cards, buttons, assessment, etc.
+    └── assets/                 # Static assets
 ```
 
 ## 📋 Prerequisites
 
-- **Node.js** v16 or higher
-- **npm** or **yarn**
-- Modern web browser
-- Firebase project
-- Backend server running
+- **Node.js** v18 or higher
+- **npm** (bundled with Node)
+- A running instance of the [Monprova Server](../monprova-server/README.md)
+- A **Firebase** project (for authentication)
 
 ## 🚀 Installation
 
-### 1. Install Dependencies
-
 ```bash
+# From the monprova-client directory
 npm install
 ```
 
-### 2. Configure Environment Variables
+> The project pins `vite` to the `rolldown-vite` build via `overrides` in
+> `package.json`. A normal `npm install` will resolve this automatically.
 
-Create a `.env.local` file:
+## 🔐 Environment Variables
+
+Create a `.env` file in the `monprova-client` root:
 
 ```env
-VITE_FIREBASE_API_KEY=your_firebase_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
-VITE_FIREBASE_PROJECT_ID=your_firebase_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
-VITE_FIREBASE_APP_ID=your_firebase_app_id
-VITE_API_URL=http://localhost:5000
+# Backend API base URL (must match the server's CORS origin)
+VITE_API_BASE_URL=http://localhost:5000
+
+# Firebase web app configuration
+VITE_apiKey=your_firebase_api_key
+VITE_authDomain=your_project.firebaseapp.com
+VITE_projectId=your_firebase_project_id
+VITE_storageBucket=your_project.appspot.com
+VITE_messagingSenderId=your_messaging_sender_id
+VITE_appId=your_firebase_app_id
 ```
 
-## ⚙️ Configuration
+These are read in `src/firebase/firebase.config.js` and
+`src/hooks/useAxiosPublic.jsx` / `useAxiosSecure.jsx` via `import.meta.env`.
 
-### Vite Configuration (`vite.config.js`)
-- Dev server runs on port 5175
-- React plugin enabled
-- HMR (Hot Module Replacement) configured
+## 🏃 Running the Client
 
-### Tailwind Configuration (`tailwind.config.js`)
-- DaisyUI theme enabled
-- Custom color palette
-- Responsive design utilities
-
-## 🛠 Development
-
-### Start Development Server
+The dev server is configured to run on port **5175** (to match the backend CORS
+allowlist, which defaults to `http://localhost:5175`):
 
 ```bash
 npm run dev
 ```
 
-Access at `http://localhost:5175`
+Open http://localhost:5175 in your browser.
 
-### Available Scripts
-
-```bash
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Run ESLint
-npm run lint
-```
-
-## 🔨 Building
-
-### Production Build
+## 🏗 Building for Production
 
 ```bash
 npm run build
 ```
 
-Creates optimized `dist/` directory.
-
-### Preview Production Build
+Output is written to the `dist/` folder. To preview the production build locally:
 
 ```bash
 npm run preview
 ```
 
-## 🪝 Custom Hooks
+## 🔗 Connecting to the Backend
 
-All hooks use React Query for efficient data fetching:
+1. Start the [Monprova Server](../monprova-server/README.md) (default port 5000).
+2. Ensure `VITE_API_BASE_URL` points at the server (e.g. `http://localhost:5000`).
+3. In the server's `.env`, set `CORS_ORIGIN=http://localhost:5175` so requests
+   from the client are accepted.
 
-| Hook | Purpose |
-|------|---------|
-| `useAuth` | Authentication state |
-| `useAxiosPublic` | Public API requests |
-| `useAxiosSecure` | Authenticated requests |
-| `useAppointment` | Appointment management |
-| `useAssessment` | Health assessments |
-| `usePrescription` | Prescriptions |
-| `useDoctor` | Doctor data |
-| `useBlogs` | Blog content |
-| `useNotifications` | Notifications |
+On login, `AuthProvider` posts the Firebase user email to `POST /api/jwt` to
+receive a backend JWT, which it stores as `access-token` in `localStorage`.
 
-## 🎨 Styling
+## 🔥 Firebase Setup
 
-- **Tailwind CSS**: Utility-first styling
-- **DaisyUI**: Pre-built components
-- **Global CSS**: `index.css` and `App.css`
+1. Go to the [Firebase Console](https://console.firebase.google.com/) and create a
+   project.
+2. Add a **Web App** and copy its config values into the `.env` variables above.
+3. Enable **Authentication → Sign-in method**:
+   - Email/Password
+   - Google
+4. (Optional) For hosting, the included `firebase.json` serves the `dist` build
+   with SPA rewrites to `index.html`.
+
+## 🧪 Testing
+
+End-to-end tests for the app live in the repository root `tests/` (Playwright) and
+target the running client. From the repo root:
+
+```bash
+npm install      # installs playwright + csv-parser at the workspace root
+npx playwright test
+```
+
+Common test specs:
+
+- `tests/login.spec.js`
+- `tests/register.spec.js`
+
+Make sure the client dev server and backend are running before executing tests.
 
 ## 🚀 Deployment
 
@@ -252,29 +223,36 @@ npm run build
 firebase deploy
 ```
 
-### Vercel
+The `firebase.json` already maps the `dist` directory and rewrites all routes to
+`index.html`.
 
-```bash
-npm run build
-vercel deploy
-```
+### Netlify / Vercel / Any Static Host
 
-### Netlify
+1. Build with `npm run build`.
+2. Deploy the `dist/` folder.
+3. Add a **SPA rewrite** so all paths serve `index.html` (needed for React Router).
+4. Set the environment variables from the [Environment Variables](#environment-variables)
+   section in the host's dashboard.
 
-```bash
-npm run build
-netlify deploy --prod --dir=dist
-```
+## ⚠️ Troubleshooting
 
-## 💡 Best Practices
+| Problem | Fix |
+|---------|-----|
+| CORS errors from the API | Confirm `CORS_ORIGIN` on the server matches `http://localhost:5175` (or your deployed URL) and that `VITE_API_BASE_URL` is correct. |
+| Firebase "auth/invalid-api-key" | Double-check all `VITE_*` Firebase env values. |
+| `access-token` never set | Ensure the server exposes `POST /api/jwt` and is reachable from the client. |
+| Blank page after deploy | Add an SPA rewrite to `index.html` on the static host. |
+| Port already in use | `vite.config.js` fixes the port to `5175`; change it or stop the conflicting process. |
 
-1. Keep components small and focused
-2. Use custom hooks for API calls
-3. Leverage React Query for data management
-4. Use Tailwind utilities for styling
-5. Implement proper error handling
-6. Use semantic HTML
+## 💡 Notes for Contributors
+
+- `src/App.jsx` is still the default Vite starter component and is not used by the
+  router — the real app boots from `src/main.jsx` → `Routes/Routes.jsx`.
+- API access should go through `useAxiosPublic` (no token) or `useAxiosSecure`
+  (token attached) rather than raw `axios`.
+- Data-fetching logic is centralized in `src/hooks/` (e.g. `useAppointment`,
+  `useDoctor`, `usePrescription`).
 
 ---
 
-For backend setup, see [Server README](../monprova-server/README.md)
+For backend setup and API details, see the [Server README](../monprova-server/README.md).

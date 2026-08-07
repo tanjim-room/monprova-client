@@ -74,100 +74,100 @@ const Login = () => {
     };
 
     // Handle login
-  const handleLogin = (event) => {
-    event.preventDefault();
-    
-    // Reset all error messages
-    setError("");
-    setEmailError("");
-    setPasswordError("");
-    setRoleError("");
+    const handleLogin = (event) => {
+        event.preventDefault();
 
-    const form = event.target;
-    const email = form.email.value.trim();
-    const password = form.password.value.trim();
+        // Reset all error messages
+        setError("");
+        setEmailError("");
+        setPasswordError("");
+        setRoleError("");
 
-    // ===== Validation =====
-    let hasError = false;
+        const form = event.target;
+        const email = form.email.value.trim();
+        const password = form.password.value.trim();
 
-    // Check if email is empty
-    if (!email) {
-        setEmailError("ইমেইল দিন");
-        hasError = true;
-    }
-    // Check if email format is valid
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setEmailError("সঠিক ইমেইল দিন");
-        hasError = true;
-    }
+        // ===== Validation =====
+        let hasError = false;
 
-    // Check if password is empty
-    if (!password) {
-        setPasswordError("পাসওয়ার্ড দিন");
-        hasError = true;
-    }
-    // Check if password meets basic criteria
-    else if (password.length < 6) {
-        setPasswordError("পাসওয়ার্ডে কমপক্ষে ৬টি ক্যারেক্টার থাকতে হবে");
-        hasError = true;
-    }
+        // Check if email is empty
+        if (!email) {
+            setEmailError("ইমেইল দিন");
+            hasError = true;
+        }
+        // Check if email format is valid
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            setEmailError("সঠিক ইমেইল দিন");
+            hasError = true;
+        }
 
-    // Ensure role is selected
-    if (!role) {
-        setRoleError("দয়া করে আপনার রোল (রোগী বা ডাক্তার) নির্বাচন করুন");
-        hasError = true;
-    }
+        // Check if password is empty
+        if (!password) {
+            setPasswordError("পাসওয়ার্ড দিন");
+            hasError = true;
+        }
+        // Check if password meets basic criteria
+        else if (password.length < 6) {
+            setPasswordError("পাসওয়ার্ডে কমপক্ষে ৬টি ক্যারেক্টার থাকতে হবে");
+            hasError = true;
+        }
 
-    if (hasError) return;
-    console.log(users)
-    // Check if the email exists in the user list
-    const dbUser = users?.find(user => user.email === email);
+        // Ensure role is selected
+        if (!role) {
+            setRoleError("দয়া করে আপনার রোল (রোগী বা ডাক্তার) নির্বাচন করুন");
+            hasError = true;
+        }
 
-    Swal.fire({
-        title: "লগইন হচ্ছে...",
-        text: "অনুগ্রহ করে অপেক্ষা করুন",
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-    });
+        if (hasError) return;
+        console.log(users)
+        // Check if the email exists in the user list
+        const dbUser = users?.find(user => user.email === email);
 
-    if (dbUser) {
-        // If the role matches, proceed with login
-        if (dbUser?.role === role) {
-            signInEmail(email, password)
-                .then(result => {
-                    const loggedUser = result.user;
-                    if (loggedUser.emailVerified) {
-                        setError(""); // Clear any previous error
-                        if (role === "doctor") {
-                            navigate(form2, { replace: true });
+        Swal.fire({
+            title: "লগইন হচ্ছে...",
+            text: "অনুগ্রহ করে অপেক্ষা করুন",
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading(),
+        });
+
+        if (dbUser) {
+            // If the role matches, proceed with login
+            if (dbUser?.role === role) {
+                signInEmail(email, password)
+                    .then(result => {
+                        const loggedUser = result.user;
+                        if (loggedUser.emailVerified) {
+                            setError(""); // Clear any previous error
+                            if (role === "doctor") {
+                                navigate(form2, { replace: true });
+                            } else {
+                                navigate(from, { replace: true });
+                            }
+                            Swal.close();
                         } else {
-                            navigate(from, { replace: true });
+                            setError("ইমেইল ভেরিফিকেশন করুন");
+                            Swal.close();
                         }
+                    })
+                    .catch(error => {
+                        setError("ভুল ইমেইল বা পাসওয়ার্ড দিয়েছেন");
                         Swal.close();
-                    } else {
-                        setError("ইমেইল ভেরিফিকেশন করুন");
-                        Swal.close();
-                    }
-                })
-                .catch(error => {
-                    setError("ভুল ইমেইল বা পাসওয়ার্ড দিয়েছেন");
-                    Swal.close();
-                });
+                    });
+            } else {
+                setError("আপনার রোল মেলে না, দয়া করে সঠিক লগইন পদ্ধতি ব্যবহার করুন।");
+                Swal.close();
+            }
         } else {
-            setError("আপনার রোল মেলে না, দয়া করে সঠিক লগইন পদ্ধতি ব্যবহার করুন।");
+            setError("ইমেইল খুঁজে পাওয়া যায়নি। দয়া করে সঠিক ইমেইল দিন।");
             Swal.close();
         }
-    } else {
-        setError("ইমেইল খুঁজে পাওয়া যায়নি। দয়া করে সঠিক ইমেইল দিন।");
-        Swal.close();
-    }
-};
+    };
 
 
     return (
         <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
             <HomeNavbar></HomeNavbar>
-            
+
             <div className="w-full max-w-6xl bg-base-100 rounded-2xl shadow-xl grid grid-cols-1 md:grid-cols-2 overflow-hidden mt-8">
                 {/* Left Section */}
                 <div className="p-8 md:p-12 flex flex-col justify-center">
@@ -238,9 +238,9 @@ const Login = () => {
 
                             <p className='mt-2'><Link to={"/resetpassword"} className="text-blue-600 hover:underline ">পাসওয়ার্ড ভুলে গেছেন?</Link></p>
                         </div>
-                        
-                            
-                        
+
+
+
 
                         <input type="submit" value="লগইন করুন" className="btn bg-secondary-color text-white w-full px-8" />
                     </form>
