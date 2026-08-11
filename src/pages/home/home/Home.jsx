@@ -56,7 +56,7 @@ const Home = () => {
             
             
 
-            <div id="blogs" className='px-24'>
+            <div id="blogs" className='px-4 md:px-24'>
                 <div className='my-16'>
                     <SectionHeading
                         heading="ব্লগসমুহ"
@@ -66,7 +66,7 @@ const Home = () => {
                 <BlogSection />
             </div>
             <ActionButton link="/blogList" btnName={"সব ব্লগ দেখুন"} bgColor={"bg-secondary-color"}></ActionButton>
-            <div id="videos" className='px-24'>
+            <div id="videos" className='px-4 md:px-24'>
                 <div className='my-16'>
                     <SectionHeading
                         heading="ভিডিও সেকশন"
