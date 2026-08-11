@@ -1,4 +1,4 @@
-# Monprova Client - Healthcare Web Frontend
+# Monprova Client - Mental-Healthcare Web Frontend
 
 The official web frontend for **Monprova (মনপ্রভা)**, a mental-health and telemedicine
 healthcare platform. This React single-page application (SPA) lets patients book
@@ -6,30 +6,14 @@ appointments with doctors, complete health assessments, view prescriptions, make
 payments, and read educational resources — while doctors and admins manage their
 dashboards.
 
-> This app is the client for the [Monprova Server](../monprova-server/README.md).
+> This app is the client for the [Monprova Server](https://github.com/tanjim-room/monprova-server).
 > It talks to the backend REST API for all data and uses Firebase for
 > authentication.
 
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Environment Variables](#environment-variables)
-- [Running the Client](#running-the-client)
-- [Building for Production](#building-for-production)
-- [Connecting to the Backend](#connecting-to-the-backend)
-- [Firebase Setup](#firebase-setup)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [Troubleshooting](#troubleshooting)
 
 ## 🎯 Overview
 
-The Monprova client is a role-aware healthcare web app with three main user
+The Monprova client is a role-aware mental-healthcare web app with three main user
 surfaces:
 
 - **Patients** — register/login, find doctors, book appointments, complete
@@ -120,7 +104,7 @@ monprova-client/
 
 - **Node.js** v18 or higher
 - **npm** (bundled with Node)
-- A running instance of the [Monprova Server](../monprova-server/README.md)
+- A running instance of the [Monprova Server](https://github.com/tanjim-room/monprova-server).
 - A **Firebase** project (for authentication)
 
 ## 🚀 Installation
@@ -178,7 +162,7 @@ npm run preview
 
 ## 🔗 Connecting to the Backend
 
-1. Start the [Monprova Server](../monprova-server/README.md) (default port 5000).
+1. Start the [Monprova Server](https://github.com/tanjim-room/monprova-server) (default port 5000).
 2. Ensure `VITE_API_BASE_URL` points at the server (e.g. `http://localhost:5000`).
 3. In the server's `.env`, set `CORS_ORIGIN=http://localhost:5175` so requests
    from the client are accepted.
@@ -255,4 +239,11 @@ The `firebase.json` already maps the `dist` directory and rewrites all routes to
 
 ---
 
-For backend setup and API details, see the [Server README](../monprova-server/README.md).
+For backend setup and API details, see the [Server README](https://github.com/tanjim-room/monprova-server/blob/main/README.md).
+
+## 📄 Documents
+
+- 📋 **Software Requirements Specification (SRS):** [SRS Document](https://drive.google.com/file/d/1JKYyHTt7MNLfRSXdX14IeplCR5ajedmb/view?usp=sharing)
+- 🏗️ **System Architecture Analysis:** [Architecture Document](https://drive.google.com/file/d/1dQXI7A2t8wudt-x42jaUO-j2m87XESPz/view?usp=sharing)
+- 🎥 **Software Metrics Analysis:** [Metrics Document](https://drive.google.com/file/d/1_Qv54aDtYbUUT2tAdNEmBPnRH8CzCYZD/view?usp=sharing)
+- 🗄️ **User Manual:** [User Manual](https://drive.google.com/file/d/1m_at0VObKTAxERvY9WjajxwH0kMnLQsv/view?usp=sharing)
