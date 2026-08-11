@@ -49,7 +49,7 @@ const PrescriptionDetails = () => {
       </div>
 
       {/* Patient Info */}
-      <div className="grid grid-cols-3 gap-4 text-sm border-b py-3 mt-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm border-b py-3 mt-2">
         <p>
           <span className="font-semibold">রোগীর নাম:</span> {appointment?.patientName || "N/A"}
         </p>
@@ -63,7 +63,7 @@ const PrescriptionDetails = () => {
       </div>
 
       {/* Main Content */}
-      <div className="grid grid-cols-3 gap-6 mt-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
 
         {/* Chief Complaints */}
         <div>

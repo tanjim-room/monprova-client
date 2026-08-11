@@ -236,7 +236,7 @@ const DoctorSchedule = () => {
           </div>
 
           {/* Slots */}
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {timeSlots.map(slot => {
               const slotData = availability[selectedDay].find(s => s.time === slot);
 

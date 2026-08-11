@@ -15,7 +15,7 @@ const PageCover = ({coverTitle, coverSubtitle, coverImg}) => {
 
       {/* Centered Content */}
       <div className="relative z-10 flex h-full items-center justify-center">
-        <div className="bg-black bg-opacity-25   w-full mx-24 text-center rounded-sm p-24">
+        <div className="bg-black bg-opacity-25 w-full mx-4 md:mx-24 text-center rounded-sm p-6 md:p-24">
           <h2 className="text-white text-4xl font-bold">
             {coverTitle}
           </h2>

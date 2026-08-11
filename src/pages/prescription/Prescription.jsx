@@ -31,7 +31,7 @@ const Prescription = () => {
             এখনো কোনো প্রেসক্রিপশন পাওয়া যায়নি।
           </p>
         ) : (
-          <div className="grid grid-cols-3 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {prescription.map((prescription, index) => (
               <PrescriptionCard key={index} prescription={prescription} patient ={patient} /> // Use PrescriptionCard to render each item
             ))}

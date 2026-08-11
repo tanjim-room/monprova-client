@@ -181,7 +181,7 @@ const AppointmentDetailsDoctor = () => {
                                     <span className="font-semibold text-gray-700">ইমেইলঃ</span>
                                     <span className="ml-2 text-gray-600">{appointment?.patientEmail || 'ইমেইল নেই'}</span>
                                 </div>
-                                <div className="grid grid-cols-3 gap-2.5">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                                     <div className="p-2.5 rounded-lg ">
                                         <span className="font-semibold text-gray-700 block text-sm">বয়স</span>
                                         <span className="text-gray-600">{appointment?.age || 0} বছর</span>
@@ -222,7 +222,7 @@ const AppointmentDetailsDoctor = () => {
 
             </div>
 
-            <div className={`grid gap-3 mt-4 mb-4 ${appointment?.mode === 'online' ? 'grid-cols-3' : 'grid-cols-1'
+            <div className={`grid gap-3 mt-4 mb-4 ${appointment?.mode === 'online' ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1'
                 }`}>
                 {/* ✅ Start Session Button */}
                 {appointment?.mode === 'online' && (

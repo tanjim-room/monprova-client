@@ -122,7 +122,7 @@ const AppointmentCardDoctor = ({ appointment }) => {
                     </div>
                 </div>
 
-                <div className={`grid gap-3 mt-4 ${appointment?.mode === 'online' ? 'grid-cols-3' : 'grid-cols-1'
+                <div className={`grid gap-3 mt-4 ${appointment?.mode === 'online' ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1'
                     }`}>
                     {/* ✅ Start Session Button */}
                     {appointment?.mode === 'online' && (

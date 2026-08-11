@@ -8,6 +8,7 @@ import usePatient from "../../hooks/usePatient.jsx";
 import useDoctor from "../../hooks/useDoctor.jsx";
 import { GrUpdate } from "react-icons/gr";
 import { MdVerified } from "react-icons/md";
+import { HiMenu, HiX } from "react-icons/hi";
 import useAdmin from "../../hooks/useAdmin.jsx";
 
 const DashboardNavBar = ({ fullName, role }) => {
@@ -15,6 +16,8 @@ const DashboardNavBar = ({ fullName, role }) => {
     const [patients] = usePatient();
     const [doctors] = useDoctor();
     const [admins] = useAdmin();
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
     const admin = admins?.find(admin => admin.email === user.email)
     const patient = patients.find(p => p.email === user?.email);
     const doctor = doctors.find(d => d.email === user?.email);
@@ -46,15 +49,15 @@ const DashboardNavBar = ({ fullName, role }) => {
 
 
 
-
     const menuItems =
         role === "admin" ? adminMenuItems
             : role === "doctor" ? doctorMenuItems
                 : patientMenuItems;
 
-    return (
-        <aside className="w-1/5 bg-white xm:hidden sm:hidden md:block shadow-lg p-6 fixed h-full overflow-y-auto">
+    const closeDrawer = () => setIsDrawerOpen(false);
 
+    const sidebarContent = (
+        <div className="flex flex-col h-full">
             <div className="flex flex-col items-center mb-4 ">
                 <div className="relative">
                     {role === "doctor" && (
@@ -74,7 +77,7 @@ const DashboardNavBar = ({ fullName, role }) => {
             </div>
 
 
-            <ul className="space-y-4">
+            <ul className="space-y-4 flex-1">
                 {menuItems.map((item, index) => {
                     const isActive = location.pathname === item.link;
 
@@ -83,7 +86,7 @@ const DashboardNavBar = ({ fullName, role }) => {
                         return (
                             <li key={index} className="border rounded-md">
                                 <button
-                                    onClick={handleLogout}
+                                    onClick={() => { handleLogout(); closeDrawer(); }}
                                     className="flex w-full items-center gap-6 px-4 py-2 text-md font-semibold
                         rounded-md text-red-600 hover:bg-red-600 hover:text-white transition"
                                 >
@@ -99,6 +102,7 @@ const DashboardNavBar = ({ fullName, role }) => {
                         <li key={index} className="border rounded-md">
                             <Link
                                 to={item.link}
+                                onClick={closeDrawer}
                                 className={`flex items-center gap-6 px-4 py-2 text-md font-semibold rounded-md transition
                     ${isActive
                                         ? "bg-blue-500 text-white"
@@ -116,6 +120,7 @@ const DashboardNavBar = ({ fullName, role }) => {
                 <div className="flex justify-center mt-4">
                     <Link
                         to={getChangePasswordRoute(role)}
+                        onClick={closeDrawer}
                         className="inline-flex items-center gap-2
                    bg-gray-500 hover:bg-primary-400
                    text-white px-4 py-2 rounded-lg w-full"
@@ -125,10 +130,46 @@ const DashboardNavBar = ({ fullName, role }) => {
                 </div>
 
             }
+        </div>
+    );
 
+    return (
+        <>
+            {/* Mobile top bar with hamburger */}
+            <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-md flex items-center justify-between px-4 h-16">
+                <Logo />
+                <button
+                    onClick={() => setIsDrawerOpen(true)}
+                    className="text-2xl text-gray-700"
+                    aria-label="Open menu"
+                >
+                    <HiMenu />
+                </button>
+            </div>
 
+            {/* Desktop sidebar */}
+            <aside className="hidden md:block fixed h-full w-1/5 bg-white shadow-lg p-6 overflow-y-auto">
+                {sidebarContent}
+            </aside>
 
-        </aside>
+            {/* Mobile drawer */}
+            <div className={`md:hidden fixed inset-0 z-[60] ${isDrawerOpen ? "" : "pointer-events-none"}`}>
+                {/* Overlay */}
+                <div
+                    className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ${isDrawerOpen ? "opacity-100" : "opacity-0"}`}
+                    onClick={closeDrawer}
+                ></div>
+                {/* Drawer panel */}
+                <aside className={`absolute top-0 left-0 h-full w-4/5 max-w-xs bg-white shadow-lg p-6 overflow-y-auto transition-transform duration-300 ${isDrawerOpen ? "translate-x-0" : "-translate-x-full"}`}>
+                    <div className="flex justify-end mb-2">
+                        <button onClick={closeDrawer} className="text-2xl text-gray-700" aria-label="Close menu">
+                            <HiX />
+                        </button>
+                    </div>
+                    {sidebarContent}
+                </aside>
+            </div>
+        </>
     );
 };
 

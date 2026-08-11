@@ -51,7 +51,7 @@ const PrescriptionDetailsPrint = () => {
                 </div>
 
                 {/* Patient Info */}
-                <div className="grid grid-cols-4 gap-4 text-sm border-b py-3 mt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-sm border-b py-3 mt-2">
                     <p className="col-span-2">
                         <span className="font-semibold">রোগীর নাম:</span> {appointment?.patientName || "N/A"}
                     </p>
@@ -65,7 +65,7 @@ const PrescriptionDetailsPrint = () => {
                 </div>
 
                 {/* Main Content */}
-                <div className="grid grid-cols-3 gap-6 mt-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
 
                     {/* Chief Complaints and Tests */}
                     <div>
