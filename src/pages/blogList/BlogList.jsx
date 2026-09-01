@@ -5,6 +5,13 @@ import BlogCard from '../../components/cards/BlogCard';
 
 const BlogList = () => {
     const { blogs, loading, error } = useBlogs()
+    if (error) {
+        return <p>Something wrong...</p>
+    }
+
+    if (loading) {
+        return <p>Loading...</p>
+    }
     return (
         <div>
             <PageCover coverTitle="আমাদের ব্লগসমুহ" coverSubtitle="আপনার মানসিক স্বাস্থ্য সম্পর্কিত ব্লগ পড়ুন" coverImg="https://i.ibb.co.com/CsbSwPgp/thought-catalog-505eect-W54k-unsplash.jpg"></PageCover>
