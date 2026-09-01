@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 
 
 const useBlogs = () => {
-    const axiosPublic = useAxiosPublic();
+    // const axiosPublic = useAxiosPublic();
     // const { data: blogs = [] } = useQuery({
     //     queryKey: ['blogs'],
     //     queryFn: async () => {
@@ -23,8 +23,15 @@ const useBlogs = () => {
             setLoading(true);
             setError(null);
 
-            const res = await axiosPublic.get("/api/blogs");
-            setBlogs(res.data);
+            // const res = await axiosPublic.get("/api/blogs");
+            const res = await fetch("https://monprova-server.vercel.app/api/blogs");
+
+            if (!res.ok) {
+                throw new Error("Failed");
+            }
+
+            const data = await res.json();
+            setBlogs(data);
         }
         catch (err) {
             setError("Failed to load");
