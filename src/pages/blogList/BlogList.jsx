@@ -4,7 +4,7 @@ import useBlogs from '../../hooks/useBlogs';
 import BlogCard from '../../components/cards/BlogCard';
 
 const BlogList = () => {
-    const [blogs] = useBlogs()
+    const { blogs, loading, error } = useBlogs()
     return (
         <div>
             <PageCover coverTitle="আমাদের ব্লগসমুহ" coverSubtitle="আপনার মানসিক স্বাস্থ্য সম্পর্কিত ব্লগ পড়ুন" coverImg="https://i.ibb.co.com/CsbSwPgp/thought-catalog-505eect-W54k-unsplash.jpg"></PageCover>

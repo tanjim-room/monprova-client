@@ -5,14 +5,46 @@ import { useQuery } from "@tanstack/react-query";
 
 const useBlogs = () => {
     const axiosPublic = useAxiosPublic();
-    const { data: blogs = [] } = useQuery({
-        queryKey: ['blogs'],
-        queryFn: async () => {
-            const res = await axiosPublic.get('/api/blogs')
-            return res.data
+    // const { data: blogs = [] } = useQuery({
+    //     queryKey: ['blogs'],
+    //     queryFn: async () => {
+    //         const res = await axiosPublic.get('/api/blogs')
+    //         return res.data
+    //     }
+    // })
+    // return [blogs]
+
+    const [blogs, setBlogs] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const fetchBlogs = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const res = await axiosPublic.get("/api/blogs");
+            setBlogs(res.data);
         }
-    })
-    return [blogs]
+        catch (err) {
+            setError("Failed to load");
+        }
+        finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        fetchBlogs();
+
+        const interval = setInterval(() => {
+            fetchBlogs();
+        }, 10000)
+
+        return () => clearInterval(interval);
+    }, []);
+
+    return { blogs, loading, error };
 };
 
 export default useBlogs;
