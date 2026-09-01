@@ -14,12 +14,12 @@ const Hero = () => {
       }}
     >
       {/* Logo top-left */}
-     <HomeNavbar></HomeNavbar>
+      <HomeNavbar></HomeNavbar>
 
       {/* Hero content */}
       <div className="max-w-lg ml-24">
         <h1 className="mb-5 text-5xl font-bold primary-color leading-normal">
-          আপনার মানসিক <span className="tertiary-color">স্বাস্থ্যের বিশ্বস্ত সঙ্গী</span>
+          আপনার মানসিক <span className="tertiary-color text-sm">স্বাস্থ্যের বিশ্বস্ত সঙ্গী</span>
         </h1>
 
         <p className="mb-5 secondary-color">
