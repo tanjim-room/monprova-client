@@ -214,7 +214,7 @@ const CombinedAssessmentGraph = ({ assessments = [], isLoading }) => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {Object.values(assessmentTypes).map(type => {
                     const validScores = timeSeries
                         .map(d => d[type])

@@ -4,11 +4,11 @@ import useBlogs from '../../hooks/useBlogs';
 import BlogCard from '../../components/cards/BlogCard';
 
 const BlogList = () => {
-    const [blogs] = useBlogs()
+    const { blogs, loading, error } = useBlogs()
     return (
         <div>
             <PageCover coverTitle="আমাদের ব্লগসমুহ" coverSubtitle="আপনার মানসিক স্বাস্থ্য সম্পর্কিত ব্লগ পড়ুন" coverImg="https://i.ibb.co.com/CsbSwPgp/thought-catalog-505eect-W54k-unsplash.jpg"></PageCover>
-            <div className="grid grid-cols-3 gap-12 mx-auto px-0 mt-16">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-12 mx-auto px-4 mt-16">
                 {
                     blogs.map(blog => <BlogCard key={blog.id} blog={blog}></BlogCard>)
                 }

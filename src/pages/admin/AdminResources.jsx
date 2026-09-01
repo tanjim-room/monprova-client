@@ -850,7 +850,7 @@ const AdminResources = () => {
                 {notifications.map((notification) => (
                     <div
                         key={notification.id}
-                        className={`flex items-center gap-3 min-w-[320px] max-w-md p-4 rounded-lg shadow-lg transform transition-all duration-300 animate-slide-in ${
+                        className={`flex items-center gap-3 min-w-0 sm:min-w-[320px] max-w-md p-4 rounded-lg shadow-lg transform transition-all duration-300 animate-slide-in ${
                             notification.type === 'success'
                                 ? 'bg-green-50 border-l-4 border-green-500'
                                 : 'bg-red-50 border-l-4 border-red-500'
